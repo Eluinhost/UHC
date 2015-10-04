@@ -9,8 +9,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -88,8 +88,13 @@ public class IconInventory implements UpdateHandler, Listener {
         // create a replacement
         Inventory newInventory = Bukkit.createInventory(null, slotsRequired, title);
 
-        // copy contents over (with padded nulls)
-        newInventory.setContents(Arrays.copyOf(inventory.getContents(), slotsRequired));
+        // rerender entire inventory
+        ItemStack[] contents = new ItemStack[slotsRequired];
+        for (int i = 0; i < icons.size(); i++) {
+            contents[i] = icons.get(i);
+        }
+
+        newInventory.setContents(contents);
 
         // replace the old inventory
         for (HumanEntity entity : inventory.getViewers()) {
