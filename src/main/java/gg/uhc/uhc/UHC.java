@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import gg.uhc.uhc.inventory.IconInventory;
 import gg.uhc.uhc.command.ShowIconsCommand;
 import gg.uhc.uhc.modules.ConfigurableModule;
+import gg.uhc.uhc.modules.difficulty.DifficultyModule;
 import gg.uhc.uhc.modules.heads.GoldenHeadsModule;
 import gg.uhc.uhc.modules.heads.HeadDropsModule;
 import gg.uhc.uhc.modules.heads.PlayerHeadProvider;
@@ -43,6 +44,7 @@ public class UHC extends JavaPlugin {
                 .add(new AbsorptionModule(this, inventory.createNewIcon(2), false))
                 .add(new GoldenHeadsModule(headProvider, inventory.createNewIcon(0), true, 7))
                 .add(new HeadDropsModule(inventory.createNewIcon(0), true, 1F, headProvider))
+                .add(new DifficultyModule(inventory.createNewIcon(1), true))
                 .build();
 
         // TODO global pvp
