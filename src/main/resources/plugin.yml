@@ -1,0 +1,15 @@
+name: ${project.name}
+main: ${project.groupId}.${project.artifactId}.UHC
+version: ${project.version}
+author: ghowden/Eluinhost
+database: false
+commands:
+  showhealth:
+    permission: uhc.command.showhealth
+  addons:
+    permission: uhc.command.addons
+permissions:
+  uhc.command.showhealth:
+    default: op
+  uhc.commands.addons:
+    default: true
