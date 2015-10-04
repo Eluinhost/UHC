@@ -15,6 +15,7 @@ import gg.uhc.uhc.modules.potions.AbsorptionModule;
 import gg.uhc.uhc.modules.recipes.GlisteringMelonRecipeModule;
 import gg.uhc.uhc.modules.recipes.GoldenCarrotRecipeModule;
 import gg.uhc.uhc.modules.recipes.NotchApplesModule;
+import gg.uhc.uhc.modules.saturation.ExtendedSaturationModule;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -45,6 +46,7 @@ public class UHC extends JavaPlugin {
                 .add(new GoldenHeadsModule(headProvider, inventory.createNewIcon(0), true, 7))
                 .add(new HeadDropsModule(inventory.createNewIcon(0), true, 1F, headProvider))
                 .add(new DifficultyModule(inventory.createNewIcon(1), true))
+                .add(new ExtendedSaturationModule(inventory.createNewIcon(10), true, this, 2.5F))
                 .build();
 
         // TODO global pvp
