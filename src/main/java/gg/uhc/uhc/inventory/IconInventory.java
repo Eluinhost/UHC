@@ -2,7 +2,6 @@ package gg.uhc.uhc.inventory;
 
 import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Collections;
 import java.util.List;
 
-public class IconInventory implements UpdateHandler, Listener {
+public class IconInventory implements IconUpdateListener, Listener {
 
     protected final List<IconStack> icons = Lists.newArrayList();
 
@@ -30,10 +29,12 @@ public class IconInventory implements UpdateHandler, Listener {
         entity.openInventory(inventory);
     }
 
-    public IconStack createNewIcon(int weight) {
-        IconStack icon = new IconStack(weight, Material.BARRIER);
+    public void registerNewIcon(IconStack icon) {
         icon.registerUpdateHandler(this);
+        add(icon);
+    }
 
+    protected int add(IconStack icon) {
         // check where to insert and
         // add item to list in the correct location
         int index = indexToInsert(icon);
@@ -42,12 +43,12 @@ public class IconInventory implements UpdateHandler, Listener {
         // make sure this is enough space now
         ensureInventorySize();
 
-        // rerender all items past this one (inclusive)
+        // rerender all items past this one (inclusive) as they have shifted index right 1
         for (int i = index; i < icons.size(); i++) {
             inventory.setItem(i, icons.get(i));
         }
 
-        return icon;
+        return index;
     }
 
     protected int indexToInsert(IconStack icon) {
@@ -70,6 +71,25 @@ public class IconInventory implements UpdateHandler, Listener {
 
         // refresh the item
         inventory.setItem(index, icon);
+    }
+
+    @Override
+    public void onWeightUpdate(IconStack icon) {
+        int index = icons.indexOf(icon);
+
+        // this isn't one of our icons
+        if (index < 0) return;
+
+        // remove from the list
+        icons.remove(index);
+
+        // readd to the list
+        int newIndex = add(icon);
+
+        // rerender the changed items (index+ is handled by the add() method)
+        for (int i = newIndex; i < index; i++) {
+            inventory.setItem(i, icons.get(i));
+        }
     }
 
     protected void ensureInventorySize() {

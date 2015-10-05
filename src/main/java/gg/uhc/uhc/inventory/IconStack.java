@@ -15,14 +15,21 @@ import java.util.List;
 
 public class IconStack extends ItemStack implements Comparable<IconStack> {
 
-    protected final int weight;
+    protected int weight = 0;
 
     protected List<ClickHandler> clickHandlers = Lists.newArrayList();
-    protected List<UpdateHandler> updateHandlers = Lists.newArrayList();
+    protected List<IconUpdateListener> iconUpdateListeners = Lists.newArrayList();
 
-    protected IconStack(int weight, Material defaultMat) {
-        super(defaultMat);
-        this.weight = weight;
+    public IconStack(Material defaultMat) {
+        this(defaultMat, 1);
+    }
+
+    public IconStack(Material type, int amount) {
+        super(type, amount);
+    }
+
+    public IconStack(Material type, int amount, short damage) {
+        super(type, amount, damage);
     }
 
     /**
@@ -37,10 +44,10 @@ public class IconStack extends ItemStack implements Comparable<IconStack> {
         return this;
     }
 
-    public IconStack registerUpdateHandler(UpdateHandler handler) {
+    public IconStack registerUpdateHandler(IconUpdateListener handler) {
         Preconditions.checkNotNull(handler);
 
-        this.updateHandlers.add(handler);
+        this.iconUpdateListeners.add(handler);
         return this;
     }
 
@@ -54,8 +61,16 @@ public class IconStack extends ItemStack implements Comparable<IconStack> {
         return weight;
     }
 
+    public void setWeight(int weight) {
+        this.weight = weight;
+
+        for (IconUpdateListener listener : iconUpdateListeners) {
+            listener.onWeightUpdate(this);
+        }
+    }
+
     public void refresh() {
-        for (UpdateHandler handler : updateHandlers) {
+        for (IconUpdateListener handler : iconUpdateListeners) {
             handler.onUpdate(this);
         }
     }
