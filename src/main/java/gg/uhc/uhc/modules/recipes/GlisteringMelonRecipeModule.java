@@ -1,6 +1,5 @@
 package gg.uhc.uhc.modules.recipes;
 
-import gg.uhc.uhc.inventory.IconStack;
 import gg.uhc.uhc.modules.DisableableModule;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -15,12 +14,13 @@ public class GlisteringMelonRecipeModule extends DisableableModule implements Li
 
     protected static final String ICON_NAME = "Glistering Melon Recipe";
 
-    public GlisteringMelonRecipeModule(IconStack icon, boolean enabled) {
-        super(ICON_NAME, icon, enabled);
+    public GlisteringMelonRecipeModule() {
+        this.iconName = ICON_NAME;
 
         // TODO allow permission?
 
-        icon.setType(Material.SPECKLED_MELON);
+        this.icon.setType(Material.SPECKLED_MELON);
+        this.icon.setWeight(10);
 
         ShapelessRecipe modified = new ShapelessRecipe(new ItemStack(Material.SPECKLED_MELON, 1))
                 .addIngredient(1, Material.GOLD_BLOCK)
@@ -30,13 +30,19 @@ public class GlisteringMelonRecipeModule extends DisableableModule implements Li
     }
 
     @Override
-    public void onEnable() {
-        icon.setLore("Requires a golden block to craft");
+    protected boolean isEnabledByDefault() {
+        return true;
     }
 
     @Override
-    public void onDisable() {
-        icon.setLore("Requires 8 golden nuggets to craft");
+    protected void rerender() {
+        super.rerender();
+
+        if (isEnabled()) {
+            icon.setLore("Requires a golden block to craft");
+        } else {
+            icon.setLore("Requires 8 golden nuggets to craft");
+        }
     }
 
     @EventHandler
@@ -45,7 +51,7 @@ public class GlisteringMelonRecipeModule extends DisableableModule implements Li
 
         if (recipe.getResult().getType() != Material.SPECKLED_MELON) return;
 
-        if (RecipeUtil.hasRecipeGotMaterial(recipe, enabled ? Material.GOLD_NUGGET : Material.GOLD_BLOCK)) {
+        if (RecipeUtil.hasRecipeGotMaterial(recipe, isEnabled() ? Material.GOLD_NUGGET : Material.GOLD_BLOCK)) {
             event.getInventory().setResult(new ItemStack(Material.AIR));
         }
     }

@@ -1,9 +1,9 @@
 package gg.uhc.uhc;
 
-import com.google.common.collect.ImmutableList;
-import gg.uhc.uhc.inventory.IconInventory;
+import com.google.common.collect.Maps;
 import gg.uhc.uhc.command.ShowIconsCommand;
-import gg.uhc.uhc.modules.ConfigurableModule;
+import gg.uhc.uhc.inventory.IconInventory;
+import gg.uhc.uhc.modules.Module;
 import gg.uhc.uhc.modules.difficulty.DifficultyModule;
 import gg.uhc.uhc.modules.heads.GoldenHeadsModule;
 import gg.uhc.uhc.modules.heads.HeadDropsModule;
@@ -18,36 +18,50 @@ import gg.uhc.uhc.modules.recipes.NotchApplesModule;
 import gg.uhc.uhc.modules.saturation.ExtendedSaturationModule;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.DisplaySlot;
 
-import java.util.List;
+import java.util.Map;
 
 public class UHC extends JavaPlugin {
 
+    protected Map<String, Module> modules;
     protected IconInventory inventory;
+    protected FileConfiguration configuration;
+    protected DebouncedRunnable configSaver;
 
     @Override
     public void onEnable() {
+        // setup to save the config with a debounce of 2 seconds
+        configSaver = new DebouncedRunnable(this, new Runnable() {
+            @Override
+            public void run() {
+                saveConfigNow();
+            }
+        }, 40);
+
+        configuration = getConfig();
+
+        modules = Maps.newHashMap();
+
         inventory = new IconInventory(ChatColor.DARK_PURPLE + "UHC Control Panel");
         registerEvents(inventory);
 
         PlayerHeadProvider headProvider = new PlayerHeadProvider();
 
-        // TODO config
-        List<ConfigurableModule> modules = ImmutableList.<ConfigurableModule>builder()
-                .add(new HealthRegenerationModule(inventory.createNewIcon(1), false))
-                .add(new GhastTearDropsModule(inventory.createNewIcon(1), false))
-                .add(new GoldenCarrotRecipeModule(inventory.createNewIcon(3), true))
-                .add(new GlisteringMelonRecipeModule(inventory.createNewIcon(3), true))
-                .add(new NotchApplesModule(inventory.createNewIcon(3), false))
-                .add(new AbsorptionModule(this, inventory.createNewIcon(2), false))
-                .add(new GoldenHeadsModule(headProvider, inventory.createNewIcon(0), true, 7))
-                .add(new HeadDropsModule(inventory.createNewIcon(0), true, 1F, headProvider))
-                .add(new DifficultyModule(inventory.createNewIcon(1), true))
-                .add(new ExtendedSaturationModule(inventory.createNewIcon(10), true, this, 2.5F))
-                .build();
+        registerModule("hard difficulty", new DifficultyModule());
+        registerModule("golden heads", new GoldenHeadsModule(headProvider));
+        registerModule("head drops", new HeadDropsModule(headProvider));
+        registerModule("health regeneration", new HealthRegenerationModule());
+        registerModule("ghast tears", new GhastTearDropsModule());
+        registerModule("golden carrot recipe", new GoldenCarrotRecipeModule());
+        registerModule("glistering melon recipe", new GlisteringMelonRecipeModule());
+        registerModule("notch apples", new NotchApplesModule());
+        registerModule("absoption", new AbsorptionModule());
+        registerModule("extended saturation", new ExtendedSaturationModule());
 
         // TODO global pvp
         // TODO enderpearls
@@ -56,12 +70,6 @@ public class UHC extends JavaPlugin {
         // TODO death items?
         // TODO tier 2
         // TODO splash potions
-
-        for (ConfigurableModule module : modules) {
-            if (module instanceof Listener) {
-                registerEvents((Listener) module);
-            }
-        }
 
         // TODO heal
         // TODO feed
@@ -78,13 +86,50 @@ public class UHC extends JavaPlugin {
                 "UHCHealth",
                 "Health"
         ));
+
+        saveConfig();
     }
 
     protected void registerEvents(Listener listener) {
         getServer().getPluginManager().registerEvents(listener, this);
     }
 
-    public IconInventory getIconInventory() {
-        return inventory;
+    public void registerModule(String id, Module module) {
+        if (modules.containsKey(id)) {
+            throw new IllegalArgumentException("Module " + module + " is already registered");
+        }
+
+        module.setPlugin(this);
+
+        String sectionId = "modules." + id;
+
+        if (!configuration.contains(sectionId)) {
+            configuration.createSection(sectionId);
+        }
+
+        try {
+            module.initialize(configuration.getConfigurationSection(sectionId));
+        } catch (InvalidConfigurationException ex) {
+            ex.printStackTrace();
+            return;
+        }
+
+        modules.put(id, module);
+
+        if (module instanceof Listener) {
+            registerEvents((Listener) module);
+        }
+
+        inventory.registerNewIcon(module.getIconStack());
+    }
+
+    @Override
+    public void saveConfig() {
+        configSaver.trigger();
+    }
+
+    public void saveConfigNow() {
+        super.saveConfig();
+        getLogger().info("Saved configuration changes");
     }
 }

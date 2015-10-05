@@ -1,11 +1,11 @@
 package gg.uhc.uhc.modules.heads;
 
-import com.google.common.base.Preconditions;
-import gg.uhc.uhc.inventory.IconStack;
 import gg.uhc.uhc.modules.DisableableModule;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
@@ -31,16 +31,15 @@ public class GoldenHeadsModule extends DisableableModule implements Listener {
 
     protected final PlayerHeadProvider playerHeadProvider;
 
-    protected int healAmount = 0;
+    protected int healAmount;
 
-    public GoldenHeadsModule(PlayerHeadProvider playerHeadProvider, IconStack icon, boolean enabled, int healAmount) {
-        super(ICON_NAME, icon, enabled);
-        this.playerHeadProvider = playerHeadProvider;
+    public GoldenHeadsModule(PlayerHeadProvider provider) {
+        this.playerHeadProvider = provider;
 
-        icon.setType(Material.SKULL_ITEM);
-        icon.setDurability((short) 3);
-
-        setHealAmount(healAmount);
+        this.iconName = ICON_NAME;
+        this.icon.setType(Material.SKULL_ITEM);
+        this.icon.setDurability((short) 3);
+        this.icon.setWeight(-5);
 
         // register the new recipe
         ShapedRecipe modified = new ShapedRecipe(new ItemStack(Material.GOLDEN_APPLE, 1))
@@ -51,15 +50,42 @@ public class GoldenHeadsModule extends DisableableModule implements Listener {
         Bukkit.addRecipe(modified);
     }
 
-    public void setHealAmount(int halfHearts) {
-        Preconditions.checkArgument(halfHearts > 0);
-        this.healAmount = halfHearts;
-
-        updateIconInfo();
+    public int getHealAmount() {
+        return healAmount;
     }
 
-    protected void updateIconInfo() {
-        if (enabled) {
+    public void setHealAmount(int amount) {
+        this.healAmount = amount;
+        config.set("heal amount", this.healAmount);
+        saveConfig();
+        rerender();
+    }
+
+    @Override
+    protected boolean isEnabledByDefault() {
+        return true;
+    }
+
+    @Override
+    public void initialize(ConfigurationSection section) throws InvalidConfigurationException {
+        if (!section.contains("heal amount")) {
+            section.set("heal amount", 6);
+        }
+
+        if (!section.isInt("heal amount"))
+            throw new InvalidConfigurationException("Invalid value at " + section.getCurrentPath() + ".heal amount (" + section.get("heal amount"));
+
+        // TODO check heal amount sane
+        healAmount = section.getInt("heal amount");
+
+        super.initialize(section);
+    }
+
+    @Override
+    public void rerender() {
+        super.rerender();
+
+        if (isEnabled()) {
             icon.setLore(ChatColor.GREEN + "Heal: " + formatter.format(healAmount / 2D) + " hearts", "Golden heads are craftable");
             // show heal amount on icon
             icon.setAmount(healAmount);
@@ -67,16 +93,6 @@ public class GoldenHeadsModule extends DisableableModule implements Listener {
             icon.setLore("Golden heads are not craftable and heal 2 hearts");
             icon.setAmount(0);
         }
-    }
-
-    @Override
-    public void onEnable() {
-        updateIconInfo();
-    }
-
-    @Override
-    public void onDisable() {
-        updateIconInfo();
     }
 
     @EventHandler

@@ -8,29 +8,55 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.meta.ItemMeta;
 
-public abstract class DisableableModule extends ConfigurableModule implements ClickHandler {
+public abstract class DisableableModule extends Module implements ClickHandler {
 
     protected static final String CONSOLE_FORMAT = "[UHC] Module %s is now %s";
 
-    protected final String name;
-    protected final IconStack icon;
+    private boolean enabled;
+    protected String iconName = "ERROR: NO ICON NAME SET";
 
-    protected boolean enabled;
-
-    public DisableableModule(String name, IconStack icon, boolean enabled) {
-        // TODO use extension of configurable module to pull/save enabled state to the configuration as it is changed
-        this.name = name;
-        this.icon = icon;
-
+    public DisableableModule() {
         icon.registerClickHandler(this);
+    }
 
-        if (enabled) {
-            this.enable();
+    /**
+     * @return if enabled isn't set in the config what should the default be
+     */
+    protected abstract boolean isEnabledByDefault();
+
+    @Override
+    public void initialize(ConfigurationSection config) throws InvalidConfigurationException {
+        super.initialize(config);
+
+        if (!config.contains("enabled")) {
+            config.set("enabled", isEnabledByDefault());
+        }
+
+        if (!config.isBoolean("enabled"))
+            throw new InvalidConfigurationException("Invalid value at key " + config.getCurrentPath() + ".enabled (" + config.get("enabled") + ")");
+
+        this.enabled = config.getBoolean("enabled");
+
+        if (this.enabled) {
+            enable();
         } else {
-            this.disable();
+            disable();
+        }
+    }
+
+    protected void rerender() {
+        IconStack icon = getIconStack();
+
+        if (isEnabled()) {
+            icon.setDisplayName(ChatColor.GREEN + iconName);
+            icon.setAmount(1);
+        } else {
+            icon.setDisplayName(ChatColor.RED + iconName);
+            icon.setAmount(0);
         }
     }
 
@@ -39,31 +65,47 @@ public abstract class DisableableModule extends ConfigurableModule implements Cl
     protected void onDisable() {}
 
     public final void enable() {
-        this.enabled = true;
-
-        // set display name to GREEN and set amount to 1
-        icon.setDisplayName(ChatColor.GREEN + name);
-        icon.setAmount(1);
-
+        enabled = true;
+        config.set("enabled", true);
+        saveConfig();
         onEnable();
+        rerender();
     }
 
     public final void disable() {
-        this.enabled = false;
-
-        // set display name to RED and set amount to 0
-        icon.setDisplayName(ChatColor.RED + name);
-        icon.setAmount(0);
-
+        enabled = false;
+        config.set("enabled", false);
+        saveConfig();
         onDisable();
+        rerender();
     }
 
     public final void toggle() {
-        if (enabled) {
+        if (isEnabled()) {
             disable();
         } else {
             enable();
         }
+
+        // send messages about the toggle
+        String enableStatus = isEnabled() ? "enabled" : "disabled";
+
+        Bukkit.getConsoleSender().sendMessage(String.format(CONSOLE_FORMAT, enableStatus, iconName));
+
+        TextComponent base = new TextComponent("[UHC] ");
+        base.setColor(ChatColor.AQUA);
+
+        TextComponent itemNBT = new TextComponent(ItemStackNBTStringFetcher.readFromItemStack(getIconStack()));
+
+        TextComponent module = new TextComponent(iconName);
+        module.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[]{itemNBT}));
+        module.setUnderlined(true);
+        module.setColor(isEnabled() ? ChatColor.GREEN : ChatColor.RED);
+
+        base.addExtra(module);
+        base.addExtra(" is now " + enableStatus);
+
+        Bukkit.spigot().broadcast(base);
     }
 
     public final boolean isEnabled() {
@@ -74,24 +116,5 @@ public abstract class DisableableModule extends ConfigurableModule implements Cl
     public void onClick(Player player) {
         // TODO permissions
         toggle();
-
-        String enableStatus = enabled ? "enabled" : "disabled";
-
-        Bukkit.getConsoleSender().sendMessage(String.format(CONSOLE_FORMAT, enableStatus, name));
-
-        TextComponent base = new TextComponent("[UHC] ");
-        base.setColor(ChatColor.AQUA);
-
-        TextComponent itemNBT = new TextComponent(ItemStackNBTStringFetcher.readFromItemStack(icon));
-
-        TextComponent module = new TextComponent(name);
-        module.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[]{itemNBT}));
-        module.setUnderlined(true);
-        module.setColor(enabled ? ChatColor.GREEN : ChatColor.RED);
-
-        base.addExtra(module);
-        base.addExtra(" is now " + enableStatus);
-
-        Bukkit.spigot().broadcast(base);
     }
 }

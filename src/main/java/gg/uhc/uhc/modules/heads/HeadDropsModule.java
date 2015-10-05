@@ -1,10 +1,11 @@
 package gg.uhc.uhc.modules.heads;
 
 import com.google.common.base.Preconditions;
-import gg.uhc.uhc.inventory.IconStack;
 import gg.uhc.uhc.modules.DisableableModule;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
@@ -22,25 +23,60 @@ public class HeadDropsModule extends DisableableModule {
     }
 
     protected final PlayerHeadProvider playerHeadProvider;
-    protected float dropRate = 0;
+    protected double dropRate = 0;
 
-    public HeadDropsModule(IconStack icon, boolean enabled, float dropRate, PlayerHeadProvider playerHeadProvider) {
-        super(ICON_NAME, icon, enabled);
+    public HeadDropsModule(PlayerHeadProvider playerHeadProvider) {
         this.playerHeadProvider = playerHeadProvider;
+        this.iconName = ICON_NAME;
 
         // TODO PVP only drops + team drops
 
-        icon.setType(Material.SKULL_ITEM);
-        icon.setDurability((short) 3);
-
-        setDropRate(dropRate);
+        this.icon.setType(Material.SKULL_ITEM);
+        this.icon.setDurability((short) 3);
+        this.icon.setWeight(-5);
     }
 
-    public void setDropRate(float rate) {
-        Preconditions.checkArgument(rate >= 0F && rate <= 1F);
-        this.dropRate = rate;
+    @Override
+    protected boolean isEnabledByDefault() {
+        return true;
+    }
 
-        updateIconInfo();
+    @Override
+    public void initialize(ConfigurationSection section) throws InvalidConfigurationException {
+        if (!section.contains("drop chance")) {
+            section.set("drop chance", 100D);
+        }
+
+        if (!section.isDouble("drop chance") && !section.isInt("drop chance"))
+            throw new InvalidConfigurationException("Invalid value at " + section.getCurrentPath() + ".drop chance (" + section.get("drop chance"));
+
+        // TODO check amount sane
+        dropRate = section.getDouble("drop chance") / 100D;
+
+        super.initialize(section);
+    }
+
+    public double getDropRate() {
+        return dropRate;
+    }
+
+    public void setDropRate(double rate) {
+        Preconditions.checkArgument(rate >= 0D && rate <= 1D);
+        this.dropRate = rate;
+        config.set("drop chance", this.dropRate);
+        saveConfig();
+        rerender();
+    }
+
+    @Override
+    protected void rerender() {
+        super.rerender();
+
+        if (isEnabled()) {
+            icon.setLore(ChatColor.GREEN + "Drop rate: " + formatter.format(dropRate * 100) + "%");
+        } else {
+            icon.setLore("Heads do not drop");
+        }
     }
 
     @Override
@@ -65,12 +101,6 @@ public class HeadDropsModule extends DisableableModule {
     }
 
     protected void updateIconInfo() {
-        if (enabled) {
-            icon.setLore(ChatColor.GREEN + "Drop rate: " + formatter.format(dropRate * 100) + "%");
-        } else {
-            icon.setLore("Heads do not drop");
-        }
 
-        icon.setAmount(isEnabled() ? Math.round(dropRate * 10) : 0);
     }
 }

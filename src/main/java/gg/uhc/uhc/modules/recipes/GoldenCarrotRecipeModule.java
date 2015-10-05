@@ -1,6 +1,5 @@
 package gg.uhc.uhc.modules.recipes;
 
-import gg.uhc.uhc.inventory.IconStack;
 import gg.uhc.uhc.modules.DisableableModule;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -15,12 +14,13 @@ public class GoldenCarrotRecipeModule extends DisableableModule implements Liste
 
     protected static final String ICON_NAME = "Golden Carrot Recipe";
 
-    public GoldenCarrotRecipeModule(IconStack icon, boolean enabled) {
-        super(ICON_NAME, icon, enabled);
+    public GoldenCarrotRecipeModule() {
+        this.iconName = ICON_NAME;
 
         // TODO allow permission?
 
-        icon.setType(Material.GOLDEN_CARROT);
+        this.icon.setType(Material.GOLDEN_CARROT);
+        this.icon.setWeight(10);
 
         // register the new recipe
         ShapedRecipe modified = new ShapedRecipe(new ItemStack(Material.GOLDEN_CARROT, 1))
@@ -32,13 +32,19 @@ public class GoldenCarrotRecipeModule extends DisableableModule implements Liste
     }
 
     @Override
-    public void onEnable() {
-        icon.setLore("Requires golden ingots to craft");
+    protected boolean isEnabledByDefault() {
+        return true;
     }
 
     @Override
-    public void onDisable() {
-        icon.setLore("Requires golden nuggets to craft");
+    protected void rerender() {
+        super.rerender();
+
+        if (isEnabled()) {
+            icon.setLore("Requires golden ingots to craft");
+        } else {
+            icon.setLore("Requires golden nuggets to craft");
+        }
     }
 
     @EventHandler
@@ -47,7 +53,7 @@ public class GoldenCarrotRecipeModule extends DisableableModule implements Liste
 
         if (recipe.getResult().getType() != Material.GOLDEN_CARROT) return;
 
-        if (RecipeUtil.hasRecipeGotMaterial(recipe, enabled ? Material.GOLD_NUGGET : Material.GOLD_INGOT)) {
+        if (RecipeUtil.hasRecipeGotMaterial(recipe, isEnabled() ? Material.GOLD_NUGGET : Material.GOLD_INGOT)) {
             event.getInventory().setResult(new ItemStack(Material.AIR));
         }
     }

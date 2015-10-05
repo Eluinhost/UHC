@@ -10,9 +10,9 @@ public class SaturationMultiplierRunnable extends BukkitRunnable {
 
     protected final UUID uuid;
     protected final float pre;
-    protected final float multiplier;
+    protected final double multiplier;
 
-    public SaturationMultiplierRunnable(UUID uuid, float pre, float multiplier) {
+    public SaturationMultiplierRunnable(UUID uuid, float pre, double multiplier) {
         this.uuid = uuid;
         this.pre = pre;
         this.multiplier = multiplier;
@@ -26,6 +26,6 @@ public class SaturationMultiplierRunnable extends BukkitRunnable {
 
         float change = player.getSaturation() - pre;
 
-        player.setSaturation(pre + (change * multiplier));
+        player.setSaturation(pre + (change * ((float)multiplier)));
     }
 }

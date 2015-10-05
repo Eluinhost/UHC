@@ -1,6 +1,5 @@
 package gg.uhc.uhc.modules.recipes;
 
-import gg.uhc.uhc.inventory.IconStack;
 import gg.uhc.uhc.modules.DisableableModule;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -13,23 +12,29 @@ public class NotchApplesModule extends DisableableModule implements Listener {
 
     protected static final String ICON_NAME = "Notch apples";
 
-    public NotchApplesModule(IconStack icon, boolean enabled) {
-        super(ICON_NAME, icon, enabled);
+    public NotchApplesModule() {
+        this.iconName = ICON_NAME;
 
         // TODO allow permission?
 
-        icon.setType(Material.GOLDEN_APPLE);
-        icon.setDurability((short) 1);
+        this.icon.setType(Material.GOLDEN_APPLE);
+        this.icon.setDurability((short) 1);
     }
 
     @Override
-    public void onEnable() {
-        icon.setLore("Notch apples are craftable");
+    protected boolean isEnabledByDefault() {
+        return false;
     }
 
     @Override
-    public void onDisable() {
-        icon.setLore("Notch apples are uncraftable");
+    protected void rerender() {
+        super.rerender();
+
+        if (isEnabled()) {
+            icon.setLore("Notch apples are craftable");
+        } else {
+            icon.setLore("Notch apples are uncraftable");
+        }
     }
 
     @EventHandler

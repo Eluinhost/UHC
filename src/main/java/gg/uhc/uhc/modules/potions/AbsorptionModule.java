@@ -1,38 +1,39 @@
 package gg.uhc.uhc.modules.potions;
 
-import gg.uhc.uhc.inventory.IconStack;
 import gg.uhc.uhc.modules.DisableableModule;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffectType;
 
 public class AbsorptionModule extends DisableableModule implements Listener {
 
     protected static final String ICON_NAME = "Absorption";
 
-    protected final Plugin plugin;
-
-    public AbsorptionModule(Plugin plugin, IconStack icon, boolean enabled) {
-        super(ICON_NAME, icon, enabled);
-        this.plugin = plugin;
+    public AbsorptionModule() {
+        this.iconName = ICON_NAME;
 
         // TODO allow permission?
 
-        icon.setType(Material.POTION);
+        this.icon.setType(Material.POTION);
     }
 
     @Override
-    public void onEnable() {
-        icon.setLore("Absorption is enabled");
+    protected boolean isEnabledByDefault() {
+        return false;
     }
 
     @Override
-    public void onDisable() {
-        icon.setLore("Absorption is disabled");
+    protected void rerender() {
+        super.rerender();
+
+        if (isEnabled()) {
+            icon.setLore("Absorption is enabled");
+        } else {
+            icon.setLore("Absorption is disabled");
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

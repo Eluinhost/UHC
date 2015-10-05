@@ -1,7 +1,6 @@
 package gg.uhc.uhc.modules.health;
 
 import gg.uhc.uhc.inventory.ClickHandler;
-import gg.uhc.uhc.inventory.IconStack;
 import gg.uhc.uhc.modules.DisableableModule;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -20,19 +19,34 @@ public class HealthRegenerationModule extends DisableableModule implements Click
     protected static final short ENABLED_DATA = new Potion(PotionType.REGEN).toDamageValue();
     protected static final short DISABLED_DATA = new Potion(PotionType.WATER).toDamageValue();
 
-    public HealthRegenerationModule(IconStack icon, boolean enabled) {
-        super(ICON_NAME, icon, enabled);
-
-        icon.setType(Material.POTION);
+    public HealthRegenerationModule() {
+        this.iconName = ICON_NAME;
+        this.icon.setType(Material.POTION);
+        this.icon.setWeight(-10);
 
         // TODO world whitelist/blacklist with config
     }
 
     @Override
-    public void onEnable() {
-        icon.setDurability(ENABLED_DATA);
-        icon.setLore("Natural health regeneration is enabled");
+    protected boolean isEnabledByDefault() {
+        return false;
+    }
 
+    @Override
+    protected void rerender() {
+        super.rerender();
+
+        if (isEnabled()) {
+            icon.setDurability(ENABLED_DATA);
+            icon.setLore("Natural health regeneration is enabled");
+        } else {
+            icon.setDurability(DISABLED_DATA);
+            icon.setLore("Natural health regeneration is disabled");
+        }
+    }
+
+    @Override
+    public void onEnable() {
         for (World world : Bukkit.getWorlds()) {
             world.setGameRuleValue(GAME_RULE, "true");
         }
@@ -40,9 +54,6 @@ public class HealthRegenerationModule extends DisableableModule implements Click
 
     @Override
     public void onDisable() {
-        icon.setDurability(DISABLED_DATA);
-        icon.setLore("Natural health regeneration is disabled");
-
         for (World world : Bukkit.getWorlds()) {
             world.setGameRuleValue(GAME_RULE, "false");
         }

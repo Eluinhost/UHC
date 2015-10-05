@@ -1,28 +1,65 @@
 package gg.uhc.uhc.modules.saturation;
 
-import gg.uhc.uhc.inventory.IconStack;
 import gg.uhc.uhc.modules.DisableableModule;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.plugin.Plugin;
 
 public class ExtendedSaturationModule extends DisableableModule implements Listener {
 
     protected static final String ICON_NAME = "Extended Saturation";
 
-    protected final Plugin plugin;
-    protected float multiplier;
+    protected double multiplier;
 
-    public ExtendedSaturationModule(IconStack icon, boolean enabled, Plugin plugin, float multiplier) {
-        super(ICON_NAME, icon, enabled);
-        this.plugin = plugin;
+    public ExtendedSaturationModule() {
+        this.iconName = ICON_NAME;
 
-        // TODO show multiplier in icon
+        this.icon.setType(Material.COOKED_BEEF);
+        this.icon.setWeight(10);
+    }
+
+    public double getMultiplier() {
+        return multiplier;
+    }
+
+    public void setMultiplier(double multiplier) {
         this.multiplier = multiplier;
+        config.set("multiplier", multiplier);
+        saveConfig();
+        rerender();
+    }
 
-        icon.setType(Material.COOKED_BEEF);
+    @Override
+    protected boolean isEnabledByDefault() {
+        return false;
+    }
+
+    @Override
+    public void initialize(ConfigurationSection section) throws InvalidConfigurationException {
+        if (!section.contains("multiplier")) {
+            section.set("multiplier", 2.5D);
+        }
+
+        if (!section.isDouble("multiplier") && !section.isInt("multiplier"))
+            throw new InvalidConfigurationException("Invalid value at " + section.getCurrentPath() + ".multiplier (" + section.get("multiplier") + ")");
+
+        // TODO check sane values
+        multiplier = section.getDouble("multiplier");
+        super.initialize(section);
+    }
+
+    @Override
+    protected void rerender() {
+        super.rerender();
+
+        if (isEnabled()) {
+            this.icon.setLore("Food gives " + multiplier + " times the saturation");
+        } else {
+            this.icon.setLore("Food gives regular levels of saturation");
+        }
     }
 
     @EventHandler(ignoreCancelled = true)
