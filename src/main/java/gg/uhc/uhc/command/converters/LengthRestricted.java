@@ -21,9 +21,10 @@ public class LengthRestricted implements ValueConverter<String> {
     }
 
     @Override
-    public Class<? extends String> valueType() {
+    public Class<String> valueType() {
         return String.class;
     }
+
 
     @Override
     public String valuePattern() {
