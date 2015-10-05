@@ -27,6 +27,8 @@ public class ExtendedSaturationModule extends DisableableModule implements Liste
 
     @EventHandler(ignoreCancelled = true)
     public void on(PlayerItemConsumeEvent event) {
-        new SaturationMultiplierRunnable(event.getPlayer().getUniqueId(), event.getPlayer().getSaturation(), multiplier).runTask(plugin);
+        if (isEnabled()) {
+            new SaturationMultiplierRunnable(event.getPlayer().getUniqueId(), event.getPlayer().getSaturation(), multiplier).runTask(plugin);
+        }
     }
 }

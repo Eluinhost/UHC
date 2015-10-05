@@ -1,6 +1,7 @@
 package gg.uhc.uhc.inventory;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import org.bukkit.Material;
@@ -57,6 +58,18 @@ public class IconStack extends ItemStack implements Comparable<IconStack> {
         for (UpdateHandler handler : updateHandlers) {
             handler.onUpdate(this);
         }
+    }
+
+    public void setDisplayName(String displayName) {
+        ItemMeta meta = getItemMeta();
+        meta.setDisplayName(displayName);
+        setItemMeta(meta);
+    }
+
+    public void setLore(String... lore) {
+        ItemMeta meta = getItemMeta();
+        meta.setLore(ImmutableList.copyOf(lore));
+        setItemMeta(meta);
     }
 
     @Override

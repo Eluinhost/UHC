@@ -22,13 +22,13 @@ public class GhastTearDropsModule extends DisableableModule implements Listener 
     @Override
     public void onEnable() {
         icon.setType(Material.GHAST_TEAR);
-        setLore("Ghasts drop ghast tears");
+        icon.setLore("Ghasts drop ghast tears");
     }
 
     @Override
     public void onDisable() {
         icon.setType(Material.GOLD_INGOT);
-        setLore("Ghasts drop gold ingots");
+        icon.setLore("Ghasts drop gold ingots");
     }
 
     @EventHandler

@@ -66,9 +66,9 @@ public class HeadDropsModule extends DisableableModule {
 
     protected void updateIconInfo() {
         if (enabled) {
-            setLore(ChatColor.GREEN + "Drop rate: " + formatter.format(dropRate * 100) + "%");
+            icon.setLore(ChatColor.GREEN + "Drop rate: " + formatter.format(dropRate * 100) + "%");
         } else {
-            setLore("Heads do not drop");
+            icon.setLore("Heads do not drop");
         }
 
         icon.setAmount(isEnabled() ? Math.round(dropRate * 10) : 0);

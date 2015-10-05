@@ -27,12 +27,12 @@ public class AbsorptionModule extends DisableableModule implements Listener {
 
     @Override
     public void onEnable() {
-        setLore("Absorption is enabled");
+        icon.setLore("Absorption is enabled");
     }
 
     @Override
     public void onDisable() {
-        setLore("Absorption is disabled");
+        icon.setLore("Absorption is disabled");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

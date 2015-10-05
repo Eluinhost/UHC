@@ -31,12 +31,12 @@ public class GlisteringMelonRecipeModule extends DisableableModule implements Li
 
     @Override
     public void onEnable() {
-        setLore("Requires a golden block to craft");
+        icon.setLore("Requires a golden block to craft");
     }
 
     @Override
     public void onDisable() {
-        setLore("Requires 8 golden nuggets to craft");
+        icon.setLore("Requires 8 golden nuggets to craft");
     }
 
     @EventHandler

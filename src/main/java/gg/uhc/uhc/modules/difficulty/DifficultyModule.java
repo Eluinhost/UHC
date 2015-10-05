@@ -24,7 +24,7 @@ public class DifficultyModule extends DisableableModule implements Listener {
 
     @Override
     public void onEnable() {
-        setLore("All worlds are HARD difficulty");
+        icon.setLore("All worlds are HARD difficulty");
 
         for (World world : Bukkit.getWorlds()) {
             world.setDifficulty(Difficulty.HARD);
@@ -33,7 +33,7 @@ public class DifficultyModule extends DisableableModule implements Listener {
 
     @Override
     public void onDisable() {
-        setLore("World difficulties are not handled by the plugin");
+        icon.setLore("World difficulties are not handled by the plugin");
     }
 
     @EventHandler

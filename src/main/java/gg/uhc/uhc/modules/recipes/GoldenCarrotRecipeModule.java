@@ -33,12 +33,12 @@ public class GoldenCarrotRecipeModule extends DisableableModule implements Liste
 
     @Override
     public void onEnable() {
-        setLore("Requires golden ingots to craft");
+        icon.setLore("Requires golden ingots to craft");
     }
 
     @Override
     public void onDisable() {
-        setLore("Requires golden nuggets to craft");
+        icon.setLore("Requires golden nuggets to craft");
     }
 
     @EventHandler

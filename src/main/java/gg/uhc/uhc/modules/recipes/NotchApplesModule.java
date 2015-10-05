@@ -24,12 +24,12 @@ public class NotchApplesModule extends DisableableModule implements Listener {
 
     @Override
     public void onEnable() {
-        setLore("Notch apples are craftable");
+        icon.setLore("Notch apples are craftable");
     }
 
     @Override
     public void onDisable() {
-        setLore("Notch apples are uncraftable");
+        icon.setLore("Notch apples are uncraftable");
     }
 
     @EventHandler

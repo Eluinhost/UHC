@@ -1,6 +1,5 @@
 package gg.uhc.uhc.modules;
 
-import com.google.common.collect.ImmutableList;
 import gg.uhc.uhc.ItemStackNBTStringFetcher;
 import gg.uhc.uhc.inventory.ClickHandler;
 import gg.uhc.uhc.inventory.IconStack;
@@ -39,19 +38,11 @@ public abstract class DisableableModule extends ConfigurableModule implements Cl
 
     protected void onDisable() {}
 
-    protected void setLore(String... lore) {
-        ItemMeta meta = icon.getItemMeta();
-        meta.setLore(ImmutableList.copyOf(lore));
-        icon.setItemMeta(meta);
-    }
-
     public final void enable() {
         this.enabled = true;
 
         // set display name to GREEN and set amount to 1
-        ItemMeta meta = icon.getItemMeta();
-        meta.setDisplayName(ChatColor.GREEN + name);
-        icon.setItemMeta(meta);
+        icon.setDisplayName(ChatColor.GREEN + name);
         icon.setAmount(1);
 
         onEnable();
@@ -61,9 +52,7 @@ public abstract class DisableableModule extends ConfigurableModule implements Cl
         this.enabled = false;
 
         // set display name to RED and set amount to 0
-        ItemMeta meta = icon.getItemMeta();
-        meta.setDisplayName(ChatColor.RED + name);
-        icon.setItemMeta(meta);
+        icon.setDisplayName(ChatColor.RED + name);
         icon.setAmount(0);
 
         onDisable();

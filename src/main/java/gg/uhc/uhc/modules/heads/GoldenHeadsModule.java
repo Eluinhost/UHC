@@ -60,11 +60,11 @@ public class GoldenHeadsModule extends DisableableModule implements Listener {
 
     protected void updateIconInfo() {
         if (enabled) {
-            setLore(ChatColor.GREEN + "Heal: " + formatter.format(healAmount / 2D) + " hearts", "Golden heads are craftable");
+            icon.setLore(ChatColor.GREEN + "Heal: " + formatter.format(healAmount / 2D) + " hearts", "Golden heads are craftable");
             // show heal amount on icon
             icon.setAmount(healAmount);
         } else {
-            setLore("Golden heads are not craftable and heal 2 hearts");
+            icon.setLore("Golden heads are not craftable and heal 2 hearts");
             icon.setAmount(0);
         }
     }

@@ -31,7 +31,7 @@ public class HealthRegenerationModule extends DisableableModule implements Click
     @Override
     public void onEnable() {
         icon.setDurability(ENABLED_DATA);
-        setLore("Natural health regeneration is enabled");
+        icon.setLore("Natural health regeneration is enabled");
 
         for (World world : Bukkit.getWorlds()) {
             world.setGameRuleValue(GAME_RULE, "true");
@@ -41,7 +41,7 @@ public class HealthRegenerationModule extends DisableableModule implements Click
     @Override
     public void onDisable() {
         icon.setDurability(DISABLED_DATA);
-        setLore("Natural health regeneration is disabled");
+        icon.setLore("Natural health regeneration is disabled");
 
         for (World world : Bukkit.getWorlds()) {
             world.setGameRuleValue(GAME_RULE, "false");
