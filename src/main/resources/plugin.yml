@@ -6,10 +6,14 @@ database: false
 commands:
   showhealth:
     permission: uhc.command.showhealth
+  ghead:
+    permission: uhc.command.ghead
   addons:
     permission: uhc.command.addons
 permissions:
   uhc.command.showhealth:
+    default: op
+  uhc.command.ghead:
     default: op
   uhc.commands.addons:
     default: true
