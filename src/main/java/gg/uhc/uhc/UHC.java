@@ -12,6 +12,7 @@ import gg.uhc.uhc.modules.health.GhastTearDropsModule;
 import gg.uhc.uhc.modules.health.HealthRegenerationModule;
 import gg.uhc.uhc.modules.health.PlayerListHealthCommand;
 import gg.uhc.uhc.modules.potions.AbsorptionModule;
+import gg.uhc.uhc.modules.pvp.GlobalPVPModule;
 import gg.uhc.uhc.modules.recipes.GlisteringMelonRecipeModule;
 import gg.uhc.uhc.modules.recipes.GoldenCarrotRecipeModule;
 import gg.uhc.uhc.modules.recipes.NotchApplesModule;
@@ -52,6 +53,7 @@ public class UHC extends JavaPlugin {
 
         PlayerHeadProvider headProvider = new PlayerHeadProvider();
 
+        // TODO configuration to stop modules loading at all
         registerModule("hard difficulty", new DifficultyModule());
         registerModule("golden heads", new GoldenHeadsModule(headProvider));
         registerModule("head drops", new HeadDropsModule(headProvider));
@@ -62,8 +64,8 @@ public class UHC extends JavaPlugin {
         registerModule("notch apples", new NotchApplesModule());
         registerModule("absoption", new AbsorptionModule());
         registerModule("extended saturation", new ExtendedSaturationModule());
+        registerModule("pvp", new GlobalPVPModule());
 
-        // TODO global pvp
         // TODO enderpearls
         // TODO death message removal
         // TODO death bans?
