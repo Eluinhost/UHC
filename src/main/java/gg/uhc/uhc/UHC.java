@@ -5,6 +5,7 @@ import gg.uhc.uhc.command.ShowIconsCommand;
 import gg.uhc.uhc.inventory.IconInventory;
 import gg.uhc.uhc.modules.Module;
 import gg.uhc.uhc.modules.difficulty.DifficultyModule;
+import gg.uhc.uhc.modules.enderpearls.EnderpearlsModule;
 import gg.uhc.uhc.modules.heads.GoldenHeadsModule;
 import gg.uhc.uhc.modules.heads.HeadDropsModule;
 import gg.uhc.uhc.modules.heads.PlayerHeadProvider;
@@ -65,8 +66,8 @@ public class UHC extends JavaPlugin {
         registerModule("absoption", new AbsorptionModule());
         registerModule("extended saturation", new ExtendedSaturationModule());
         registerModule("pvp", new GlobalPVPModule());
+        registerModule("enderpearl damage", new EnderpearlsModule());
 
-        // TODO enderpearls
         // TODO death message removal
         // TODO death bans?
         // TODO death items?
