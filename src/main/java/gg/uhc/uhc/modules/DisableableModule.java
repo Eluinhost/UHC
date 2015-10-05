@@ -90,7 +90,7 @@ public abstract class DisableableModule extends Module implements ClickHandler {
         // send messages about the toggle
         String enableStatus = isEnabled() ? "enabled" : "disabled";
 
-        Bukkit.getConsoleSender().sendMessage(String.format(CONSOLE_FORMAT, enableStatus, iconName));
+        Bukkit.getConsoleSender().sendMessage(String.format(CONSOLE_FORMAT, iconName, enableStatus));
 
         TextComponent base = new TextComponent("[UHC] ");
         base.setColor(ChatColor.AQUA);
