@@ -22,6 +22,8 @@ commands:
     permission: uhc.command.clearxp
   reset:
     permission: uhc.command.reset
+  cleareffects:
+    permission: uhc.command.cleareffects
 permissions:
   uhc.command.showhealth:
     default: op
@@ -38,4 +40,6 @@ permissions:
   uhc.command.clearxp:
     default: op
   uhc.command.reset:
+    default: op
+  uhc.command.cleareffects:
     default: op

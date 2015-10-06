@@ -20,6 +20,7 @@ import gg.uhc.uhc.modules.inventory.ClearInventoryCommand;
 import gg.uhc.uhc.modules.inventory.ClearXPCommand;
 import gg.uhc.uhc.modules.inventory.ResetPlayerCommand;
 import gg.uhc.uhc.modules.potions.AbsorptionModule;
+import gg.uhc.uhc.modules.potions.ClearPotionsCommand;
 import gg.uhc.uhc.modules.pvp.GlobalPVPModule;
 import gg.uhc.uhc.modules.recipes.GlisteringMelonRecipeModule;
 import gg.uhc.uhc.modules.recipes.GoldenCarrotRecipeModule;
@@ -103,6 +104,7 @@ public class UHC extends JavaPlugin {
         getCommand("clearxp").setExecutor(new ClearXPCommand(resetter));
         getCommand("ci").setExecutor(new ClearInventoryCommand(resetter));
         getCommand("reset").setExecutor(new ResetPlayerCommand(resetter));
+        getCommand("cleareffects").setExecutor(new ClearPotionsCommand(resetter));
 
         getCommand("border").setExecutor(new WorldBorderCommand());
 
