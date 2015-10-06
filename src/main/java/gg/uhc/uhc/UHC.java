@@ -18,9 +18,8 @@ import gg.uhc.uhc.modules.health.HealthRegenerationModule;
 import gg.uhc.uhc.modules.health.PlayerListHealthCommand;
 import gg.uhc.uhc.modules.inventory.ClearInventoryCommand;
 import gg.uhc.uhc.modules.inventory.ClearXPCommand;
+import gg.uhc.uhc.modules.potions.*;
 import gg.uhc.uhc.modules.inventory.ResetPlayerCommand;
-import gg.uhc.uhc.modules.potions.AbsorptionModule;
-import gg.uhc.uhc.modules.potions.ClearPotionsCommand;
 import gg.uhc.uhc.modules.pvp.GlobalPVPModule;
 import gg.uhc.uhc.modules.recipes.GlisteringMelonRecipeModule;
 import gg.uhc.uhc.modules.recipes.GoldenCarrotRecipeModule;
@@ -74,6 +73,12 @@ public class UHC extends JavaPlugin {
         registerModule("extended saturation", new ExtendedSaturationModule());
         registerModule("pvp", new GlobalPVPModule());
         registerModule("enderpearl damage", new EnderpearlsModule());
+
+        PotionFuelsListener fuelsListener = new PotionFuelsListener();
+        registerEvents(fuelsListener);
+
+        registerModule("tier 2 potions", new Tier2PotionsModule(fuelsListener));
+        registerModule("splash potions", new SplashPotionsModule(fuelsListener));
 
         GoldenHeadsModule gheadModule = new GoldenHeadsModule(headProvider);
         registerModule("golden heads", gheadModule);
