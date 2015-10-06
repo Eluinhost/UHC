@@ -18,6 +18,8 @@ commands:
     permission: uhc.command.feed
   ci:
     permission: uhc.command.ci
+  clearxp:
+    permission: uhc.command.clearxp
 permissions:
   uhc.command.showhealth:
     default: op
@@ -30,4 +32,6 @@ permissions:
   uhc.command.heal:
     default: op
   uhc.command.ci:
+    default: op
+  uhc.command.clearxp:
     default: op
