@@ -18,6 +18,7 @@ import gg.uhc.uhc.modules.health.HealthRegenerationModule;
 import gg.uhc.uhc.modules.health.PlayerListHealthCommand;
 import gg.uhc.uhc.modules.inventory.ClearInventoryCommand;
 import gg.uhc.uhc.modules.inventory.ClearXPCommand;
+import gg.uhc.uhc.modules.inventory.ResetPlayerCommand;
 import gg.uhc.uhc.modules.potions.AbsorptionModule;
 import gg.uhc.uhc.modules.pvp.GlobalPVPModule;
 import gg.uhc.uhc.modules.recipes.GlisteringMelonRecipeModule;
@@ -82,10 +83,6 @@ public class UHC extends JavaPlugin {
         // TODO death items?
         // TODO tier 2
         // TODO splash potions
-
-        // TODO heal
-        // TODO feed
-        // TODO clear inventory
         // TODO tpp?
         // TODO team commands
 
@@ -105,6 +102,7 @@ public class UHC extends JavaPlugin {
         getCommand("feed").setExecutor(new FeedCommand(resetter));
         getCommand("clearxp").setExecutor(new ClearXPCommand(resetter));
         getCommand("ci").setExecutor(new ClearInventoryCommand(resetter));
+        getCommand("reset").setExecutor(new ResetPlayerCommand(resetter));
 
         getCommand("border").setExecutor(new WorldBorderCommand());
 
