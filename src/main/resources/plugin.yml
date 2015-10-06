@@ -16,6 +16,8 @@ commands:
     permission: uhc.command.heal
   feed:
     permission: uhc.command.feed
+  ci:
+    permission: uhc.command.ci
 permissions:
   uhc.command.showhealth:
     default: op
@@ -26,4 +28,6 @@ permissions:
   uhc.command.border:
     default: op
   uhc.command.heal:
+    default: op
+  uhc.command.ci:
     default: op

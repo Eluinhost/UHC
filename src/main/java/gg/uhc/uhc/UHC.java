@@ -16,6 +16,7 @@ import gg.uhc.uhc.modules.health.GhastTearDropsModule;
 import gg.uhc.uhc.modules.health.HealCommand;
 import gg.uhc.uhc.modules.health.HealthRegenerationModule;
 import gg.uhc.uhc.modules.health.PlayerListHealthCommand;
+import gg.uhc.uhc.modules.inventory.ClearInventoryCommand;
 import gg.uhc.uhc.modules.potions.AbsorptionModule;
 import gg.uhc.uhc.modules.pvp.GlobalPVPModule;
 import gg.uhc.uhc.modules.recipes.GlisteringMelonRecipeModule;
@@ -100,6 +101,7 @@ public class UHC extends JavaPlugin {
         getCommand("border").setExecutor(new WorldBorderCommand());
         getCommand("heal").setExecutor(new HealCommand());
         getCommand("feed").setExecutor(new FeedCommand());
+        getCommand("ci").setExecutor(new ClearInventoryCommand());
 
         saveConfig();
     }
