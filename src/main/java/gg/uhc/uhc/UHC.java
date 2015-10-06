@@ -99,11 +99,14 @@ public class UHC extends JavaPlugin {
                 "Health"
         ));
 
+        PlayerResetter resetter = new PlayerResetter();
+
+        getCommand("heal").setExecutor(new HealCommand(resetter));
+        getCommand("feed").setExecutor(new FeedCommand(resetter));
+        getCommand("clearxp").setExecutor(new ClearXPCommand(resetter));
+        getCommand("ci").setExecutor(new ClearInventoryCommand(resetter));
+
         getCommand("border").setExecutor(new WorldBorderCommand());
-        getCommand("heal").setExecutor(new HealCommand());
-        getCommand("feed").setExecutor(new FeedCommand());
-        getCommand("ci").setExecutor(new ClearInventoryCommand());
-        getCommand("clearxp").setExecutor(new ClearXPCommand());
 
         saveConfig();
     }

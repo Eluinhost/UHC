@@ -1,5 +1,6 @@
 package gg.uhc.uhc.modules.food;
 
+import gg.uhc.uhc.PlayerResetter;
 import gg.uhc.uhc.command.OptionCommand;
 import gg.uhc.uhc.command.converters.OnlinePlayerConverter;
 import joptsimple.OptionSet;
@@ -13,13 +14,13 @@ import java.util.Collection;
 
 public class FeedCommand extends OptionCommand {
 
-    protected static final int MAX_FOOD = 20;
-    protected static final float MAX_SATURATION = 5F;
-    protected static final float NO_EXHAUSTION = 0F;
-
     protected final OptionSpec<Player> playersSpec;
 
-    public FeedCommand() {
+    protected final PlayerResetter resetter;
+
+    public FeedCommand(PlayerResetter resetter) {
+        this.resetter = resetter;
+
         playersSpec = parser.nonOptions("List of online players to feed, leave empty to feed all online")
                 .withValuesConvertedBy(new OnlinePlayerConverter());
     }
@@ -33,9 +34,7 @@ public class FeedCommand extends OptionCommand {
         }
 
         for (Player player : toFeed) {
-            player.setFoodLevel(MAX_FOOD);
-            player.setSaturation(MAX_SATURATION);
-            player.setExhaustion(NO_EXHAUSTION);
+            resetter.resetFood(player);
             player.sendMessage(ChatColor.AQUA + "You were fed back to full hunger");
         }
 

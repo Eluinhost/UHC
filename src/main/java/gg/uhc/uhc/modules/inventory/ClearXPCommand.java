@@ -1,5 +1,6 @@
 package gg.uhc.uhc.modules.inventory;
 
+import gg.uhc.uhc.PlayerResetter;
 import gg.uhc.uhc.command.OptionCommand;
 import gg.uhc.uhc.command.converters.OnlinePlayerConverter;
 import joptsimple.OptionSet;
@@ -15,7 +16,11 @@ public class ClearXPCommand extends OptionCommand {
 
     protected final OptionSpec<Player> playersSpec;
 
-    public ClearXPCommand() {
+    protected final PlayerResetter resetter;
+
+    public ClearXPCommand(PlayerResetter resetter) {
+        this.resetter = resetter;
+
         playersSpec = parser.nonOptions("List of online players to clear XP for, leave empty for all online")
                 .withValuesConvertedBy(new OnlinePlayerConverter());
     }
@@ -29,9 +34,7 @@ public class ClearXPCommand extends OptionCommand {
         }
 
         for (Player player : toClear) {
-            player.setExp(0);
-            player.setLevel(0);
-            player.setTotalExperience(0);
+            resetter.resetExp(player);
             player.sendMessage(ChatColor.AQUA + "Your XP was reset");
         }
 

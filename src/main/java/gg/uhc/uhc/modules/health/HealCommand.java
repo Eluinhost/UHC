@@ -1,5 +1,6 @@
 package gg.uhc.uhc.modules.health;
 
+import gg.uhc.uhc.PlayerResetter;
 import gg.uhc.uhc.command.OptionCommand;
 import gg.uhc.uhc.command.converters.OnlinePlayerConverter;
 import joptsimple.OptionSet;
@@ -15,7 +16,11 @@ public class HealCommand extends OptionCommand {
 
     protected final OptionSpec<Player> playersSpec;
 
-    public HealCommand() {
+    protected final PlayerResetter resetter;
+
+    public HealCommand(PlayerResetter resetter) {
+        this.resetter = resetter;
+
         playersSpec = parser.nonOptions("List of online players to heal, leave empty to heal all online")
                 .withValuesConvertedBy(new OnlinePlayerConverter());
     }
@@ -29,7 +34,7 @@ public class HealCommand extends OptionCommand {
         }
 
         for (Player player : toHeal) {
-            player.setHealth(player.getMaxHealth());
+            resetter.resetHealth(player);
             player.sendMessage(ChatColor.AQUA + "You were healed back to full health");
         }
 
