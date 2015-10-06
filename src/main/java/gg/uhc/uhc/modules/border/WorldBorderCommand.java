@@ -31,7 +31,7 @@ public class WorldBorderCommand extends OptionCommand {
 
     public WorldBorderCommand() {
         resetSpec = parser
-                .acceptsAll(ImmutableList.of("r", "reset"), "Clears the border back to default settings");
+                .acceptsAll(ImmutableList.of("reset"), "Clears the border back to default settings");
 
         sizeSpec = parser
                 .acceptsAll(ImmutableList.of("s", "size", "r", "radius"), "The radius of the border from the centre. Use 1000>200 format for shrinking borders (requires -t/--time parameter)")

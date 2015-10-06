@@ -78,7 +78,6 @@ public class UHC extends JavaPlugin {
         // TODO death items?
         // TODO tier 2
         // TODO splash potions
-        // TODO borders, shrinking
 
         // TODO heal
         // TODO feed
