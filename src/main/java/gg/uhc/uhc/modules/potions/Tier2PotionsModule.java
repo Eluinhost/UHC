@@ -1,6 +1,7 @@
 package gg.uhc.uhc.modules.potions;
 
 import gg.uhc.uhc.modules.DisableableModule;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
@@ -44,6 +45,6 @@ public class Tier2PotionsModule extends DisableableModule {
 
     @Override
     public void onDisable() {
-        listener.addMaterial(Material.GLOWSTONE_DUST);
+        listener.addMaterial(Material.GLOWSTONE_DUST, ChatColor.RED + "Tier 2 potions are unbrewable.");
     }
 }

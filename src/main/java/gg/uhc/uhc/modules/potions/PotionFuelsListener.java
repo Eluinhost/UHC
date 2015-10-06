@@ -1,7 +1,8 @@
 package gg.uhc.uhc.modules.potions;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Maps;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,14 +12,18 @@ import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Map;
 import java.util.Set;
 
 public class PotionFuelsListener implements Listener {
 
-    protected final Set<Material> disabled = Sets.newHashSet();
+    protected static final String NOT_ALLOWED = ChatColor.RED + "The material `%s` is not allowed to be brewed with.";
 
-    protected void addMaterial(Material material) {
-        disabled.add(material);
+    protected final Map<Material, String> messages = Maps.newHashMap();
+    protected final Set<Material> disabled = messages.keySet();
+
+    protected void addMaterial(Material material, String message) {
+        messages.put(material, message);
     }
 
     protected void removeMaterial(Material material) {
@@ -46,6 +51,7 @@ public class PotionFuelsListener implements Listener {
         // check if they dragged over the fuel
         // 3 is the fuel slot
         if (event.getRawSlots().contains(3)) {
+            event.getWhoClicked().sendMessage(messages.get(event.getOldCursor().getType()));
             event.setCancelled(true);
         }
     }
@@ -90,6 +96,7 @@ public class PotionFuelsListener implements Listener {
         }
 
         if (relevant.isPresent() && disabled.contains(relevant.get().getType())) {
+            event.getWhoClicked().sendMessage(messages.get(relevant.get().getType()));
             event.setCancelled(true);
         }
     }

@@ -1,6 +1,7 @@
 package gg.uhc.uhc.modules.potions;
 
 import gg.uhc.uhc.modules.DisableableModule;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
@@ -39,7 +40,7 @@ public class SplashPotionsModule extends DisableableModule {
 
     @Override
     public void onDisable() {
-        listener.addMaterial(Material.SULPHUR);
+        listener.addMaterial(Material.SULPHUR, ChatColor.RED + "Splash potions are unbrewable.");
     }
 
     @Override
