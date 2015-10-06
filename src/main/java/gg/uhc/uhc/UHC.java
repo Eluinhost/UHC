@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import gg.uhc.uhc.command.ShowIconsCommand;
 import gg.uhc.uhc.inventory.IconInventory;
 import gg.uhc.uhc.modules.Module;
+import gg.uhc.uhc.modules.border.WorldBorderCommand;
 import gg.uhc.uhc.modules.difficulty.DifficultyModule;
 import gg.uhc.uhc.modules.enderpearls.EnderpearlsModule;
 import gg.uhc.uhc.modules.heads.GoldenHeadsHealthCommand;
@@ -77,6 +78,7 @@ public class UHC extends JavaPlugin {
         // TODO death items?
         // TODO tier 2
         // TODO splash potions
+        // TODO borders, shrinking
 
         // TODO heal
         // TODO feed
@@ -93,6 +95,8 @@ public class UHC extends JavaPlugin {
                 "UHCHealth",
                 "Health"
         ));
+
+        getCommand("border").setExecutor(new WorldBorderCommand());
 
         saveConfig();
     }

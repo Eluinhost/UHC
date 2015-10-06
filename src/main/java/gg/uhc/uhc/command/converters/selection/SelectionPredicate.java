@@ -76,4 +76,40 @@ public abstract class SelectionPredicate<T> implements Predicate<T> {
             return input >= 0;
         }
     };
+
+    public static SelectionPredicate<Long> ANY_LONG = new SelectionPredicate<Long>() {
+        @Override
+        public String getTypeString() {
+            return "Integer";
+        }
+
+        @Override
+        public boolean apply(Long input) {
+            return true;
+        }
+    };
+
+    public static SelectionPredicate<Long> POSITIVE_LONG = new SelectionPredicate<Long>() {
+        @Override
+        public String getTypeString() {
+            return "Integer > 0";
+        }
+
+        @Override
+        public boolean apply(Long input) {
+            return input > 0;
+        }
+    };
+
+    public static SelectionPredicate<Long> POSITIVE_LONG_INC_ZERO = new SelectionPredicate<Long>() {
+        @Override
+        public String getTypeString() {
+            return "Integer >= 0";
+        }
+
+        @Override
+        public boolean apply(Long input) {
+            return input >= 0;
+        }
+    };
 }

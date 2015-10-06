@@ -10,6 +10,8 @@ commands:
     permission: uhc.command.ghead
   addons:
     permission: uhc.command.addons
+  border:
+    permission: uhc.command.border
 permissions:
   uhc.command.showhealth:
     default: op
@@ -17,3 +19,5 @@ permissions:
     default: op
   uhc.commands.addons:
     default: true
+  uhc.commands.border:
+    default: op
