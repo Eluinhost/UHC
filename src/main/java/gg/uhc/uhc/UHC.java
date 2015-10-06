@@ -12,6 +12,7 @@ import gg.uhc.uhc.modules.heads.GoldenHeadsModule;
 import gg.uhc.uhc.modules.heads.HeadDropsModule;
 import gg.uhc.uhc.modules.heads.PlayerHeadProvider;
 import gg.uhc.uhc.modules.health.GhastTearDropsModule;
+import gg.uhc.uhc.modules.health.HealCommand;
 import gg.uhc.uhc.modules.health.HealthRegenerationModule;
 import gg.uhc.uhc.modules.health.PlayerListHealthCommand;
 import gg.uhc.uhc.modules.potions.AbsorptionModule;
@@ -96,6 +97,7 @@ public class UHC extends JavaPlugin {
         ));
 
         getCommand("border").setExecutor(new WorldBorderCommand());
+        getCommand("heal").setExecutor(new HealCommand());
 
         saveConfig();
     }

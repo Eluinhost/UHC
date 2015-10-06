@@ -12,12 +12,16 @@ commands:
     permission: uhc.command.addons
   border:
     permission: uhc.command.border
+  heal:
+    permission: uhc.command.heal
 permissions:
   uhc.command.showhealth:
     default: op
   uhc.command.ghead:
     default: op
-  uhc.commands.addons:
+  uhc.command.addons:
     default: true
-  uhc.commands.border:
+  uhc.command.border:
+    default: op
+  uhc.command.heal:
     default: op
