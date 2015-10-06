@@ -87,8 +87,6 @@ public class UHC extends JavaPlugin {
         // TODO death message removal
         // TODO death bans?
         // TODO death items?
-        // TODO tier 2
-        // TODO splash potions
         // TODO tpp?
         // TODO team commands
 
