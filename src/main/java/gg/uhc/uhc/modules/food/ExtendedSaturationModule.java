@@ -1,4 +1,4 @@
-package gg.uhc.uhc.modules.saturation;
+package gg.uhc.uhc.modules.food;
 
 import gg.uhc.uhc.modules.DisableableModule;
 import org.bukkit.Material;

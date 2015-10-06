@@ -7,6 +7,7 @@ import gg.uhc.uhc.modules.Module;
 import gg.uhc.uhc.modules.border.WorldBorderCommand;
 import gg.uhc.uhc.modules.difficulty.DifficultyModule;
 import gg.uhc.uhc.modules.enderpearls.EnderpearlsModule;
+import gg.uhc.uhc.modules.food.FeedCommand;
 import gg.uhc.uhc.modules.heads.GoldenHeadsHealthCommand;
 import gg.uhc.uhc.modules.heads.GoldenHeadsModule;
 import gg.uhc.uhc.modules.heads.HeadDropsModule;
@@ -20,7 +21,7 @@ import gg.uhc.uhc.modules.pvp.GlobalPVPModule;
 import gg.uhc.uhc.modules.recipes.GlisteringMelonRecipeModule;
 import gg.uhc.uhc.modules.recipes.GoldenCarrotRecipeModule;
 import gg.uhc.uhc.modules.recipes.NotchApplesModule;
-import gg.uhc.uhc.modules.saturation.ExtendedSaturationModule;
+import gg.uhc.uhc.modules.food.ExtendedSaturationModule;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -98,6 +99,7 @@ public class UHC extends JavaPlugin {
 
         getCommand("border").setExecutor(new WorldBorderCommand());
         getCommand("heal").setExecutor(new HealCommand());
+        getCommand("feed").setExecutor(new FeedCommand());
 
         saveConfig();
     }

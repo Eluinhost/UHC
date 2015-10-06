@@ -1,4 +1,4 @@
-package gg.uhc.uhc.modules.saturation;
+package gg.uhc.uhc.modules.food;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
