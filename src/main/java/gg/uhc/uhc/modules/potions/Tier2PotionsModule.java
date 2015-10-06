@@ -18,7 +18,8 @@ public class Tier2PotionsModule extends DisableableModule {
         Potion potion = new Potion(PotionType.INSTANT_HEAL);
         potion.setLevel(2);
 
-        this.icon.setData(potion.toItemStack(1).getData());
+        this.icon.setType(Material.POTION);
+        this.icon.setDurability(potion.toDamageValue());
         this.iconName = ICON_NAME;
     }
 

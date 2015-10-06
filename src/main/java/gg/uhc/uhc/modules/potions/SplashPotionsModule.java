@@ -18,7 +18,8 @@ public class SplashPotionsModule extends DisableableModule {
         Potion potion = new Potion(PotionType.POISON);
         potion.setSplash(true);
 
-        this.icon.setData(potion.toItemStack(1).getData());
+        this.icon.setType(Material.POTION);
+        this.icon.setDurability(potion.toDamageValue());
         this.iconName = ICON_NAME;
     }
 
