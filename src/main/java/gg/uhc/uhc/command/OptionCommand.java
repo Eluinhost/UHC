@@ -62,6 +62,10 @@ public abstract class OptionCommand implements CommandExecutor {
             if (desc.isRequired()) builder.append(ChatColor.BOLD);
 
             if (desc.representsNonOptions()) {
+                // skip if no description is given for non options
+                // because non options always exists
+                if (desc.description().equals("")) continue;
+
                 builder.append("Other arguments");
             } else {
                 builder.append(desc.options());
