@@ -7,6 +7,7 @@ import gg.uhc.uhc.modules.Module;
 import gg.uhc.uhc.modules.border.WorldBorderCommand;
 import gg.uhc.uhc.modules.difficulty.DifficultyModule;
 import gg.uhc.uhc.modules.enderpearls.EnderpearlsModule;
+import gg.uhc.uhc.modules.food.ExtendedSaturationModule;
 import gg.uhc.uhc.modules.food.FeedCommand;
 import gg.uhc.uhc.modules.heads.GoldenHeadsHealthCommand;
 import gg.uhc.uhc.modules.heads.GoldenHeadsModule;
@@ -18,15 +19,16 @@ import gg.uhc.uhc.modules.health.HealthRegenerationModule;
 import gg.uhc.uhc.modules.health.PlayerListHealthCommand;
 import gg.uhc.uhc.modules.inventory.ClearInventoryCommand;
 import gg.uhc.uhc.modules.inventory.ClearXPCommand;
-import gg.uhc.uhc.modules.potions.*;
 import gg.uhc.uhc.modules.inventory.ResetPlayerCommand;
+import gg.uhc.uhc.modules.potions.*;
 import gg.uhc.uhc.modules.pvp.GlobalPVPModule;
 import gg.uhc.uhc.modules.recipes.GlisteringMelonRecipeModule;
 import gg.uhc.uhc.modules.recipes.GoldenCarrotRecipeModule;
 import gg.uhc.uhc.modules.recipes.NotchApplesModule;
-import gg.uhc.uhc.modules.food.ExtendedSaturationModule;
-import net.md_5.bungee.api.ChatColor;
+import gg.uhc.uhc.modules.team.ListTeamsCommand;
+import gg.uhc.uhc.modules.team.TeamModule;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
@@ -83,6 +85,10 @@ public class UHC extends JavaPlugin {
         GoldenHeadsModule gheadModule = new GoldenHeadsModule(headProvider);
         registerModule("golden heads", gheadModule);
         getCommand("ghead").setExecutor(new GoldenHeadsHealthCommand(gheadModule));
+
+        TeamModule teamModule = new TeamModule();
+        registerModule("team manager", teamModule);
+        getCommand("teams").setExecutor(new ListTeamsCommand(teamModule));
 
         // TODO death message removal
         // TODO death bans?

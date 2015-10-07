@@ -24,6 +24,8 @@ commands:
     permission: uhc.command.reset
   cleareffects:
     permission: uhc.command.cleareffects
+  teams:
+    permission: uhc.command.teams
 permissions:
   uhc.command.showhealth:
     default: op
@@ -43,3 +45,5 @@ permissions:
     default: op
   uhc.command.cleareffects:
     default: op
+  uhc.command.teams:
+    default: true
