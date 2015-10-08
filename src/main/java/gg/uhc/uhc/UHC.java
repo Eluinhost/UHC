@@ -20,6 +20,7 @@ import gg.uhc.uhc.modules.health.PlayerListHealthCommand;
 import gg.uhc.uhc.modules.inventory.ClearInventoryCommand;
 import gg.uhc.uhc.modules.inventory.ClearXPCommand;
 import gg.uhc.uhc.modules.inventory.ResetPlayerCommand;
+import gg.uhc.uhc.modules.portals.NetherModule;
 import gg.uhc.uhc.modules.potions.*;
 import gg.uhc.uhc.modules.pvp.GlobalPVPModule;
 import gg.uhc.uhc.modules.recipes.GlisteringMelonRecipeModule;
@@ -95,6 +96,8 @@ public class UHC extends JavaPlugin {
         getCommand("randomteams").setExecutor(new RandomTeamsCommand(teamModule));
         getCommand("clearteams").setExecutor(new ClearTeamsCommand(teamModule));
 
+        registerModule("nether", new NetherModule());
+
         // TODO team requests?
         // TODO timer
         // TODO add freeze/scatter to this repo?
@@ -105,6 +108,8 @@ public class UHC extends JavaPlugin {
         // TODO tpp?
         // TODO figure out hardcore hearts 1.8
         // TODO nether
+
+        // TODO toggle/on/off command
 
         getCommand("addons").setExecutor(new ShowIconsCommand(inventory));
 

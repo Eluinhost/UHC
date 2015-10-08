@@ -67,3 +67,5 @@ permissions:
     default: op
   uhc.command.clearteams:
     default: op
+  uhc.broadcast.netherdisable:
+    default: op
