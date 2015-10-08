@@ -74,6 +74,7 @@ public class UHC extends JavaPlugin {
         registerModule("extended saturation", new ExtendedSaturationModule());
         registerModule("pvp", new GlobalPVPModule());
         registerModule("enderpearl damage", new EnderpearlsModule());
+        registerModule("witch spawns", new WitchesModule());
 
         PotionFuelsListener fuelsListener = new PotionFuelsListener();
         registerEvents(fuelsListener);
@@ -98,7 +99,6 @@ public class UHC extends JavaPlugin {
         // TODO timer
         // TODO add freeze/scatter to this repo?
         // TODO horse armour + horses
-        // TODO witches
         // TODO death message removal/coords
         // TODO death bans?
         // TODO death items?
