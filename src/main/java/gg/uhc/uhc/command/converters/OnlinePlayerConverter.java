@@ -22,6 +22,6 @@ public class OnlinePlayerConverter implements ValueConverter<Player> {
 
     @Override
     public String valuePattern() {
-        return "player name";
+        return "online player name";
     }
 }
