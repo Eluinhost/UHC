@@ -87,7 +87,7 @@ public class PlayerListHealthCommand extends OptionCommand {
         }
 
         // set display name
-        objective.setDisplayName(displayName);
+        objective.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayName));
 
         // set the slot to render in
         objective.setDisplaySlot(slot);
