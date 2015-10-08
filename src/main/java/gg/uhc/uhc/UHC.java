@@ -25,10 +25,7 @@ import gg.uhc.uhc.modules.pvp.GlobalPVPModule;
 import gg.uhc.uhc.modules.recipes.GlisteringMelonRecipeModule;
 import gg.uhc.uhc.modules.recipes.GoldenCarrotRecipeModule;
 import gg.uhc.uhc.modules.recipes.NotchApplesModule;
-import gg.uhc.uhc.modules.team.ListTeamsCommand;
-import gg.uhc.uhc.modules.team.NoTeamCommand;
-import gg.uhc.uhc.modules.team.TeamCommands;
-import gg.uhc.uhc.modules.team.TeamModule;
+import gg.uhc.uhc.modules.team.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -93,6 +90,10 @@ public class UHC extends JavaPlugin {
         getCommand("teams").setExecutor(new ListTeamsCommand(teamModule));
         getCommand("team").setExecutor(new TeamCommands(teamModule));
         getCommand("noteam").setExecutor(new NoTeamCommand(teamModule));
+        getCommand("pmt").setExecutor(new TeamPMCommand(teamModule));
+
+        // TODO empty all teams command
+        // TODO team requests?
 
         // TODO death message removal
         // TODO death bans?
