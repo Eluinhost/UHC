@@ -36,6 +36,10 @@ public class TeamModule extends Module {
         this.icon.setWeight(100);
     }
 
+    public Scoreboard getScoreboard() {
+        return scoreboard;
+    }
+
     public Map<String, Team> getTeams() {
         return teams;
     }

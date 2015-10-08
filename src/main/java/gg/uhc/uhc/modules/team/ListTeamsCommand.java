@@ -1,6 +1,5 @@
 package gg.uhc.uhc.modules.team;
 
-import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -17,7 +16,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scoreboard.Team;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
 
@@ -67,13 +65,13 @@ public class ListTeamsCommand extends OptionCommand {
 
         if (emptyOnly) {
             type = "(empty teams)";
-            predicate = Predicates.not(WITH_PLAYERS);
+            predicate = Predicates.not(FunctionalUtil.TEAMS_WITH_PLAYERS);
         } else if (showAll) {
             type = "(all teams)";
             predicate = Predicates.alwaysTrue();
         } else {
             type = "(with players)";
-            predicate = WITH_PLAYERS;
+            predicate = FunctionalUtil.TEAMS_WITH_PLAYERS;
         }
 
         List<Team> teams = Lists.newArrayList(Iterables.filter(teamModule.getTeams().values(), predicate));
@@ -106,7 +104,7 @@ public class ListTeamsCommand extends OptionCommand {
             if (members.size() == 0) {
                 memberString = NO_MEMBERS;
             } else {
-                memberString = joiner.join(Iterables.transform(team.getPlayers(), NAME_FETCHER));
+                memberString = joiner.join(Iterables.transform(team.getPlayers(), FunctionalUtil.PLAYER_NAME_FETCHER));
             }
 
             sender.sendMessage(String.format(FORMAT, team.getPrefix() + team.getDisplayName(), team.getName(), memberString));
@@ -114,20 +112,4 @@ public class ListTeamsCommand extends OptionCommand {
 
         return true;
     }
-
-    protected static final Predicate<Team> WITH_PLAYERS = new Predicate<Team>() {
-        @Override
-        public boolean apply(@Nullable Team input) {
-            assert input != null;
-            return input.getPlayers().size() > 0;
-        }
-    };
-
-    protected static final Function<OfflinePlayer, String> NAME_FETCHER = new Function<OfflinePlayer, String>() {
-        @Nullable
-        @Override
-        public String apply(OfflinePlayer input) {
-            return input.getName();
-        }
-    };
 }
