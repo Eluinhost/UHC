@@ -95,11 +95,16 @@ public class UHC extends JavaPlugin {
         getCommand("clearteams").setExecutor(new ClearTeamsCommand(teamModule));
 
         // TODO team requests?
-
-        // TODO death message removal
+        // TODO timer
+        // TODO add freeze/scatter to this repo?
+        // TODO horse armour + horses
+        // TODO witches
+        // TODO death message removal/coords
         // TODO death bans?
         // TODO death items?
         // TODO tpp?
+        // TODO figure out hardcore hearts 1.8
+        // TODO nether
 
         getCommand("addons").setExecutor(new ShowIconsCommand(inventory));
 
