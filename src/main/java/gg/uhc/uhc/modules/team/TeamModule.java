@@ -1,9 +1,11 @@
 package gg.uhc.uhc.modules.team;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import gg.uhc.uhc.modules.Module;
@@ -42,6 +44,10 @@ public class TeamModule extends Module {
 
     public Map<String, Team> getTeams() {
         return teams;
+    }
+
+    public Optional<Team> findFirstEmptyTeam() {
+        return Iterables.tryFind(teams.values(), Predicates.not(FunctionalUtil.TEAMS_WITH_PLAYERS));
     }
 
     @Override

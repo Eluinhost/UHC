@@ -32,6 +32,8 @@ commands:
     permission: uhc.command.noteam
   pmt:
     permission: uhc.command.pmt
+  randomteams:
+    permission: uhc.command.randomteams
 permissions:
   uhc.command.showhealth:
     default: op
@@ -59,3 +61,5 @@ permissions:
     default: op
   uhc.command.pmt:
     default: true
+  uhc.command.randomteams:
+    default: op

@@ -91,6 +91,7 @@ public class UHC extends JavaPlugin {
         getCommand("team").setExecutor(new TeamCommands(teamModule));
         getCommand("noteam").setExecutor(new NoTeamCommand(teamModule));
         getCommand("pmt").setExecutor(new TeamPMCommand(teamModule));
+        getCommand("randomteams").setExecutor(new RandomTeamsCommand(teamModule));
 
         // TODO empty all teams command
         // TODO team requests?

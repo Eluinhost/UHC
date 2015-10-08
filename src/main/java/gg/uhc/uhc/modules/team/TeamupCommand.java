@@ -2,7 +2,6 @@ package gg.uhc.uhc.modules.team;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
-import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import gg.uhc.uhc.command.OptionCommand;
@@ -71,8 +70,7 @@ public class TeamupCommand extends OptionCommand {
             }
         } else {
             // grab the first UHC team available
-
-            Optional<Team> teamOptional = Iterables.tryFind(teamModule.getTeams().values(), Predicates.not(FunctionalUtil.TEAMS_WITH_PLAYERS));
+            Optional<Team> teamOptional = teamModule.findFirstEmptyTeam();
 
             if (!teamOptional.isPresent()) {
                 sender.sendMessage(NO_UHC_TEAMS);
