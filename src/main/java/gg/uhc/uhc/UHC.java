@@ -26,6 +26,7 @@ import gg.uhc.uhc.modules.recipes.GlisteringMelonRecipeModule;
 import gg.uhc.uhc.modules.recipes.GoldenCarrotRecipeModule;
 import gg.uhc.uhc.modules.recipes.NotchApplesModule;
 import gg.uhc.uhc.modules.team.ListTeamsCommand;
+import gg.uhc.uhc.modules.team.NoTeamCommand;
 import gg.uhc.uhc.modules.team.TeamCommands;
 import gg.uhc.uhc.modules.team.TeamModule;
 import org.bukkit.Bukkit;
@@ -91,12 +92,12 @@ public class UHC extends JavaPlugin {
         registerModule("team manager", teamModule);
         getCommand("teams").setExecutor(new ListTeamsCommand(teamModule));
         getCommand("team").setExecutor(new TeamCommands(teamModule));
+        getCommand("noteam").setExecutor(new NoTeamCommand(teamModule));
 
         // TODO death message removal
         // TODO death bans?
         // TODO death items?
         // TODO tpp?
-        // TODO team commands
 
         getCommand("addons").setExecutor(new ShowIconsCommand(inventory));
 

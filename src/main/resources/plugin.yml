@@ -28,6 +28,8 @@ commands:
     permission: uhc.command.teams
   team:
     permission: uhc.command.team
+  noteam:
+    permission: uhc.command.noteam
 permissions:
   uhc.command.showhealth:
     default: op
@@ -50,4 +52,6 @@ permissions:
   uhc.command.teams:
     default: true
   uhc.command.team:
+    default: op
+  uhc.command.noteam:
     default: op
