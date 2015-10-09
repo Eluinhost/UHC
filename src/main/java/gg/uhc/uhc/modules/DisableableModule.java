@@ -80,14 +80,7 @@ public abstract class DisableableModule extends Module implements ClickHandler {
         rerender();
     }
 
-    public final void toggle() {
-        if (isEnabled()) {
-            disable();
-        } else {
-            enable();
-        }
-
-        // send messages about the toggle
+    public void announceState() {
         String enableStatus = isEnabled() ? "enabled" : "disabled";
 
         Bukkit.getConsoleSender().sendMessage(String.format(CONSOLE_FORMAT, iconName, enableStatus));
@@ -103,9 +96,17 @@ public abstract class DisableableModule extends Module implements ClickHandler {
         module.setColor(isEnabled() ? ChatColor.GREEN : ChatColor.RED);
 
         base.addExtra(module);
-        base.addExtra(" is now " + enableStatus);
+        base.addExtra(" is " + enableStatus);
 
         Bukkit.spigot().broadcast(base);
+    }
+
+    public final void toggle() {
+        if (isEnabled()) {
+            disable();
+        } else {
+            enable();
+        }
     }
 
     public final boolean isEnabled() {
@@ -116,5 +117,6 @@ public abstract class DisableableModule extends Module implements ClickHandler {
     public void onClick(Player player) {
         // TODO permissions
         toggle();
+        announceState();
     }
 }

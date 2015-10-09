@@ -36,6 +36,8 @@ commands:
     permission: uhc.command.randomteams
   clearteams:
     permission: uhc.command.clearteams
+  uhc:
+    permission: uhc.command.uhc
 permissions:
   uhc.command.showhealth:
     default: op
@@ -68,4 +70,6 @@ permissions:
   uhc.command.clearteams:
     default: op
   uhc.broadcast.netherdisable:
+    default: op
+  uhc.command.uhc:
     default: op

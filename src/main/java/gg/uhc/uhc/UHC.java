@@ -1,10 +1,9 @@
 package gg.uhc.uhc;
 
-import com.google.common.collect.Maps;
 import gg.uhc.uhc.command.ShowIconsCommand;
-import gg.uhc.uhc.inventory.IconInventory;
-import gg.uhc.uhc.modules.Module;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.border.WorldBorderCommand;
+import gg.uhc.uhc.modules.commands.ModuleCommands;
 import gg.uhc.uhc.modules.difficulty.DifficultyModule;
 import gg.uhc.uhc.modules.enderpearls.EnderpearlsModule;
 import gg.uhc.uhc.modules.food.ExtendedSaturationModule;
@@ -28,20 +27,12 @@ import gg.uhc.uhc.modules.recipes.GoldenCarrotRecipeModule;
 import gg.uhc.uhc.modules.recipes.NotchApplesModule;
 import gg.uhc.uhc.modules.team.*;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.DisplaySlot;
 
-import java.util.Map;
-
 public class UHC extends JavaPlugin {
 
-    protected Map<String, Module> modules;
-    protected IconInventory inventory;
-    protected FileConfiguration configuration;
+    protected ModuleRegistry registry;
     protected DebouncedRunnable configSaver;
 
     @Override
@@ -54,49 +45,43 @@ public class UHC extends JavaPlugin {
             }
         }, 40);
 
-        configuration = getConfig();
+        registry = new ModuleRegistry(this, getConfig());
 
-        modules = Maps.newHashMap();
-
-        inventory = new IconInventory(ChatColor.DARK_PURPLE + "UHC Control Panel");
-        registerEvents(inventory);
-
-        PlayerHeadProvider headProvider = new PlayerHeadProvider();
 
         // TODO configuration to stop modules loading at all
-        registerModule("hard difficulty", new DifficultyModule());
-        registerModule("head drops", new HeadDropsModule(headProvider));
-        registerModule("health regeneration", new HealthRegenerationModule());
-        registerModule("ghast tears", new GhastTearDropsModule());
-        registerModule("golden carrot recipe", new GoldenCarrotRecipeModule());
-        registerModule("glistering melon recipe", new GlisteringMelonRecipeModule());
-        registerModule("notch apples", new NotchApplesModule());
-        registerModule("absoption", new AbsorptionModule());
-        registerModule("extended saturation", new ExtendedSaturationModule());
-        registerModule("pvp", new GlobalPVPModule());
-        registerModule("enderpearl damage", new EnderpearlsModule());
-        registerModule("witch spawns", new WitchesModule());
+        registry.register(new DifficultyModule(), "HardDifficulty");
+        registry.register(new HealthRegenerationModule(), "HealthRegen");
+        registry.register(new GhastTearDropsModule(), "GhastTears");
+        registry.register(new GoldenCarrotRecipeModule(), "GoldenCarrotRecipe");
+        registry.register(new GlisteringMelonRecipeModule(), "GlisteringMelonRecipe");
+        registry.register(new NotchApplesModule(), "NotchApples");
+        registry.register(new AbsorptionModule(), "Absoption");
+        registry.register(new ExtendedSaturationModule(), "ExtendedSaturation");
+        registry.register(new GlobalPVPModule(), "PVP");
+        registry.register(new EnderpearlsModule(), "EnderpearlDamage");
+        registry.register(new WitchesModule(), "WitchSpawns");
+        registry.register(new NetherModule(), "Nether");
 
         PotionFuelsListener fuelsListener = new PotionFuelsListener();
-        registerEvents(fuelsListener);
+        registry.registerEvents(fuelsListener);
+        registry.register(new Tier2PotionsModule(fuelsListener), "Tier2Potions");
+        registry.register(new SplashPotionsModule(fuelsListener), "SplashPotions");
 
-        registerModule("tier 2 potions", new Tier2PotionsModule(fuelsListener));
-        registerModule("splash potions", new SplashPotionsModule(fuelsListener));
-
+        PlayerHeadProvider headProvider = new PlayerHeadProvider();
         GoldenHeadsModule gheadModule = new GoldenHeadsModule(headProvider);
-        registerModule("golden heads", gheadModule);
         getCommand("ghead").setExecutor(new GoldenHeadsHealthCommand(gheadModule));
+        registry.register(new HeadDropsModule(headProvider), "HeadDrops");
+        registry.register(gheadModule, "GoldenHeads");
 
         TeamModule teamModule = new TeamModule();
-        registerModule("team manager", teamModule);
+        registry.register(teamModule, "TeamManager");
+
         getCommand("teams").setExecutor(new ListTeamsCommand(teamModule));
         getCommand("team").setExecutor(new TeamCommands(teamModule));
         getCommand("noteam").setExecutor(new NoTeamCommand(teamModule));
         getCommand("pmt").setExecutor(new TeamPMCommand(teamModule));
         getCommand("randomteams").setExecutor(new RandomTeamsCommand(teamModule));
         getCommand("clearteams").setExecutor(new ClearTeamsCommand(teamModule));
-
-        registerModule("nether", new NetherModule());
 
         // TODO team requests?
         // TODO timer
@@ -107,13 +92,10 @@ public class UHC extends JavaPlugin {
         // TODO death items?
         // TODO tpp?
         // TODO figure out hardcore hearts 1.8
-        // TODO nether
 
-        // TODO toggle/on/off command
-
-        getCommand("addons").setExecutor(new ShowIconsCommand(inventory));
-
-        // TODO config
+        getCommand("border").setExecutor(new WorldBorderCommand());
+        getCommand("addons").setExecutor(new ShowIconsCommand(registry.getInventory()));
+        getCommand("uhc").setExecutor(new ModuleCommands(registry));
         getCommand("showhealth").setExecutor(new PlayerListHealthCommand(
                 Bukkit.getScoreboardManager().getMainScoreboard(),
                 DisplaySlot.PLAYER_LIST,
@@ -122,7 +104,6 @@ public class UHC extends JavaPlugin {
         ));
 
         PlayerResetter resetter = new PlayerResetter();
-
         getCommand("heal").setExecutor(new HealCommand(resetter));
         getCommand("feed").setExecutor(new FeedCommand(resetter));
         getCommand("clearxp").setExecutor(new ClearXPCommand(resetter));
@@ -130,42 +111,8 @@ public class UHC extends JavaPlugin {
         getCommand("reset").setExecutor(new ResetPlayerCommand(resetter));
         getCommand("cleareffects").setExecutor(new ClearPotionsCommand(resetter));
 
-        getCommand("border").setExecutor(new WorldBorderCommand());
-
+        // save config just to make sure at the end
         saveConfig();
-    }
-
-    protected void registerEvents(Listener listener) {
-        getServer().getPluginManager().registerEvents(listener, this);
-    }
-
-    public void registerModule(String id, Module module) {
-        if (modules.containsKey(id)) {
-            throw new IllegalArgumentException("Module " + module + " is already registered");
-        }
-
-        module.setPlugin(this);
-
-        String sectionId = "modules." + id;
-
-        if (!configuration.contains(sectionId)) {
-            configuration.createSection(sectionId);
-        }
-
-        try {
-            module.initialize(configuration.getConfigurationSection(sectionId));
-        } catch (InvalidConfigurationException ex) {
-            ex.printStackTrace();
-            return;
-        }
-
-        modules.put(id, module);
-
-        if (module instanceof Listener) {
-            registerEvents((Listener) module);
-        }
-
-        inventory.registerNewIcon(module.getIconStack());
     }
 
     @Override
