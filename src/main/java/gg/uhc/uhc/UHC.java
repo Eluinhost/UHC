@@ -1,6 +1,7 @@
 package gg.uhc.uhc;
 
 import gg.uhc.uhc.command.ShowIconsCommand;
+import gg.uhc.uhc.modules.ModuleNotLoadedDummyCommand;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.autorespawn.AutoRespawnModule;
 import gg.uhc.uhc.modules.border.WorldBorderCommand;
@@ -27,6 +28,7 @@ import gg.uhc.uhc.modules.team.*;
 import gg.uhc.uhc.modules.timer.TimerCommand;
 import gg.uhc.uhc.modules.timer.TimerModule;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.DisplaySlot;
 
@@ -66,11 +68,8 @@ public class UHC extends JavaPlugin {
         if (getServer().getPluginManager().getPlugin("ProtocolLib") != null) {
             TimerModule timer = new TimerModule();
 
-            if (registry.register(timer, "Timer")) {
-                getCommand("timer").setExecutor(new TimerCommand(timer));
-            } else {
-                // TODO register dummy command
-            }
+            boolean timerLoaded = registry.register(timer, "Timer");
+            getCommand("timer").setExecutor(timerLoaded ? new TimerCommand(timer) : new ModuleNotLoadedDummyCommand("Timer"));
 
             if (respawnModuleLoaded) {
                 registry.register(new HardcoreHeartsModule(respawnModule), "HardcoreHearts");
@@ -84,11 +83,8 @@ public class UHC extends JavaPlugin {
 
         PlayerHeadProvider headProvider = new PlayerHeadProvider();
         GoldenHeadsModule gheadModule = new GoldenHeadsModule(headProvider);
-        if (registry.register(gheadModule, "GoldenHeads")) {
-            getCommand("ghead").setExecutor(new GoldenHeadsHealthCommand(gheadModule));
-        } else {
-            // TODO register ghead to a dummy command to say the module wasn't loaded
-        }
+        boolean gheadsLoaded = registry.register(gheadModule, "GoldenHeads");
+        getCommand("ghead").setExecutor(gheadsLoaded ? new GoldenHeadsHealthCommand(gheadModule) : new ModuleNotLoadedDummyCommand("GoldenHeads"));
         registry.register(new HeadDropsModule(headProvider), "HeadDrops");
 
         TeamModule teamModule = new TeamModule();
@@ -100,7 +96,13 @@ public class UHC extends JavaPlugin {
             getCommand("randomteams").setExecutor(new RandomTeamsCommand(teamModule));
             getCommand("clearteams").setExecutor(new ClearTeamsCommand(teamModule));
         } else {
-            // TODO register commands to a dummy command to say the module wasn't loaded
+            CommandExecutor teamsNotLoaded = new ModuleNotLoadedDummyCommand("TeamManager");
+            getCommand("teams").setExecutor(teamsNotLoaded);
+            getCommand("team").setExecutor(teamsNotLoaded);
+            getCommand("noteam").setExecutor(teamsNotLoaded);
+            getCommand("pmt").setExecutor(teamsNotLoaded);
+            getCommand("randomteams").setExecutor(teamsNotLoaded);
+            getCommand("clearteams").setExecutor(teamsNotLoaded);
         }
 
         // TODO team requests?
