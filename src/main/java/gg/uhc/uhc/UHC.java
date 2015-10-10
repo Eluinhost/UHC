@@ -26,6 +26,8 @@ import gg.uhc.uhc.modules.recipes.GlisteringMelonRecipeModule;
 import gg.uhc.uhc.modules.recipes.GoldenCarrotRecipeModule;
 import gg.uhc.uhc.modules.recipes.NotchApplesModule;
 import gg.uhc.uhc.modules.team.*;
+import gg.uhc.uhc.modules.timer.TimerCommand;
+import gg.uhc.uhc.modules.timer.TimerModule;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -47,6 +49,11 @@ public class UHC extends JavaPlugin {
 
         registry = new ModuleRegistry(this, getConfig());
 
+        if (getServer().getPluginManager().getPlugin("ProtocolLib") != null) {
+            TimerModule timer = new TimerModule();
+            registry.register(timer, "Timer");
+            getCommand("timer").setExecutor(new TimerCommand(timer));
+        }
 
         // TODO configuration to stop modules loading at all
         registry.register(new DifficultyModule(), "HardDifficulty");
@@ -92,6 +99,7 @@ public class UHC extends JavaPlugin {
         // TODO death items?
         // TODO tpp?
         // TODO figure out hardcore hearts 1.8
+        // TODO health objective with percents
 
         getCommand("border").setExecutor(new WorldBorderCommand());
         getCommand("addons").setExecutor(new ShowIconsCommand(registry.getInventory()));

@@ -3,6 +3,7 @@ main: ${project.groupId}.${project.artifactId}.UHC
 version: ${project.version}
 author: ghowden/Eluinhost
 database: false
+soft-depend: [ProtocolLib]
 commands:
   showhealth:
     permission: uhc.command.showhealth
@@ -38,6 +39,8 @@ commands:
     permission: uhc.command.clearteams
   uhc:
     permission: uhc.command.uhc
+  timer:
+    permission: uhc.command.timer
 permissions:
   uhc.command.showhealth:
     default: op
@@ -72,4 +75,6 @@ permissions:
   uhc.broadcast.netherdisable:
     default: op
   uhc.command.uhc:
+    default: op
+  uhc.command.timer:
     default: op
