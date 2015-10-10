@@ -51,10 +51,7 @@ public class PlayerResetter {
         inv.clear();
 
         // clear armour slots
-        inv.setHelmet(null);
-        inv.setChestplate(null);
-        inv.setLeggings(null);
-        inv.setBoots(null);
+        inv.setArmorContents(null);
 
         // clear if they have something on their cursour currently
         player.setItemOnCursor(new ItemStack(Material.AIR));
