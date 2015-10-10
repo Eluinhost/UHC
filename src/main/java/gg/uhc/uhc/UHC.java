@@ -94,14 +94,12 @@ public class UHC extends JavaPlugin {
         getCommand("clearteams").setExecutor(new ClearTeamsCommand(teamModule));
 
         // TODO team requests?
-        // TODO timer
         // TODO add freeze/scatter to this repo?
         // TODO horse armour + horses
         // TODO death message removal/coords
         // TODO death bans?
         // TODO death items?
         // TODO tpp?
-        // TODO figure out hardcore hearts 1.8
         // TODO health objective with percents
 
         getCommand("border").setExecutor(new WorldBorderCommand());
