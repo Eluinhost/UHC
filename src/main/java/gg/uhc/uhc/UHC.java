@@ -2,6 +2,7 @@ package gg.uhc.uhc;
 
 import gg.uhc.uhc.command.ShowIconsCommand;
 import gg.uhc.uhc.modules.ModuleRegistry;
+import gg.uhc.uhc.modules.autorespawn.AutoRespawnModule;
 import gg.uhc.uhc.modules.border.WorldBorderCommand;
 import gg.uhc.uhc.modules.commands.ModuleCommands;
 import gg.uhc.uhc.modules.difficulty.DifficultyModule;
@@ -68,6 +69,7 @@ public class UHC extends JavaPlugin {
         registry.register(new EnderpearlsModule(), "EnderpearlDamage");
         registry.register(new WitchesModule(), "WitchSpawns");
         registry.register(new NetherModule(), "Nether");
+        registry.register(new AutoRespawnModule(), "AutoRespawn");
 
         PotionFuelsListener fuelsListener = new PotionFuelsListener();
         registry.registerEvents(fuelsListener);
