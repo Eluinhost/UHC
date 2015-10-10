@@ -47,7 +47,6 @@ public class UHC extends JavaPlugin {
 
         registry = new ModuleRegistry(this, getConfig());
 
-        // TODO configuration to stop modules loading at all
         registry.register(new DifficultyModule(), "HardDifficulty");
         registry.register(new HealthRegenerationModule(), "HealthRegen");
         registry.register(new GhastTearDropsModule(), "GhastTears");
@@ -61,15 +60,21 @@ public class UHC extends JavaPlugin {
         registry.register(new WitchesModule(), "WitchSpawns");
         registry.register(new NetherModule(), "Nether");
 
-        AutoRespawnModule autoRespawnModule = new AutoRespawnModule();
-        registry.register(autoRespawnModule, "AutoRespawn");
+        AutoRespawnModule respawnModule = new AutoRespawnModule();
+        boolean respawnModuleLoaded = registry.register(respawnModule, "AutoRespawn");
 
         if (getServer().getPluginManager().getPlugin("ProtocolLib") != null) {
             TimerModule timer = new TimerModule();
-            registry.register(timer, "Timer");
-            getCommand("timer").setExecutor(new TimerCommand(timer));
 
-            registry.register(new HardcoreHeartsModule(autoRespawnModule), "HardcoreHearts");
+            if (registry.register(timer, "Timer")) {
+                getCommand("timer").setExecutor(new TimerCommand(timer));
+            } else {
+                // TODO register dummy command
+            }
+
+            if (respawnModuleLoaded) {
+                registry.register(new HardcoreHeartsModule(respawnModule), "HardcoreHearts");
+            }
         }
 
         PotionFuelsListener fuelsListener = new PotionFuelsListener();
@@ -79,19 +84,24 @@ public class UHC extends JavaPlugin {
 
         PlayerHeadProvider headProvider = new PlayerHeadProvider();
         GoldenHeadsModule gheadModule = new GoldenHeadsModule(headProvider);
-        getCommand("ghead").setExecutor(new GoldenHeadsHealthCommand(gheadModule));
+        if (registry.register(gheadModule, "GoldenHeads")) {
+            getCommand("ghead").setExecutor(new GoldenHeadsHealthCommand(gheadModule));
+        } else {
+            // TODO register ghead to a dummy command to say the module wasn't loaded
+        }
         registry.register(new HeadDropsModule(headProvider), "HeadDrops");
-        registry.register(gheadModule, "GoldenHeads");
 
         TeamModule teamModule = new TeamModule();
-        registry.register(teamModule, "TeamManager");
-
-        getCommand("teams").setExecutor(new ListTeamsCommand(teamModule));
-        getCommand("team").setExecutor(new TeamCommands(teamModule));
-        getCommand("noteam").setExecutor(new NoTeamCommand(teamModule));
-        getCommand("pmt").setExecutor(new TeamPMCommand(teamModule));
-        getCommand("randomteams").setExecutor(new RandomTeamsCommand(teamModule));
-        getCommand("clearteams").setExecutor(new ClearTeamsCommand(teamModule));
+        if (registry.register(teamModule, "TeamManager")) {
+            getCommand("teams").setExecutor(new ListTeamsCommand(teamModule));
+            getCommand("team").setExecutor(new TeamCommands(teamModule));
+            getCommand("noteam").setExecutor(new NoTeamCommand(teamModule));
+            getCommand("pmt").setExecutor(new TeamPMCommand(teamModule));
+            getCommand("randomteams").setExecutor(new RandomTeamsCommand(teamModule));
+            getCommand("clearteams").setExecutor(new ClearTeamsCommand(teamModule));
+        } else {
+            // TODO register commands to a dummy command to say the module wasn't loaded
+        }
 
         // TODO team requests?
         // TODO add freeze/scatter to this repo?

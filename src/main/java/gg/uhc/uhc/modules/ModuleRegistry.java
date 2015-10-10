@@ -53,7 +53,7 @@ public class ModuleRegistry {
         return Optional.fromNullable(modules.get(id.toLowerCase()));
     }
 
-    public void register(Module module, String id) {
+    public boolean register(Module module, String id) {
         Preconditions.checkArgument(VALID_MODULE_NAME_REGEX.matcher(id).matches(), "Module id may only contain alphanumberic characters and _, found `" + id + "`");
 
         // use all lower case in the map
@@ -71,13 +71,25 @@ public class ModuleRegistry {
             config.createSection(sectionId);
         }
 
+        ConfigurationSection section = config.getConfigurationSection(sectionId);
+
+        // set load parameter if it doesn't exist
+        if (!section.contains("load")) {
+            section.set("load", true);
+        }
+
+        // if it's configured to not load then don't load it
+        if (!section.getBoolean("load")) {
+            return false;
+        }
+
         // attempt initiaization from config section
         try {
-            module.initialize(config.getConfigurationSection(sectionId));
+            module.initialize(section);
         } catch (InvalidConfigurationException ex) {
             ex.printStackTrace();
             // dont add the module if it failed to load
-            return;
+            return false;
         }
 
         // add the module to the map
@@ -90,5 +102,6 @@ public class ModuleRegistry {
 
         // register the module's icon stack with the addon inventory
         addonInventory.registerNewIcon(module.getIconStack());
+        return true;
     }
 }
