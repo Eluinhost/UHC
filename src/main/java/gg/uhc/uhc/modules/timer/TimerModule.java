@@ -23,6 +23,7 @@ public class TimerModule extends Module {
         this.icon.setDisplayName(ChatColor.GREEN + "Actionbar Timer");
         this.icon.setType(Material.WATCH);
         this.icon.setWeight(100);
+        this.icon.setLore("Handles running timers in the action bar", "Not disableable");
     }
 
     public void startTimer(TimerMessage message, long seconds) {
