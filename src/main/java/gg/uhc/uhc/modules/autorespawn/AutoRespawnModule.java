@@ -12,6 +12,7 @@ public class AutoRespawnModule extends DisableableModule implements Listener {
 
     public AutoRespawnModule() {
         this.icon.setType(Material.REDSTONE);
+        this.icon.setWeight(50);
         this.iconName = ICON_NAME;
     }
 

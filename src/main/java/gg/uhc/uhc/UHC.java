@@ -13,10 +13,7 @@ import gg.uhc.uhc.modules.heads.GoldenHeadsHealthCommand;
 import gg.uhc.uhc.modules.heads.GoldenHeadsModule;
 import gg.uhc.uhc.modules.heads.HeadDropsModule;
 import gg.uhc.uhc.modules.heads.PlayerHeadProvider;
-import gg.uhc.uhc.modules.health.GhastTearDropsModule;
-import gg.uhc.uhc.modules.health.HealCommand;
-import gg.uhc.uhc.modules.health.HealthRegenerationModule;
-import gg.uhc.uhc.modules.health.PlayerListHealthCommand;
+import gg.uhc.uhc.modules.health.*;
 import gg.uhc.uhc.modules.inventory.ClearInventoryCommand;
 import gg.uhc.uhc.modules.inventory.ClearXPCommand;
 import gg.uhc.uhc.modules.inventory.ResetPlayerCommand;
@@ -50,12 +47,6 @@ public class UHC extends JavaPlugin {
 
         registry = new ModuleRegistry(this, getConfig());
 
-        if (getServer().getPluginManager().getPlugin("ProtocolLib") != null) {
-            TimerModule timer = new TimerModule();
-            registry.register(timer, "Timer");
-            getCommand("timer").setExecutor(new TimerCommand(timer));
-        }
-
         // TODO configuration to stop modules loading at all
         registry.register(new DifficultyModule(), "HardDifficulty");
         registry.register(new HealthRegenerationModule(), "HealthRegen");
@@ -69,7 +60,17 @@ public class UHC extends JavaPlugin {
         registry.register(new EnderpearlsModule(), "EnderpearlDamage");
         registry.register(new WitchesModule(), "WitchSpawns");
         registry.register(new NetherModule(), "Nether");
-        registry.register(new AutoRespawnModule(), "AutoRespawn");
+
+        AutoRespawnModule autoRespawnModule = new AutoRespawnModule();
+        registry.register(autoRespawnModule, "AutoRespawn");
+
+        if (getServer().getPluginManager().getPlugin("ProtocolLib") != null) {
+            TimerModule timer = new TimerModule();
+            registry.register(timer, "Timer");
+            getCommand("timer").setExecutor(new TimerCommand(timer));
+
+            registry.register(new HardcoreHeartsModule(autoRespawnModule), "HardcoreHearts");
+        }
 
         PotionFuelsListener fuelsListener = new PotionFuelsListener();
         registry.registerEvents(fuelsListener);
