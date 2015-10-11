@@ -16,9 +16,6 @@ public class GoldenCarrotRecipeModule extends DisableableModule implements Liste
 
     public GoldenCarrotRecipeModule() {
         this.iconName = ICON_NAME;
-
-        // TODO allow permission?
-
         this.icon.setType(Material.GOLDEN_CARROT);
         this.icon.setWeight(10);
 

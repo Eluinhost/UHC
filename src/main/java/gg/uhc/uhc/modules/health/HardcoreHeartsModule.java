@@ -45,7 +45,6 @@ public class HardcoreHeartsModule extends DisableableModule {
 
     @Override
     public void onEnable() {
-        // TODO need a way to listen on respawn module disable so we can disable ourselves too
         if (!respawnModule.isEnabled()) {
             respawnModule.enable();
 

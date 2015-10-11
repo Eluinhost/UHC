@@ -16,9 +16,6 @@ public class GlisteringMelonRecipeModule extends DisableableModule implements Li
 
     public GlisteringMelonRecipeModule() {
         this.iconName = ICON_NAME;
-
-        // TODO allow permission?
-
         this.icon.setType(Material.SPECKLED_MELON);
         this.icon.setWeight(10);
 

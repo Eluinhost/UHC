@@ -15,7 +15,6 @@ public class GhastTearDropsModule extends DisableableModule implements Listener 
     public GhastTearDropsModule() {
         this.iconName = ICON_NAME;
         this.icon.setWeight(5);
-        // TODO world whitelist/blacklist with config
     }
 
     @Override

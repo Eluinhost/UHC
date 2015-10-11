@@ -23,8 +23,6 @@ public class HealthRegenerationModule extends DisableableModule implements Click
         this.iconName = ICON_NAME;
         this.icon.setType(Material.POTION);
         this.icon.setWeight(-10);
-
-        // TODO world whitelist/blacklist with config
     }
 
     @Override

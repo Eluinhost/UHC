@@ -10,8 +10,6 @@ public class GlobalPVPModule extends DisableableModule {
     protected static final String ICON_NAME = "PVP";
 
     public GlobalPVPModule() {
-        // TODO world white/blacklist
-
         this.iconName = ICON_NAME;
         this.icon.setType(Material.IRON_SWORD);
         this.icon.setWeight(-5);

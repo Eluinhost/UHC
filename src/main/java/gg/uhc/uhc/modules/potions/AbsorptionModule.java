@@ -14,9 +14,6 @@ public class AbsorptionModule extends DisableableModule implements Listener {
 
     public AbsorptionModule() {
         this.iconName = ICON_NAME;
-
-        // TODO allow permission?
-
         this.icon.setType(Material.POTION);
     }
 

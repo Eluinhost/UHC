@@ -115,7 +115,6 @@ public abstract class DisableableModule extends Module implements ClickHandler {
 
     @Override
     public void onClick(Player player) {
-        // TODO permissions
         toggle();
         announceState();
     }

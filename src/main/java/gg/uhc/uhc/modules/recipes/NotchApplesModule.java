@@ -14,9 +14,6 @@ public class NotchApplesModule extends DisableableModule implements Listener {
 
     public NotchApplesModule() {
         this.iconName = ICON_NAME;
-
-        // TODO allow permission?
-
         this.icon.setType(Material.GOLDEN_APPLE);
         this.icon.setDurability((short) 1);
     }

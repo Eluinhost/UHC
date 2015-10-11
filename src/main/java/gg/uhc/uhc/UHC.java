@@ -105,15 +105,6 @@ public class UHC extends JavaPlugin {
             getCommand("clearteams").setExecutor(teamsNotLoaded);
         }
 
-        // TODO team requests?
-        // TODO add freeze/scatter to this repo?
-        // TODO horse armour + horses
-        // TODO death message removal/coords
-        // TODO death bans?
-        // TODO death items?
-        // TODO tpp?
-        // TODO health objective with percents
-
         getCommand("border").setExecutor(new WorldBorderCommand());
         getCommand("addons").setExecutor(new ShowIconsCommand(registry.getInventory()));
         getCommand("uhc").setExecutor(new ModuleCommands(registry));

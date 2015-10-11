@@ -75,7 +75,6 @@ public class GoldenHeadsModule extends DisableableModule implements Listener {
         if (!section.isInt("heal amount"))
             throw new InvalidConfigurationException("Invalid value at " + section.getCurrentPath() + ".heal amount (" + section.get("heal amount"));
 
-        // TODO check heal amount sane
         healAmount = section.getInt("heal amount");
 
         super.initialize(section);

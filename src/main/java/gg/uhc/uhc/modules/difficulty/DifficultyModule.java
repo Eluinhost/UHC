@@ -15,8 +15,6 @@ public class DifficultyModule extends DisableableModule implements Listener {
 
     public DifficultyModule() {
         this.iconName = ICON_NAME;
-
-        // TODO whitelist/blacklist
         this.icon.setType(Material.ARROW);
         this.icon.setWeight(-10);
     }

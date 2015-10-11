@@ -46,7 +46,6 @@ public class ExtendedSaturationModule extends DisableableModule implements Liste
         if (!section.isDouble("multiplier") && !section.isInt("multiplier"))
             throw new InvalidConfigurationException("Invalid value at " + section.getCurrentPath() + ".multiplier (" + section.get("multiplier") + ")");
 
-        // TODO check sane values
         multiplier = section.getDouble("multiplier");
         super.initialize(section);
     }

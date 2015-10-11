@@ -28,9 +28,6 @@ public class HeadDropsModule extends DisableableModule {
     public HeadDropsModule(PlayerHeadProvider playerHeadProvider) {
         this.playerHeadProvider = playerHeadProvider;
         this.iconName = ICON_NAME;
-
-        // TODO PVP only drops + team drops
-
         this.icon.setType(Material.SKULL_ITEM);
         this.icon.setDurability((short) 3);
         this.icon.setWeight(-5);
@@ -50,7 +47,6 @@ public class HeadDropsModule extends DisableableModule {
         if (!section.isDouble("drop chance") && !section.isInt("drop chance"))
             throw new InvalidConfigurationException("Invalid value at " + section.getCurrentPath() + ".drop chance (" + section.get("drop chance"));
 
-        // TODO check amount sane
         dropRate = section.getDouble("drop chance") / 100D;
 
         super.initialize(section);
@@ -94,8 +90,6 @@ public class HeadDropsModule extends DisableableModule {
         if (!isEnabled()) return;
 
         if (random.nextInt(100) < (100 - dropRate)) return;
-
-        // TODO stake + place blocks e.t.c.
 
         event.getDrops().add(playerHeadProvider.getPlayerHeadItem(event.getEntity()));
     }

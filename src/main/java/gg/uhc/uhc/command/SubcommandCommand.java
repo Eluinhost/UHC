@@ -42,6 +42,4 @@ public class SubcommandCommand implements CommandExecutor {
         // cut subroute arg off and run subcommand
         return subcommand.onCommand(sender, command, label, Arrays.copyOfRange(args, 1, args.length));
     }
-
-    // TODO tab complete
 }
