@@ -1,10 +1,14 @@
 package gg.uhc.uhc.modules.health;
 
+import com.google.common.collect.ImmutableList;
 import gg.uhc.uhc.inventory.ClickHandler;
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.WorldMatcher;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldLoadEvent;
@@ -19,10 +23,19 @@ public class HealthRegenerationModule extends DisableableModule implements Click
     protected static final short ENABLED_DATA = new Potion(PotionType.REGEN).toDamageValue();
     protected static final short DISABLED_DATA = new Potion(PotionType.WATER).toDamageValue();
 
+    protected WorldMatcher worlds;
+
     public HealthRegenerationModule() {
         this.iconName = ICON_NAME;
         this.icon.setType(Material.POTION);
         this.icon.setWeight(-10);
+    }
+
+    @Override
+    public void initialize(ConfigurationSection section) throws InvalidConfigurationException {
+        worlds = new WorldMatcher(section, ImmutableList.of("world to not touch on enable/disable"), false);
+
+        super.initialize(section);
     }
 
     @Override
@@ -46,14 +59,18 @@ public class HealthRegenerationModule extends DisableableModule implements Click
     @Override
     public void onEnable() {
         for (World world : Bukkit.getWorlds()) {
-            world.setGameRuleValue(GAME_RULE, "true");
+            if (worlds.worldMatches(world)) {
+                world.setGameRuleValue(GAME_RULE, "true");
+            }
         }
     }
 
     @Override
     public void onDisable() {
         for (World world : Bukkit.getWorlds()) {
-            world.setGameRuleValue(GAME_RULE, "false");
+            if (worlds.worldMatches(world)) {
+                world.setGameRuleValue(GAME_RULE, "false");
+            }
         }
     }
 
