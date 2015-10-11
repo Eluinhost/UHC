@@ -3,6 +3,8 @@ package gg.uhc.uhc.modules;
 import gg.uhc.uhc.ItemStackNBTStringFetcher;
 import gg.uhc.uhc.inventory.ClickHandler;
 import gg.uhc.uhc.inventory.IconStack;
+import gg.uhc.uhc.modules.events.ModuleDisableEvent;
+import gg.uhc.uhc.modules.events.ModuleEnableEvent;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -39,13 +41,9 @@ public abstract class DisableableModule extends Module implements ClickHandler {
         if (!config.isBoolean("enabled"))
             throw new InvalidConfigurationException("Invalid value at key " + config.getCurrentPath() + ".enabled (" + config.get("enabled") + ")");
 
-        this.enabled = config.getBoolean("enabled");
-
-        if (this.enabled) {
-            enable();
-        } else {
-            disable();
-        }
+        // store inverted version to trigger change
+        this.enabled = !config.getBoolean("enabled");
+        toggle();
     }
 
     protected void rerender() {
@@ -64,20 +62,38 @@ public abstract class DisableableModule extends Module implements ClickHandler {
 
     protected void onDisable() {}
 
-    public final void enable() {
+    public final boolean enable() {
+        if (isEnabled()) return false;
+
+        ModuleEnableEvent event = new ModuleEnableEvent(this);
+        Bukkit.getPluginManager().callEvent(event);
+
+        if (event.isCancelled()) return false;
+
         enabled = true;
         config.set("enabled", true);
         saveConfig();
         onEnable();
         rerender();
+
+        return true;
     }
 
-    public final void disable() {
+    public final boolean disable() {
+        if (!isEnabled()) return false;
+
+        ModuleDisableEvent event = new ModuleDisableEvent(this);
+        Bukkit.getPluginManager().callEvent(event);
+
+        if (event.isCancelled()) return false;
+
         enabled = false;
         config.set("enabled", false);
         saveConfig();
         onDisable();
         rerender();
+
+        return true;
     }
 
     public void announceState() {
@@ -101,12 +117,8 @@ public abstract class DisableableModule extends Module implements ClickHandler {
         Bukkit.spigot().broadcast(base);
     }
 
-    public final void toggle() {
-        if (isEnabled()) {
-            disable();
-        } else {
-            enable();
-        }
+    public final boolean toggle() {
+        return isEnabled() ? disable() : enable();
     }
 
     public final boolean isEnabled() {
@@ -117,7 +129,8 @@ public abstract class DisableableModule extends Module implements ClickHandler {
     public void onClick(Player player) {
         if (!player.hasPermission("uhc.command.uhc")) return;
 
-        toggle();
-        announceState();
+        if (toggle()) {
+            announceState();
+        }
     }
 }

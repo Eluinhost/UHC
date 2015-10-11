@@ -63,22 +63,25 @@ public class ModuleCommand extends OptionCommand {
                 switch (type) {
                     case ENABLE:
                         if (!disableable.isEnabled()) {
-                            disableable.enable();
-                            disableable.announceState();
-                            count++;
+                            if (disableable.enable()) {
+                                disableable.announceState();
+                                count++;
+                            }
                         }
                         break;
                     case DISABLE:
                         if (disableable.isEnabled()) {
-                            disableable.disable();
-                            disableable.announceState();
-                            count++;
+                            if (disableable.disable()) {
+                                disableable.announceState();
+                                count++;
+                            }
                         }
                         break;
                     case TOGGLE:
-                        disableable.toggle();
-                        disableable.announceState();
-                        count++;
+                        if (disableable.toggle()) {
+                            disableable.announceState();
+                            count++;
+                        }
                         break;
                 }
 
