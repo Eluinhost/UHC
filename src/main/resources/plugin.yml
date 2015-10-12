@@ -41,6 +41,8 @@ commands:
     permission: uhc.command.uhc
   timer:
     permission: uhc.command.timer
+  tpp:
+    permission: uhc.command.tpp
 permissions:
   uhc.command.showhealth:
     default: op
@@ -77,4 +79,6 @@ permissions:
   uhc.command.uhc:
     default: op
   uhc.command.timer:
+    default: op
+  uhc.command.tpp:
     default: op

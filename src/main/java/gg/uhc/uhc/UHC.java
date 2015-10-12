@@ -25,6 +25,7 @@ import gg.uhc.uhc.modules.recipes.GlisteringMelonRecipeModule;
 import gg.uhc.uhc.modules.recipes.GoldenCarrotRecipeModule;
 import gg.uhc.uhc.modules.recipes.NotchApplesModule;
 import gg.uhc.uhc.modules.team.*;
+import gg.uhc.uhc.modules.teleport.TeleportCommand;
 import gg.uhc.uhc.modules.timer.TimerCommand;
 import gg.uhc.uhc.modules.timer.TimerModule;
 import org.bukkit.Bukkit;
@@ -122,6 +123,8 @@ public class UHC extends JavaPlugin {
         getCommand("ci").setExecutor(new ClearInventoryCommand(resetter));
         getCommand("reset").setExecutor(new ResetPlayerCommand(resetter));
         getCommand("cleareffects").setExecutor(new ClearPotionsCommand(resetter));
+
+        getCommand("tpp").setExecutor(new TeleportCommand());
 
         // save config just to make sure at the end
         saveConfig();
