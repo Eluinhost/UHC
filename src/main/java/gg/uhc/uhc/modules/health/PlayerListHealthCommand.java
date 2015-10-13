@@ -21,23 +21,29 @@ public class PlayerListHealthCommand extends OptionCommand {
     protected static final String INCORRECT_TYPE = ChatColor.RED + "Existing objective was of type `%s` when we were looking for `health`. You can use `-f` to register the objective with the correct type";
 
     protected final Scoreboard scoreboard;
+    protected final PercentHealthObjectiveModule percentHealth;
 
     protected final OptionSpec<Void> forceSpec;
+    protected final OptionSpec<Void> percentSpec;
     protected final OptionSpec<String> nameSpec;
     protected final OptionSpec<String> displayNameSpec;
     protected final OptionSpec<DisplaySlot> slotSpec;
 
-    public PlayerListHealthCommand(Scoreboard scoreboard, DisplaySlot defaultSlot, String objectiveName, String displayName) {
+    public PlayerListHealthCommand(PercentHealthObjectiveModule percentHealth, Scoreboard scoreboard, DisplaySlot defaultSlot, String objectiveName, String displayName) {
+        this.percentHealth = percentHealth;
         this.scoreboard = scoreboard;
 
         forceSpec = parser
-                .acceptsAll(ImmutableList.of("f", "force"), "Remove any existing objective with the same name.");
+                .acceptsAll(ImmutableList.of("f", "force"), "Remove any existing objective with the same name. Does not work with percent health flag");
 
         nameSpec = parser
-                .acceptsAll(ImmutableList.of("n", "name"), "Name of the objective to create/use.")
+                .acceptsAll(ImmutableList.of("n", "name"), "Name of the objective to create/use. Use -p/percent to use the objective from the percent health module")
                 .withRequiredArg()
                 .withValuesConvertedBy(new LengthRestricted("objective name", 16))
                 .defaultsTo(objectiveName);
+
+        percentSpec = parser
+                .acceptsAll(ImmutableList.of("p", "percent"), "Use the objective from the percent health module");
 
         displayNameSpec = parser
                 .acceptsAll(ImmutableList.of("d", "displayName"), "Display name of the objective.")
@@ -59,30 +65,41 @@ public class PlayerListHealthCommand extends OptionCommand {
         boolean force = options.has(forceSpec);
         DisplaySlot slot = slotSpec.value(options);
 
-        Objective objective = scoreboard.getObjective(objectiveName);
+        Objective objective;
 
-        // unregister the current objective if it exists and we want to force remake it
-        if (objective != null && force) {
-            sender.sendMessage(String.format(UNREGISTERD, objective.getName()));
-            objective.unregister();
-            objective = null;
-        }
-
-        // register the objective
-        if (objective == null) {
-            objective = scoreboard.registerNewObjective(objectiveName, "health");
-
-            // add all online player manually
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                objective.getScore(player.getName()).setScore((int) Math.ceil(player.getHealth()));
-            }
-        } else {
-            // check existing criteria is of correct type
-            String existing = objective.getCriteria();
-
-            if (!existing.equals("health")) {
-                sender.sendMessage(String.format(INCORRECT_TYPE, existing));
+        if (options.has(percentSpec)) {
+            if (percentHealth == null) {
+                sender.sendMessage(ChatColor.RED + "Cannot use percent health as the module was not loaded");
                 return true;
+            }
+
+            objective = percentHealth.getObjective();
+        } else {
+            objective = scoreboard.getObjective(objectiveName);
+
+            // unregister the current objective if it exists and we want to force remake it
+            if (objective != null && force) {
+                sender.sendMessage(String.format(UNREGISTERD, objective.getName()));
+                objective.unregister();
+                objective = null;
+            }
+
+            // register the objective
+            if (objective == null) {
+                objective = scoreboard.registerNewObjective(objectiveName, "health");
+
+                // add all online player manually
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    objective.getScore(player.getName()).setScore((int) Math.ceil(player.getHealth()));
+                }
+            } else {
+                // check existing criteria is of correct type
+                String existing = objective.getCriteria();
+
+                if (!existing.equals("health")) {
+                    sender.sendMessage(String.format(INCORRECT_TYPE, existing));
+                    return true;
+                }
             }
         }
 
@@ -92,7 +109,7 @@ public class PlayerListHealthCommand extends OptionCommand {
         // set the slot to render in
         objective.setDisplaySlot(slot);
 
-        sender.sendMessage(String.format(CONFIRMATION, objectiveName, displayName, slot.name()));
+        sender.sendMessage(String.format(CONFIRMATION, objective.getName(), objective.getDisplayName(), slot.name()));
         return true;
     }
 }

@@ -77,6 +77,16 @@ public class UHC extends JavaPlugin {
             }
         }
 
+        PercentHealthObjectiveModule percentHealth = new PercentHealthObjectiveModule();
+        boolean percentHealthLoaded = registry.register(percentHealth, "PercentHealth");
+        getCommand("showhealth").setExecutor(new PlayerListHealthCommand(
+                percentHealthLoaded ? percentHealth : null,
+                Bukkit.getScoreboardManager().getMainScoreboard(),
+                DisplaySlot.PLAYER_LIST,
+                "UHCHealth",
+                "Health"
+        ));
+
         PotionFuelsListener fuelsListener = new PotionFuelsListener();
         registry.registerEvents(fuelsListener);
         registry.register(new Tier2PotionsModule(fuelsListener), "Tier2Potions");
@@ -109,12 +119,6 @@ public class UHC extends JavaPlugin {
         getCommand("border").setExecutor(new WorldBorderCommand());
         getCommand("addons").setExecutor(new ShowIconsCommand(registry.getInventory()));
         getCommand("uhc").setExecutor(new ModuleCommands(registry));
-        getCommand("showhealth").setExecutor(new PlayerListHealthCommand(
-                Bukkit.getScoreboardManager().getMainScoreboard(),
-                DisplaySlot.PLAYER_LIST,
-                "UHCHealth",
-                "Health"
-        ));
 
         PlayerResetter resetter = new PlayerResetter();
         getCommand("heal").setExecutor(new HealCommand(resetter));
