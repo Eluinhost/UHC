@@ -18,7 +18,7 @@ public abstract class DisableableModule extends Module implements ClickHandler {
 
     protected static final String CONSOLE_FORMAT = "[UHC] Module %s is now %s";
 
-    private boolean enabled;
+    protected boolean enabled;
     protected String iconName = "ERROR: NO ICON NAME SET";
 
     public DisableableModule() {

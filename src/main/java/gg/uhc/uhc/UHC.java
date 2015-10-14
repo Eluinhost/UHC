@@ -143,4 +143,8 @@ public class UHC extends JavaPlugin {
         super.saveConfig();
         getLogger().info("Saved configuration changes");
     }
+
+    public ModuleRegistry getRegistry() {
+        return registry;
+    }
 }
