@@ -7,7 +7,6 @@ import com.google.common.collect.Iterables;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
 
@@ -44,7 +43,6 @@ public class WorldMatcher {
     }
 
     protected static final Function<String, String> TO_LOWER_CASE = new Function<String, String>() {
-        @Nullable
         @Override
         public String apply(String input) {
             return input == null ? null : input.toLowerCase();

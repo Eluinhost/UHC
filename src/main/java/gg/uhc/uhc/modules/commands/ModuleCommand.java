@@ -14,7 +14,6 @@ import joptsimple.OptionSpec;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
@@ -98,9 +97,8 @@ public class ModuleCommand extends OptionCommand {
     }
 
     protected static final Function<Map.Entry, String> FETCH_KEY_AS_STRING = new Function<Map.Entry, String>() {
-        @Nullable
         @Override
-        public String apply(@Nullable Map.Entry input) {
+        public String apply(Map.Entry input) {
             return input == null ? "" : input.getKey().toString();
         }
     };
