@@ -2,10 +2,10 @@ package gg.uhc.uhc.modules.commands;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import gg.uhc.flagcommands.joptsimple.ValueConversionException;
+import gg.uhc.flagcommands.joptsimple.ValueConverter;
 import gg.uhc.uhc.modules.Module;
 import gg.uhc.uhc.modules.ModuleRegistry;
-import joptsimple.ValueConversionException;
-import joptsimple.ValueConverter;
 
 import java.util.Map;
 

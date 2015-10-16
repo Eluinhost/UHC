@@ -1,6 +1,6 @@
 package gg.uhc.uhc;
 
-import gg.uhc.uhc.command.ShowIconsCommand;
+import gg.uhc.uhc.inventory.ShowIconsCommand;
 import gg.uhc.uhc.modules.ModuleNotLoadedDummyCommand;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.autorespawn.AutoRespawnModule;

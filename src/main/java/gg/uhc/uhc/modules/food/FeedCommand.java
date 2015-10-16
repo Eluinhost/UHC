@@ -1,10 +1,10 @@
 package gg.uhc.uhc.modules.food;
 
+import gg.uhc.flagcommands.commands.OptionCommand;
+import gg.uhc.flagcommands.converters.OnlinePlayerConverter;
+import gg.uhc.flagcommands.joptsimple.OptionSet;
+import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import gg.uhc.uhc.PlayerResetter;
-import gg.uhc.uhc.command.OptionCommand;
-import gg.uhc.uhc.command.converters.OnlinePlayerConverter;
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;

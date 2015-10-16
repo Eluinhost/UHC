@@ -2,13 +2,14 @@ package gg.uhc.uhc.modules.border;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
-import gg.uhc.uhc.command.OptionCommand;
-import gg.uhc.uhc.command.converters.DoubleConverter;
-import gg.uhc.uhc.command.converters.LongConverter;
-import gg.uhc.uhc.command.converters.WorldConverter;
-import gg.uhc.uhc.command.converters.selection.SelectionPredicate;
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
+import gg.uhc.flagcommands.commands.OptionCommand;
+import gg.uhc.flagcommands.converters.DoubleConverter;
+import gg.uhc.flagcommands.converters.LongConverter;
+import gg.uhc.flagcommands.converters.WorldConverter;
+import gg.uhc.flagcommands.joptsimple.OptionSet;
+import gg.uhc.flagcommands.joptsimple.OptionSpec;
+import gg.uhc.flagcommands.predicates.DoublePredicates;
+import gg.uhc.flagcommands.predicates.LongPredicates;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
@@ -37,7 +38,7 @@ public class WorldBorderCommand extends OptionCommand {
                 .acceptsAll(ImmutableList.of("s", "size", "r", "radius"), "The radius of the border from the centre. Use 1000>200 format for shrinking borders (requires -t/--time parameter)")
                 .requiredUnless(resetSpec)
                 .withRequiredArg()
-                .withValuesConvertedBy(new DoubleConverter(SelectionPredicate.POSITIVE_DOUBLE))
+                .withValuesConvertedBy(new DoubleConverter().setPredicate(DoublePredicates.GREATER_THAN_ZERO).setType("Number > 0"))
                 .withValuesSeparatedBy('>');
 
         worldSpec = parser
@@ -48,14 +49,14 @@ public class WorldBorderCommand extends OptionCommand {
         centreSpec = parser
                 .acceptsAll(ImmutableList.of("c", "centre"), "The centre coordinates x:z of the border to create")
                 .withRequiredArg()
-                .withValuesConvertedBy(new DoubleConverter(SelectionPredicate.ANY_DOUBLE))
+                .withValuesConvertedBy(new DoubleConverter().setType("coordinate"))
                 .withValuesSeparatedBy(':')
                 .defaultsTo(new Double[]{0D, 0D});
 
         timeSpec = parser
                 .acceptsAll(ImmutableList.of("t", "time"), "How many seconds to move to the radius given from the previous value")
                 .withRequiredArg()
-                .withValuesConvertedBy(new LongConverter(SelectionPredicate.POSITIVE_LONG_INC_ZERO));
+                .withValuesConvertedBy(new LongConverter().setPredicate(LongPredicates.GREATER_THAN_ZERO_INC).setType("Integer > 0"));
     }
 
     protected Optional<World> getWorld(CommandSender sender) {

@@ -1,7 +1,8 @@
 package gg.uhc.uhc.modules.timer;
 
-import joptsimple.ValueConversionException;
-import joptsimple.ValueConverter;
+
+import gg.uhc.flagcommands.joptsimple.ValueConversionException;
+import gg.uhc.flagcommands.joptsimple.ValueConverter;
 
 public class TimeConverter implements ValueConverter<Long> {
 

@@ -2,14 +2,13 @@ package gg.uhc.uhc.modules.teleport;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import gg.uhc.uhc.command.OptionCommand;
-import gg.uhc.uhc.command.converters.IntegerConverter;
-import gg.uhc.uhc.command.converters.OnlinePlayerConverter;
-import gg.uhc.uhc.command.converters.WorldConverter;
-import gg.uhc.uhc.command.converters.selection.SelectionPredicate;
+import gg.uhc.flagcommands.commands.OptionCommand;
+import gg.uhc.flagcommands.converters.IntegerConverter;
+import gg.uhc.flagcommands.converters.OnlinePlayerConverter;
+import gg.uhc.flagcommands.converters.WorldConverter;
+import gg.uhc.flagcommands.joptsimple.OptionSet;
+import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import gg.uhc.uhc.util.LocationUtil;
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -41,7 +40,7 @@ public class TeleportCommand extends OptionCommand {
         this.coordsSpec = parser
                 .acceptsAll(ImmutableList.of("c", "coords"), "The coords to teleport all specified players to - x,z or x,y,z - does not require -p")
                 .withRequiredArg()
-                .withValuesConvertedBy(new IntegerConverter(SelectionPredicate.ANY_INTEGER))
+                .withValuesConvertedBy(new IntegerConverter().setType("Integer coordinate"))
                 .withValuesSeparatedBy(',');
 
         this.playerSpec = parser

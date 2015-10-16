@@ -1,9 +1,9 @@
 package gg.uhc.uhc.modules.team;
 
 import com.google.common.collect.ImmutableList;
-import gg.uhc.uhc.command.OptionCommand;
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
+import gg.uhc.flagcommands.commands.OptionCommand;
+import gg.uhc.flagcommands.joptsimple.OptionSet;
+import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;

@@ -1,11 +1,12 @@
 package gg.uhc.uhc.modules.health;
 
 import com.google.common.collect.ImmutableList;
-import gg.uhc.uhc.command.OptionCommand;
-import gg.uhc.uhc.command.converters.EnumConverter;
-import gg.uhc.uhc.command.converters.LengthRestricted;
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
+import gg.uhc.flagcommands.commands.OptionCommand;
+import gg.uhc.flagcommands.converters.EnumConverter;
+import gg.uhc.flagcommands.converters.StringConverter;
+import gg.uhc.flagcommands.joptsimple.OptionSet;
+import gg.uhc.flagcommands.joptsimple.OptionSpec;
+import gg.uhc.flagcommands.predicates.StringPredicates;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -39,7 +40,7 @@ public class PlayerListHealthCommand extends OptionCommand {
         nameSpec = parser
                 .acceptsAll(ImmutableList.of("n", "name"), "Name of the objective to create/use. Use -p/percent to use the objective from the percent health module")
                 .withRequiredArg()
-                .withValuesConvertedBy(new LengthRestricted("objective name", 16))
+                .withValuesConvertedBy(new StringConverter().setPredicate(new StringPredicates.LessThanOrEqualLength(16)).setType("objective name (<= 16 chars)"))
                 .defaultsTo(objectiveName);
 
         percentSpec = parser
@@ -48,7 +49,7 @@ public class PlayerListHealthCommand extends OptionCommand {
         displayNameSpec = parser
                 .acceptsAll(ImmutableList.of("d", "displayName"), "Display name of the objective.")
                 .withRequiredArg()
-                .withValuesConvertedBy(new LengthRestricted("display name", 32))
+                .withValuesConvertedBy(new StringConverter().setPredicate(new StringPredicates.LessThanOrEqualLength(32)).setType("display name (<= 32 chars)"))
                 .defaultsTo(displayName);
 
         slotSpec = parser

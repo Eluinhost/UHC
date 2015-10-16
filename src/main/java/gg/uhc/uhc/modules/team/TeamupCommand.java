@@ -4,11 +4,12 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import gg.uhc.uhc.command.OptionCommand;
-import gg.uhc.uhc.command.converters.LengthRestricted;
-import gg.uhc.uhc.command.converters.OfflinePlayerConverter;
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
+import gg.uhc.flagcommands.commands.OptionCommand;
+import gg.uhc.flagcommands.converters.OfflinePlayerConverter;
+import gg.uhc.flagcommands.converters.StringConverter;
+import gg.uhc.flagcommands.joptsimple.OptionSet;
+import gg.uhc.flagcommands.joptsimple.OptionSpec;
+import gg.uhc.flagcommands.predicates.StringPredicates;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -36,7 +37,7 @@ public class TeamupCommand extends OptionCommand {
         teamNameSpec = parser
                 .acceptsAll(ImmutableList.of("n", "name", "team"), "Team name of the team to use. If not specified will use the first empty UHC team")
                 .withRequiredArg()
-                .withValuesConvertedBy(new LengthRestricted("team name", 16));
+                .withValuesConvertedBy(new StringConverter().setPredicate(new StringPredicates.LessThanOrEqualLength(16)).setType("team name (<= 16 chars)"));
 
         playersSpec = parser
                 .nonOptions("List of player names to create a new team from")

@@ -5,12 +5,12 @@ import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import gg.uhc.uhc.command.OptionCommand;
+import gg.uhc.flagcommands.commands.OptionCommand;
+import gg.uhc.flagcommands.joptsimple.OptionSet;
+import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.Module;
 import gg.uhc.uhc.modules.ModuleRegistry;
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 

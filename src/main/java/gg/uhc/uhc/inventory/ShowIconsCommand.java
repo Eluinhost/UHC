@@ -1,6 +1,5 @@
-package gg.uhc.uhc.command;
+package gg.uhc.uhc.inventory;
 
-import gg.uhc.uhc.inventory.IconInventory;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

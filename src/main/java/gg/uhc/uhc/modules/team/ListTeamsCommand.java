@@ -6,11 +6,11 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import gg.uhc.uhc.command.OptionCommand;
-import gg.uhc.uhc.command.converters.IntegerConverter;
-import gg.uhc.uhc.command.converters.selection.SelectionPredicate;
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
+import gg.uhc.flagcommands.commands.OptionCommand;
+import gg.uhc.flagcommands.converters.IntegerConverter;
+import gg.uhc.flagcommands.joptsimple.OptionSet;
+import gg.uhc.flagcommands.joptsimple.OptionSpec;
+import gg.uhc.flagcommands.predicates.IntegerPredicates;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -45,7 +45,7 @@ public class ListTeamsCommand extends OptionCommand {
         pageSpec = parser
                 .acceptsAll(ImmutableList.of("p", "page"), "The page of results to show")
                 .withRequiredArg()
-                .withValuesConvertedBy(new IntegerConverter(SelectionPredicate.POSITIVE_INTEGER))
+                .withValuesConvertedBy(new IntegerConverter().setPredicate(IntegerPredicates.GREATER_THAN_ZERO).setType("Integer > 0"))
                 .defaultsTo(1);
     }
 

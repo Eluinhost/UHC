@@ -1,6 +1,7 @@
 package gg.uhc.uhc.modules.team;
 
-import gg.uhc.uhc.command.SubcommandCommand;
+
+import gg.uhc.flagcommands.commands.SubcommandCommand;
 
 public class TeamCommands extends SubcommandCommand {
 

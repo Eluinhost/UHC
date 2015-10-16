@@ -1,6 +1,6 @@
 package gg.uhc.uhc.modules.commands;
 
-import gg.uhc.uhc.command.SubcommandCommand;
+import gg.uhc.flagcommands.commands.SubcommandCommand;
 import gg.uhc.uhc.modules.ModuleRegistry;
 
 public class ModuleCommands extends SubcommandCommand {

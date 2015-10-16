@@ -2,9 +2,9 @@ package gg.uhc.uhc.modules.timer;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
-import gg.uhc.uhc.command.OptionCommand;
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
+import gg.uhc.flagcommands.commands.OptionCommand;
+import gg.uhc.flagcommands.joptsimple.OptionSet;
+import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 

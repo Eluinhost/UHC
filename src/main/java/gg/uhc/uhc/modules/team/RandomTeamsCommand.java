@@ -8,13 +8,13 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import gg.uhc.uhc.command.OptionCommand;
-import gg.uhc.uhc.command.converters.IntegerConverter;
-import gg.uhc.uhc.command.converters.OfflinePlayerConverter;
-import gg.uhc.uhc.command.converters.OnlinePlayerConverter;
-import gg.uhc.uhc.command.converters.selection.SelectionPredicate;
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
+import gg.uhc.flagcommands.commands.OptionCommand;
+import gg.uhc.flagcommands.converters.IntegerConverter;
+import gg.uhc.flagcommands.converters.OfflinePlayerConverter;
+import gg.uhc.flagcommands.converters.OnlinePlayerConverter;
+import gg.uhc.flagcommands.joptsimple.OptionSet;
+import gg.uhc.flagcommands.joptsimple.OptionSpec;
+import gg.uhc.flagcommands.predicates.IntegerPredicates;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -48,12 +48,12 @@ public class RandomTeamsCommand extends OptionCommand {
         teamCountSpec = parser
                 .acceptsAll(ImmutableList.of("c", "count"), "How many teams to create, teams will be as even as possible. Cannot be used with -s")
                 .withRequiredArg()
-                .withValuesConvertedBy(new IntegerConverter(SelectionPredicate.POSITIVE_INTEGER));
+                .withValuesConvertedBy(new IntegerConverter().setPredicate(IntegerPredicates.GREATER_THAN_ZERO).setType("Integer > 0"));
 
         teamSizeSpec = parser
                 .acceptsAll(ImmutableList.of("s", "size"), "How big to attempt make each team. The final team may have less members. Cannot be used with -c")
                 .withRequiredArg()
-                .withValuesConvertedBy(new IntegerConverter(SelectionPredicate.POSITIVE_INTEGER));
+                .withValuesConvertedBy(new IntegerConverter().setPredicate(IntegerPredicates.GREATER_THAN_ZERO).setType("Integer > 0"));
 
         excludingSpec = parser
                 .acceptsAll(ImmutableList.of("e", "exclude"), "List of players to exclude from selection separated with commas")

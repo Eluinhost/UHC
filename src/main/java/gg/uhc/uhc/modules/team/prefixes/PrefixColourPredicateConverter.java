@@ -1,9 +1,9 @@
 package gg.uhc.uhc.modules.team.prefixes;
 
 import com.google.common.collect.Sets;
-import gg.uhc.uhc.command.converters.EnumConverter;
-import joptsimple.ValueConversionException;
-import joptsimple.ValueConverter;
+import gg.uhc.flagcommands.converters.EnumConverter;
+import gg.uhc.flagcommands.joptsimple.ValueConversionException;
+import gg.uhc.flagcommands.joptsimple.ValueConverter;
 import org.bukkit.ChatColor;
 
 import java.util.Set;
