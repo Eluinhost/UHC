@@ -7,12 +7,13 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import java.text.NumberFormat;
 import java.util.Random;
 
-public class HeadDropsModule extends DisableableModule {
+public class HeadDropsModule extends DisableableModule implements Listener {
 
     protected static final Random random = new Random();
     protected static final String ICON_NAME = "Head Drops";
@@ -75,26 +76,12 @@ public class HeadDropsModule extends DisableableModule {
         }
     }
 
-    @Override
-    public void onEnable() {
-        updateIconInfo();
-    }
-
-    @Override
-    public void onDisable() {
-        updateIconInfo();
-    }
-
     @EventHandler
     public void on(PlayerDeathEvent event) {
         if (!isEnabled()) return;
 
-        if (random.nextInt(100) < (100 - dropRate)) return;
+        if (random.nextDouble() < (1D - dropRate)) return;
 
         event.getDrops().add(playerHeadProvider.getPlayerHeadItem(event.getEntity()));
-    }
-
-    protected void updateIconInfo() {
-
     }
 }
