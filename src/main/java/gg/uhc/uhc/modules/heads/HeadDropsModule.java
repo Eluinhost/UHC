@@ -110,6 +110,9 @@ public class HeadDropsModule extends DisableableModule implements Listener {
         // entity metadata for use later
         head.setMetadata(HEAD_METADATA_KEY, new FixedMetadataValue(plugin, new FallingHeadMetadata(player.getUniqueId(), BlockFaceXZ.getClosest(player))));
 
+        head.setCustomName(player.getName());
+        head.setCustomNameVisible(true);
+
         // use the player's velocity as a base
         Vector velocity = player.getVelocity().clone().multiply(0.75D);
         // add some vertical velocity
