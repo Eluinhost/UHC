@@ -63,6 +63,7 @@ public class PlayerHeadProvider {
     public void setBlockAsHead(String name, Block headBlock, BlockFaceXZ direction) {
         // set the type to skull
         headBlock.setType(Material.SKULL);
+        headBlock.setData((byte) 1);
 
         Skull state = (Skull) headBlock.getState();
 
