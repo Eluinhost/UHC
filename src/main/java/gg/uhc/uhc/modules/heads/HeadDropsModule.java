@@ -1,29 +1,38 @@
 package gg.uhc.uhc.modules.heads;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import gg.uhc.uhc.modules.DisableableModule;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
-import org.bukkit.event.entity.ItemSpawnEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
+import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import java.text.NumberFormat;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class HeadDropsModule extends DisableableModule implements Listener {
@@ -31,8 +40,7 @@ public class HeadDropsModule extends DisableableModule implements Listener {
     protected static final Random random = new Random();
 
     protected static final String ICON_NAME = "Head Drops";
-    protected static final String HEAD_METADATA_KEY = "falling head";
-    protected static final Material DUMMY_FALLING_HEAD_MATERIAL = Material.PUMPKIN;
+    protected static final String STAND_PREFIX = ChatColor.RED + "RIP: " + ChatColor.RESET;
 
     protected static final NumberFormat formatter = NumberFormat.getNumberInstance();
 
@@ -94,76 +102,155 @@ public class HeadDropsModule extends DisableableModule implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void on(PlayerDeathEvent event) {
         if (!isEnabled()) return;
 
         if (random.nextDouble() < (1D - dropRate)) return;
 
         Player player = event.getEntity();
+        Location location = player.getLocation();
 
-        // spawn a falling sand block with a dummy type
-        // because skulls don't render correctly ingame
-        FallingBlock head = player.getWorld().spawnFallingBlock(player.getEyeLocation(), DUMMY_FALLING_HEAD_MATERIAL, (byte) 0);
+        // make the player invisible for the duration of the death animation
+        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 18, 1));
 
-        // set player UUID and facing direction on the
-        // entity metadata for use later
-        head.setMetadata(HEAD_METADATA_KEY, new FixedMetadataValue(plugin, new FallingHeadMetadata(player.getUniqueId(), BlockFaceXZ.getClosest(player))));
+        ArmorStand stand = player.getWorld().spawn(location.clone().add(0, .2D, 0), ArmorStand.class);
+        stand.setBasePlate(false);
+        stand.setArms(true);
 
-        head.setCustomName(player.getName());
-        head.setCustomNameVisible(true);
+        // give the player's name
+        stand.setCustomName(STAND_PREFIX + event.getDeathMessage());
+        stand.setCustomNameVisible(true);
+
+        // face the same direction as the player
+        stand.getLocation().setDirection(location.getDirection());
+
+        // set the armour stand helmet to the player's head looking at the same yaw
+        stand.setHelmet(playerHeadProvider.getPlayerHeadItem(player));
+        stand.setHeadPose(new EulerAngle(Math.toRadians(location.getPitch()), 0, 0));
+
+        // copy the player's items across
+        PlayerInventory inventory = player.getInventory();
+        final List<ItemStack> toRemove = Lists.newArrayListWithCapacity(4);
+
+        ItemStack chest = inventory.getChestplate();
+        if (chest != null) {
+            stand.setChestplate(chest);
+            toRemove.add(chest);
+        }
+
+        ItemStack leggings = inventory.getLeggings();
+        if (leggings != null) {
+            stand.setLeggings(leggings);
+            toRemove.add(leggings);
+        }
+
+        ItemStack boots = inventory.getBoots();
+        if (boots != null) {
+            stand.setBoots(boots);
+            toRemove.add(boots);
+        }
+
+        ItemStack hand = player.getItemInHand();
+        if (hand != null) {
+            stand.setItemInHand(hand);
+            toRemove.add(hand);
+        }
+
+        // stop copied items from appearing in the final drops
+        Iterables.removeIf(event.getDrops(), new Predicate<ItemStack>() {
+            @Override
+            public boolean apply(ItemStack input) {
+                int index = toRemove.indexOf(input);
+
+                if (index < 0) return false;
+
+                toRemove.remove(index);
+                return true;
+            }
+        });
 
         // use the player's velocity as a base
-        Vector velocity = player.getVelocity().clone().multiply(0.75D);
-        // add some vertical velocity
-        velocity.add(new Vector(0D, .2D, 0D));
+        stand.setVelocity(player.getVelocity().clone().multiply(1.5D).add(new Vector(0D, .2D, 0D)));
+    }
 
-        head.setVelocity(velocity);
+    protected boolean isProtectedArmourStand(Entity entity) {
+        String customName = entity.getCustomName();
+
+        return customName != null && customName.startsWith(STAND_PREFIX);
+    }
+
+    protected Map<EquipmentSlot, ItemStack> getItemMap(ArmorStand stand) {
+        return ImmutableMap.<EquipmentSlot, ItemStack>builder()
+                .put(EquipmentSlot.HAND, stand.getItemInHand())
+                .put(EquipmentSlot.HEAD, stand.getHelmet())
+                .put(EquipmentSlot.CHEST, stand.getChestplate())
+                .put(EquipmentSlot.LEGS, stand.getLeggings())
+                .put(EquipmentSlot.FEET, stand.getBoots())
+                .build();
+    }
+
+    protected Collection<ItemStack> getAllItems(ArmorStand stand) {
+        return Collections2.filter(getItemMap(stand).values(), Predicates.not(IS_AIR_ITEM));
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void on(EntityDamageEvent event) {
+        if (event.getEntityType() != EntityType.ARMOR_STAND) return;
+
+        if (!isProtectedArmourStand(event.getEntity())) return;
+
+        // always cancel events, we choose when to break the stand
+        event.setCancelled(true);
+
+        ArmorStand stand = (ArmorStand) event.getEntity();
+        Location loc = stand.getLocation();
+        World world = stand.getWorld();
+
+        // for the first 2 seconds don't allow breaking
+        // to avoid accidental breaks after kill
+        if (event.getEntity().getTicksLived() < 40) {
+            world.playEffect(stand.getEyeLocation(), Effect.WITCH_MAGIC, 0);
+            return;
+        }
+
+        // drop each of it's worn items
+        for (ItemStack stack : getAllItems(stand)) {
+            world.dropItemNaturally(loc, stack);
+        }
+
+        // kill the stand now
+        stand.remove();
     }
 
     @EventHandler
-    public void on(ItemSpawnEvent event) {
-        if (!isEnabled()) return;
+    public void on(PlayerArmorStandManipulateEvent event) {
+        ArmorStand stand = event.getRightClicked();
 
-        if (event.getEntity().getItemStack().getType() != DUMMY_FALLING_HEAD_MATERIAL) return;
+        if (!isProtectedArmourStand(stand)) return;
 
-        // grab the first falling block entity at the same lcoation
-        Entity entity = Iterables.getFirst(Iterables.filter(event.getEntity().getNearbyEntities(0, 0, 0), Predicates.instanceOf(FallingBlock.class)), null);
+        ItemStack players = event.getPlayerItem();
+        ItemStack stands = event.getArmorStandItem();
 
-        // no entity found, do nothing
-        if (entity == null) return;
+        // if the player is holding something it will be a swap
+        if (players == null || players.getType() != Material.AIR) return;
 
-        // grab the metadata for the block and replace the drop
-        for (MetadataValue v : entity.getMetadata(HEAD_METADATA_KEY)) {
-            if (v.getOwningPlugin().equals(plugin)) {
-                FallingHeadMetadata data = (FallingHeadMetadata) v.value();
-                event.getEntity().setItemStack(playerHeadProvider.getPlayerHeadItem(Bukkit.getPlayer(data.getUuid()).getName()));
-                return;
-            }
+        // if the stand hasn't got something then the player is adding
+        // items or nothing will happen
+        if (stands == null || stands.getType() == Material.AIR) return;
+
+        // they're removing an item from the armour stand. If there
+        // is only 1 item on the stand then this is the final item
+        // on the armour stand so kill it (fire optional)
+        if (getAllItems(stand).size() == 1)  {
+            stand.remove();
         }
     }
 
-    @EventHandler
-    public void on(EntityChangeBlockEvent event) {
-        if (!isEnabled()) return;
-
-        if (event.getTo() != DUMMY_FALLING_HEAD_MATERIAL) return;
-
-        if (event.getEntityType() != EntityType.FALLING_BLOCK) return;
-
-        List<MetadataValue> values = event.getEntity().getMetadata(HEAD_METADATA_KEY);
-
-        for (MetadataValue v : values) {
-            if (v.getOwningPlugin().equals(plugin)) {
-                // cancel the event
-                event.setCancelled(true);
-
-                // replace the block with the head
-                FallingHeadMetadata data = (FallingHeadMetadata) v.value();
-                playerHeadProvider.setBlockAsHead(Bukkit.getPlayer(data.getUuid()).getName(), event.getBlock(), data.getDirection());
-
-                return;
-            }
+    protected static final Predicate<ItemStack> IS_AIR_ITEM = new Predicate<ItemStack>() {
+        @Override
+        public boolean apply(ItemStack input) {
+            return input != null && input.getType() == Material.AIR;
         }
-    }
+    };
 }
