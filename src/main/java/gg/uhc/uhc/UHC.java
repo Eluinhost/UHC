@@ -133,8 +133,7 @@ public class UHC extends JavaPlugin {
         }
 
         getCommand("border").setExecutor(new WorldBorderCommand());
-        getCommand("addons").setExecutor(new ShowIconsCommand(registry.getInventory()));
-        getCommand("uhc").setExecutor(new ModuleCommands(registry));
+        getCommand("uhc").setExecutor(new ModuleCommands(registry, new ShowIconsCommand(registry.getInventory())));
 
         PlayerResetter resetter = new PlayerResetter();
         getCommand("heal").setExecutor(new HealCommand(resetter));

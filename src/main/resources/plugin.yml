@@ -9,8 +9,6 @@ commands:
     permission: uhc.command.showhealth
   ghead:
     permission: uhc.command.ghead
-  addons:
-    permission: uhc.command.addons
   border:
     permission: uhc.command.border
   heal:
@@ -50,8 +48,6 @@ permissions:
     default: op
   uhc.command.ghead:
     default: op
-  uhc.command.addons:
-    default: true
   uhc.command.border:
     default: op
   uhc.command.heal:
@@ -79,6 +75,8 @@ permissions:
   uhc.broadcast.netherdisable:
     default: op
   uhc.command.uhc:
+    default: true
+  uhc.command.uhc.admin:
     default: op
   uhc.command.timer:
     default: op
