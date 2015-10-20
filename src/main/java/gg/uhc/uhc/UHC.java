@@ -62,7 +62,7 @@ public class UHC extends JavaPlugin {
         registry.register(new GoldenCarrotRecipeModule(), "GoldenCarrotRecipe");
         registry.register(new GlisteringMelonRecipeModule(), "GlisteringMelonRecipe");
         registry.register(new NotchApplesModule(), "NotchApples");
-        registry.register(new AbsorptionModule(), "Absoption");
+        registry.register(new AbsorptionModule(), "Absorption");
         registry.register(new ExtendedSaturationModule(), "ExtendedSaturation");
         registry.register(new GlobalPVPModule(), "PVP");
         registry.register(new EnderpearlsModule(), "EnderpearlDamage");
