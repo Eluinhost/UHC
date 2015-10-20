@@ -127,7 +127,7 @@ public abstract class DisableableModule extends Module implements ClickHandler {
 
     @Override
     public void onClick(Player player) {
-        if (!player.hasPermission("uhc.command.uhc")) return;
+        if (!player.hasPermission("uhc.command.uhc.admin")) return;
 
         if (toggle()) {
             announceState();
