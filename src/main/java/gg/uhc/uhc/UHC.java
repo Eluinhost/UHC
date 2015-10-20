@@ -7,6 +7,7 @@ import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.autorespawn.AutoRespawnModule;
 import gg.uhc.uhc.modules.border.WorldBorderCommand;
 import gg.uhc.uhc.modules.commands.ModuleCommands;
+import gg.uhc.uhc.modules.deathbans.DeathBansModule;
 import gg.uhc.uhc.modules.difficulty.DifficultyModule;
 import gg.uhc.uhc.modules.enderpearls.EnderpearlsModule;
 import gg.uhc.uhc.modules.food.ExtendedSaturationModule;
@@ -67,6 +68,7 @@ public class UHC extends JavaPlugin {
         registry.register(new EnderpearlsModule(), "EnderpearlDamage");
         registry.register(new WitchesModule(), "WitchSpawns");
         registry.register(new NetherModule(), "Nether");
+        registry.register(new DeathBansModule(), "DeathBans");
 
         AutoRespawnModule respawnModule = new AutoRespawnModule();
         boolean respawnModuleLoaded = registry.register(respawnModule, "AutoRespawn");
