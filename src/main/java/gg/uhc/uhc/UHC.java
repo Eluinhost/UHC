@@ -1,5 +1,6 @@
 package gg.uhc.uhc;
 
+import gg.uhc.flagcommands.commands.SubcommandCommand;
 import gg.uhc.uhc.inventory.ShowIconsCommand;
 import gg.uhc.uhc.modules.ModuleNotLoadedDummyCommand;
 import gg.uhc.uhc.modules.ModuleRegistry;
@@ -25,6 +26,10 @@ import gg.uhc.uhc.modules.recipes.GlisteringMelonRecipeModule;
 import gg.uhc.uhc.modules.recipes.GoldenCarrotRecipeModule;
 import gg.uhc.uhc.modules.recipes.NotchApplesModule;
 import gg.uhc.uhc.modules.team.*;
+import gg.uhc.uhc.modules.team.requests.RequestListCommand;
+import gg.uhc.uhc.modules.team.requests.RequestManager;
+import gg.uhc.uhc.modules.team.requests.RequestResponseCommand;
+import gg.uhc.uhc.modules.team.requests.TeamRequestCommand;
 import gg.uhc.uhc.modules.teleport.TeleportCommand;
 import gg.uhc.uhc.modules.timer.TimerCommand;
 import gg.uhc.uhc.modules.timer.TimerModule;
@@ -106,6 +111,14 @@ public class UHC extends JavaPlugin {
             getCommand("pmt").setExecutor(new TeamPMCommand(teamModule));
             getCommand("randomteams").setExecutor(new RandomTeamsCommand(teamModule));
             getCommand("clearteams").setExecutor(new ClearTeamsCommand(teamModule));
+
+            RequestManager requestManager = new RequestManager(this, teamModule, 20 * 120);
+            SubcommandCommand teamrequest = new SubcommandCommand();
+            teamrequest.registerSubcommand("accept", new RequestResponseCommand(requestManager, RequestManager.AcceptState.ACCEPT));
+            teamrequest.registerSubcommand("deny", new RequestResponseCommand(requestManager, RequestManager.AcceptState.DENY));
+            teamrequest.registerSubcommand("request", new TeamRequestCommand(requestManager));
+            teamrequest.registerSubcommand("list", new RequestListCommand(requestManager));
+            getCommand("teamrequest").setExecutor(teamrequest);
         } else {
             CommandExecutor teamsNotLoaded = new ModuleNotLoadedDummyCommand("TeamManager");
             getCommand("teams").setExecutor(teamsNotLoaded);
@@ -114,6 +127,7 @@ public class UHC extends JavaPlugin {
             getCommand("pmt").setExecutor(teamsNotLoaded);
             getCommand("randomteams").setExecutor(teamsNotLoaded);
             getCommand("clearteams").setExecutor(teamsNotLoaded);
+            getCommand("teamrequest").setExecutor(teamsNotLoaded);
         }
 
         getCommand("border").setExecutor(new WorldBorderCommand());

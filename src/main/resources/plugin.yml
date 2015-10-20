@@ -43,6 +43,8 @@ commands:
     permission: uhc.command.timer
   tpp:
     permission: uhc.command.tpp
+  teamrequest:
+    permission: uhc.command.teamrequest
 permissions:
   uhc.command.showhealth:
     default: op
@@ -81,4 +83,8 @@ permissions:
   uhc.command.timer:
     default: op
   uhc.command.tpp:
+    default: op
+  uhc.command.teamrequest:
+    default: true
+  uhc.command.teamrequestadmin:
     default: op

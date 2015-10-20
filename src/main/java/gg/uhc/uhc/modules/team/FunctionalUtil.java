@@ -2,6 +2,7 @@ package gg.uhc.uhc.modules.team;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
@@ -32,6 +33,13 @@ public class FunctionalUtil {
         @Override
         public String apply(OfflinePlayer input) {
             return input.getName();
+        }
+    };
+
+    public static final Function<String, OfflinePlayer> OFFLINE_PLAYER_FROM_NAME = new Function<String, OfflinePlayer>() {
+        @Override
+        public OfflinePlayer apply(String input) {
+            return input == null ? null : Bukkit.getOfflinePlayer(input);
         }
     };
 }
