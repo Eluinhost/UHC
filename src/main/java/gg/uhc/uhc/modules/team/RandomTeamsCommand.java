@@ -37,6 +37,7 @@ public class RandomTeamsCommand extends OptionCommand {
     protected final OptionSpec<Integer> teamCountSpec;
     protected final OptionSpec<Integer> teamSizeSpec;
     protected final OptionSpec<OfflinePlayer> excludingSpec;
+    protected final OptionSpec<Void> excludeExtrasSpec;
 
     public RandomTeamsCommand(TeamModule module) {
         this.module = module;
@@ -44,6 +45,9 @@ public class RandomTeamsCommand extends OptionCommand {
         playersSpec = parser
                 .nonOptions("Players to put into random teams, leave empty for all players online")
                 .withValuesConvertedBy(new OnlinePlayerConverter());
+
+        excludeExtrasSpec = parser
+                .acceptsAll(ImmutableList.of("x"), "Players who don't fit into a team will be excluded instead of put into their own team");
 
         teamCountSpec = parser
                 .acceptsAll(ImmutableList.of("c", "count"), "How many teams to create, teams will be as even as possible. Cannot be used with -s")
@@ -112,7 +116,7 @@ public class RandomTeamsCommand extends OptionCommand {
         );
 
         if (toAssign.size() == 0) {
-            sender.sendMessage(ChatColor.RED + "There are no players to add to a teams");
+            sender.sendMessage(ChatColor.RED + "There are no players to add to teams");
             return true;
         }
 
@@ -124,7 +128,21 @@ public class RandomTeamsCommand extends OptionCommand {
         }
 
         // partition into teams
-        List<List<Player>> teams = Lists.partition(toAssign, size);
+        List<List<Player>> teams = Lists.newArrayList(Lists.partition(toAssign, size));
+
+        int extras = toAssign.size() % size;
+
+        // if we're excluding leftovers and there were leftovers in a final
+        // team, then remove that team from the list. If it's the only team
+        // then send a message saying no teams could be created.
+        if (options.has(excludeExtrasSpec) && extras > 0) {
+            if (teams.size() == 1) {
+                sender.sendMessage(ChatColor.RED + "Not enough players to make a team of size " + size);
+                return true;
+            }
+
+            teams.remove(teams.size() - 1);
+        }
 
         // start assigning teams
         for (List<Player> teamPlayers : teams) {
@@ -147,6 +165,11 @@ public class RandomTeamsCommand extends OptionCommand {
         }
 
         sender.sendMessage(String.format(CREATED_TEAMS, teams.size(), teams.get(0).size(), toAssign.size()));
+
+        if (options.has(excludeExtrasSpec) && extras > 0) {
+            sender.sendMessage(ChatColor.AQUA + "Note: "  + extras + " players were not added to teams due to not enough players.");
+        }
+
         return true;
     }
 
