@@ -81,4 +81,13 @@ inventory will be saved to this option so changes are saved across saves/reloads
 
 ## Commands
 
-TODO
+[Information on commands with flags](docs/commands/Commands.md)
+
+- [Team Commands](docs/commands/teams/TeamCommands.md)
+- [Player Reset Commands](docs/commands/PlayerResetCommands.md)
+- [/timer](docs/commands/timer.md)
+- [/showhealth](docs/commands/showhealth.md)
+- [/ghead](docs/commands/ghead.md)
+- [/border](docs/commands/border.md)
+- [/uhc](docs/commands/uhc.md)
+- [/tpp](docs/commands/tpp.md)
