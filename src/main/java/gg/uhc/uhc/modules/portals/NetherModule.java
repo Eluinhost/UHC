@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.team.FunctionalUtil;
 import org.bukkit.*;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEvent;
@@ -51,10 +52,14 @@ public class NetherModule extends DisableableModule implements Listener {
         String playerNames = joiner.join(Iterables.transform(players, FunctionalUtil.PLAYER_NAME_FETCHER));
         String worldNames = joiner.join(worlds);
 
-        String message = "The player/s [" + playerNames + "] are within the nether world/s: [" + worldNames + "].";
+        String message = ChatColor.DARK_GRAY + "The player/s [" + playerNames + "] are within the nether world/s: [" + worldNames + "].";
         Bukkit.getConsoleSender().sendMessage(message);
 
-        Bukkit.broadcast(ChatColor.DARK_GRAY + message, "uhc.broadcast.netherdisable");
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.hasPermission("uhc.broadcast.netherdisable")) {
+                player.sendMessage(message);
+            }
+        }
     }
 
     @EventHandler(ignoreCancelled = true)
