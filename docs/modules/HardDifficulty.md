@@ -10,7 +10,7 @@ see the [world whitelist documentation](WorldWhitelist.md)
 
 All loaded worlds are converted to difficulty 3.
 
-Any other worlds that are loaded whilst enabled will be forced to gamemode 3.
+Any other worlds that are loaded whilst enabled will be forced to difficulty 3.
 
 ### On disbale:
 
