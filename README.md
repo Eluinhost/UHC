@@ -3,7 +3,9 @@ UHC
 
 This is a plugin to help run games of UltraHardcore.
 
-## Other Plugins
+This plugin is developed for Spigot 1.8+ and Java 7+.
+
+## Other Useful Plugins
 
 - [FancyFreeze](https://github.com/Eluinhost/FancyFreeze/releases) - Freezes players in an area where they can't move
 out of it, give/take damage, heal e.t.c.
