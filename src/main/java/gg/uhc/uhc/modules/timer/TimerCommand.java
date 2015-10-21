@@ -76,6 +76,6 @@ public class TimerCommand extends OptionCommand {
 
         timer.startTimer(message, time);
         sender.sendMessage(TIMER_STARTED);
-        return false;
+        return true;
     }
 }
