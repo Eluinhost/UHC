@@ -8,6 +8,8 @@ in percent.
 
 When disabled the modules stops updating the objective.
 
+This module needs to be loaded for the [/showhealth command](../commands/showhealth.md) to use percentage health
+
 ### Configuration
 
 ```yaml

@@ -11,6 +11,8 @@ When enabled golden heads are craftable and will heal the configured amount
 When disabled golden heads are uncraftable and any existing heads are treated
 as regular golden apples.
 
+The heal amount can also be modified by using the [/ghead command](../commands/ghead.md)
+
 ### Configuration
 
 ```yaml

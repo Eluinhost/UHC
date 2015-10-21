@@ -1,5 +1,5 @@
-GoldenCarrotRecipe
-==================
+GlisteringMelonRecipe
+=====================
 
 The icon for this module is glistering melon.
 

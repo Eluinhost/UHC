@@ -1,7 +1,7 @@
 Team Commands
 =============
 
-All of the below commands require that the [TeamManager module](../modules/TeamManager.md) is loaded.
+All of the below commands require that the [TeamManager module](../../modules/TeamManager.md) is loaded.
 
 [`/teams`](teams.md) - Show list of teams and their members
 

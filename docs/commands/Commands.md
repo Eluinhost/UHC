@@ -15,5 +15,5 @@ will set "1 day 2 seconds" to the `t` flag whereas if you miss off the quotes
 
 it will only take "1" and the rest will be assumed to belong to the message. 
 
-Quotes are option for single word arguments like `/timer -t 1d2s message`
+Quotes are optional for single word arguments like `/timer -t 1d2s message`
 
