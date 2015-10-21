@@ -51,7 +51,10 @@ public class NetherModule extends DisableableModule implements Listener {
         String playerNames = joiner.join(Iterables.transform(players, FunctionalUtil.PLAYER_NAME_FETCHER));
         String worldNames = joiner.join(worlds);
 
-        Bukkit.broadcast(ChatColor.DARK_GRAY + "The player/s [" + playerNames + "] are within the nether world/s: [" + worldNames + "].", "uhc.broadcast.netherdisable");
+        String message = "The player/s [" + playerNames + "] are within the nether world/s: [" + worldNames + "].";
+        Bukkit.getConsoleSender().sendMessage(message);
+
+        Bukkit.broadcast(ChatColor.DARK_GRAY + message, "uhc.broadcast.netherdisable");
     }
 
     @EventHandler(ignoreCancelled = true)
