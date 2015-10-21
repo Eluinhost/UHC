@@ -5,7 +5,7 @@ The icon for this module is blue wool. This module is not disableable.
 
 This module creates a number of 'UHC teams' on startup based on the configuration.
 
-There are [multiple commands](TODO) that can be used to modify teams.
+There are [multiple commands](../commands/teams/TeamCommands.md) that can be used to modify teams.
 
 ### Configuration
 

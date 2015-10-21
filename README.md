@@ -78,7 +78,7 @@ Any disableable modules will also contain:
 enabled: true 
 ```
 
-This is the initial state to set the module to after loading. Any changes via the [uhc command](TODO) or via the conifg
+This is the initial state to set the module to after loading. Any changes via the [uhc command](docs/commands/uhc.md) or via the conifg
 inventory will be saved to this option so changes are saved across saves/reloads.
 
 ## Commands
