@@ -7,7 +7,8 @@ import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.autorespawn.AutoRespawnModule;
 import gg.uhc.uhc.modules.border.WorldBorderCommand;
 import gg.uhc.uhc.modules.commands.ModuleCommands;
-import gg.uhc.uhc.modules.deathbans.DeathBansModule;
+import gg.uhc.uhc.modules.death.DeathBansModule;
+import gg.uhc.uhc.modules.death.DeathStandsModule;
 import gg.uhc.uhc.modules.difficulty.DifficultyModule;
 import gg.uhc.uhc.modules.enderpearls.EnderpearlsModule;
 import gg.uhc.uhc.modules.food.ExtendedSaturationModule;
@@ -104,6 +105,7 @@ public class UHC extends JavaPlugin {
         boolean gheadsLoaded = registry.register(gheadModule, "GoldenHeads");
         getCommand("ghead").setExecutor(gheadsLoaded ? new GoldenHeadsHealthCommand(gheadModule) : new ModuleNotLoadedDummyCommand("GoldenHeads"));
         registry.register(new HeadDropsModule(headProvider), "HeadDrops");
+        registry.register(new DeathStandsModule(), "DeathStands");
 
         TeamModule teamModule = new TeamModule();
         if (registry.register(teamModule, "TeamManager")) {

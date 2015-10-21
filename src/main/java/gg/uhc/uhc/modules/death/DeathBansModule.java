@@ -1,4 +1,4 @@
-package gg.uhc.uhc.modules.deathbans;
+package gg.uhc.uhc.modules.death;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;

@@ -51,6 +51,7 @@ List of modules provided by the plugin:
 - [SplashPotions](docs/modules/SplashPotions.md)
 - [GoldenHeads](docs/modules/GoldenHeads.md)
 - [HeadDrops](docs/modules/HeadDrops.md)
+- [DeathStands](docs/modules/DeathStands.md)
 - [TeamManager](docs/modules/TeamManager.md)
 
 Each module has the a section in the config.yml like this:

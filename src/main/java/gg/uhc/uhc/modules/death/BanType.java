@@ -1,4 +1,4 @@
-package gg.uhc.uhc.modules.deathbans;
+package gg.uhc.uhc.modules.death;
 
 public enum BanType {
     BAN,

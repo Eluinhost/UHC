@@ -3,13 +3,8 @@ HeadDrops
 
 The icon for this module is a player head.
 
-When enabled and a player dies:
-
-- The dead player gets 18 ticks invisibility
-- An armour stand is created in their place that is invincible for 2 seconds
-- The armour stand takes the player's velocity + a little bit more
-- The armour stand takes the player's chestplate, leggings, boots and item in hand
-- The armour stand wears the player's head
+When enabled and a player dies their head will also drop. If the [DeathStands module](DeathStands.md) is enabled then 
+the helmet on the stand will be replaced with the dropped head instead and the helmet will drop normally.
 
 When disabled nothing happens
 
@@ -19,4 +14,4 @@ When disabled nothing happens
 drop chance: 100
 ```
 
-The change for the effect to happen in %
+The change for the head to drop in %
