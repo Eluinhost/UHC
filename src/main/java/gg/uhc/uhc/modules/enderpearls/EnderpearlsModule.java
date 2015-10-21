@@ -31,7 +31,7 @@ public class EnderpearlsModule extends DisableableModule implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void on(EntityDamageByEntityEvent event) {
-        if (!isEnabled()) return;
+        if (isEnabled()) return;
 
         if (!(event.getEntity() instanceof Player)) return;
 
