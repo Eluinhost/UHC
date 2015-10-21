@@ -26,7 +26,7 @@ Hovering over the icon will show the status + configuration of the module:
 If you have permission and the module is disableable you can click on the icon
 to toggle the enabled status of the module.
 
-Documentation of each module provided by this plugin:
+## Modules
 
 - [HardDifficulty](docs/modules/HardDifficulty.md)
 - [HealthRegen](docs/modules/HealthRegen.md)
@@ -51,6 +51,34 @@ Documentation of each module provided by this plugin:
 - [HeadDrops](docs/modules/HeadDrops.md)
 - [TeamManager](docs/modules/TeamManager.md)
 
-Documentation of commands provided by this plugin:
+Each module has the a section in the config.yml like this:
+
+```yaml
+modules:
+  harddifficulty:
+    ... etc ..
+  healthregen:
+    ... etc ...
+```
+
+All modules have a configuration option:
+
+```yaml
+load: true
+```
+
+If this is set to false then the module is not even loaded on plugin startup and will not show up
+in the game. Use this to remove any modules you don't want to run at all.
+
+Any disableable modules will also contain:
+
+```yaml
+enabled: true 
+```
+
+This is the initial state to set the module to after loading. Any changes via the [uhc command](TODO) or via the conifg
+inventory will be saved to this option so changes are saved across saves/reloads.
+
+## Commands
 
 TODO
