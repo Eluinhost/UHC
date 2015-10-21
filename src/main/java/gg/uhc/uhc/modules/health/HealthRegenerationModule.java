@@ -1,7 +1,6 @@
 package gg.uhc.uhc.modules.health;
 
 import com.google.common.collect.ImmutableList;
-import gg.uhc.uhc.inventory.ClickHandler;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.WorldMatcher;
 import org.bukkit.Bukkit;
@@ -15,7 +14,7 @@ import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
 
-public class HealthRegenerationModule extends DisableableModule implements ClickHandler, Listener {
+public class HealthRegenerationModule extends DisableableModule implements Listener {
 
     protected static final String GAME_RULE = "naturalRegeneration";
     protected static final String ICON_NAME = "Health Regeneration";
