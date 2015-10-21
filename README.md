@@ -26,7 +26,7 @@ Hovering over the icon will show the status + configuration of the module:
 If you have permission and the module is disableable you can click on the icon
 to toggle the enabled status of the module.
 
-## Modules
+List of modules provided by the plugin:
 
 - [HardDifficulty](docs/modules/HardDifficulty.md)
 - [HealthRegen](docs/modules/HealthRegen.md)
