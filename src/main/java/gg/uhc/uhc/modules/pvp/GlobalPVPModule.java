@@ -8,8 +8,11 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.world.WorldLoadEvent;
 
-public class GlobalPVPModule extends DisableableModule {
+public class GlobalPVPModule extends DisableableModule implements Listener {
 
     protected static final String ICON_NAME = "PVP";
 
@@ -49,6 +52,15 @@ public class GlobalPVPModule extends DisableableModule {
             if (worlds.worldMatches(world)) {
                 world.setPVP(false);
             }
+        }
+    }
+
+    @EventHandler
+    public void on(WorldLoadEvent event) {
+        World world = event.getWorld();
+
+        if (worlds.worldMatches(world)) {
+            world.setPVP(isEnabled());
         }
     }
 
