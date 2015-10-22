@@ -26,7 +26,8 @@ Hovering over the icon will show the status + configuration of the module:
 ![Example config](images/example-inventory-with-config.png)
 
 If you have permission and the module is disableable you can click on the icon
-to toggle the enabled status of the module.
+to toggle the enabled status of the module. You will then need to click on a green
+piece of wool to confirm that you want to toggle the module to avoid misclicks.
 
 List of modules provided by the plugin:
 
