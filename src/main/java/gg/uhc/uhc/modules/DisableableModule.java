@@ -29,6 +29,7 @@ package gg.uhc.uhc.modules;
 
 import gg.uhc.uhc.ItemStackNBTStringFetcher;
 import gg.uhc.uhc.inventory.ClickHandler;
+import gg.uhc.uhc.inventory.IconInventory;
 import gg.uhc.uhc.inventory.IconStack;
 import gg.uhc.uhc.modules.events.ModuleDisableEvent;
 import gg.uhc.uhc.modules.events.ModuleEnableEvent;
@@ -37,6 +38,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
@@ -44,13 +46,25 @@ import org.bukkit.entity.Player;
 public abstract class DisableableModule extends Module implements ClickHandler {
 
     protected static final String CONSOLE_FORMAT = "[UHC] Module %s is now %s";
+    protected static final String CONFIRMATION_TITLE = ChatColor.DARK_PURPLE + "Toggle: ";
+
+    protected static final ClickHandler CLOSE_INVENTORY = new ClickHandler() {
+        @Override
+        public void onClick(Player player) {
+            player.closeInventory();
+        }
+    };
+
+    protected static final ClickHandler CANCELLED_TOGGLE = new ClickHandler() {
+        @Override
+        public void onClick(Player player) {
+            player.sendMessage(ChatColor.RED + "Cancelled toggle");
+        }
+    };
 
     protected boolean enabled;
+    protected IconInventory confirmation;
     protected String iconName = "ERROR: NO ICON NAME SET";
-
-    public DisableableModule() {
-        icon.registerClickHandler(this);
-    }
 
     /**
      * @return if enabled isn't set in the config what should the default be
@@ -71,6 +85,39 @@ public abstract class DisableableModule extends Module implements ClickHandler {
         // store inverted version to trigger change
         this.enabled = !config.getBoolean("enabled");
         toggle();
+
+        // register a click handler on our icon to show the confirmation inventory
+        icon.registerClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(Player player) {
+                if (player.hasPermission("uhc.command.uhc.admin")) {
+                    confirmation.showTo(player);
+                }
+            }
+        });
+
+        // setup confirmation inventory
+        confirmation = new IconInventory(CONFIRMATION_TITLE + id);
+
+        for (int i = 0; i < 9; i++) {
+            IconStack stack;
+            if (i == 4) {
+                stack = new IconStack(Material.WOOL, 1, (short) 5);
+                stack.setDisplayName(ChatColor.GREEN + "Confirm Toggle");
+                stack.setLore("Clicking this will toggle the module " + id);
+                stack.registerClickHandler(this);
+            } else {
+                stack = new IconStack(Material.AIR);
+                stack.registerClickHandler(CANCELLED_TOGGLE);
+            }
+
+            stack.setWeight(i);
+            stack.registerClickHandler(CLOSE_INVENTORY);
+            confirmation.registerNewIcon(stack);
+        }
+
+        // register confirmation inventory for events
+        Bukkit.getServer().getPluginManager().registerEvents(confirmation, plugin);
     }
 
     protected void rerender() {

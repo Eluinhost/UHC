@@ -27,6 +27,7 @@
 
 package gg.uhc.uhc.modules;
 
+import com.google.common.base.Preconditions;
 import gg.uhc.uhc.inventory.IconStack;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -38,8 +39,9 @@ public abstract class Module {
     protected final IconStack icon = new IconStack(Material.BARRIER, 1);
     protected ConfigurationSection config;
     protected Plugin plugin;
+    protected String id;
 
-    public void setPlugin(Plugin plugin) {
+    protected void setPlugin(Plugin plugin) {
         this.plugin = plugin;
     }
 
@@ -49,6 +51,11 @@ public abstract class Module {
 
     protected void saveConfig() {
         plugin.saveConfig();
+    }
+
+    protected void setId(String id) {
+        Preconditions.checkState(this.id == null, "ID has already been set, cannot be set again");
+        this.id = id;
     }
 
     public final IconStack getIconStack() {

@@ -82,6 +82,7 @@ public class ModuleRegistry {
 
     public boolean register(Module module, String id) {
         Preconditions.checkArgument(VALID_MODULE_NAME_REGEX.matcher(id).matches(), "Module id may only contain alphanumberic characters and _, found `" + id + "`");
+        Preconditions.checkArgument(id.length() <= 22, "Module names can only be 12 characters at most");
 
         // use all lower case in the map
         id = id.toLowerCase();
@@ -91,6 +92,9 @@ public class ModuleRegistry {
 
         // initialize the plugin for config saving
         module.setPlugin(plugin);
+
+        // set the module ID
+        module.setId(id);
 
         String sectionId = "modules." + id;
 
