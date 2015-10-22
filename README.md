@@ -54,6 +54,7 @@ List of modules provided by the plugin:
 - [DeathStands](docs/modules/DeathStands.md)
 - [TeamManager](docs/modules/TeamManager.md)
 - [Horses](docs/modules/Horses.md)
+- [HorseArmour](docs/modules/HorseArmour.md)
 
 Each module has the a section in the config.yml like this:
 
