@@ -53,6 +53,7 @@ List of modules provided by the plugin:
 - [HeadDrops](docs/modules/HeadDrops.md)
 - [DeathStands](docs/modules/DeathStands.md)
 - [TeamManager](docs/modules/TeamManager.md)
+- [Horses](docs/modules/Horses.md)
 
 Each module has the a section in the config.yml like this:
 
