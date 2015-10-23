@@ -27,70 +27,51 @@
 
 package gg.uhc.uhc.modules.team;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Sets;
 import gg.uhc.flagcommands.commands.OptionCommand;
 import gg.uhc.flagcommands.converters.OfflinePlayerConverter;
-import gg.uhc.flagcommands.converters.TeamConverter;
-import gg.uhc.flagcommands.joptsimple.ArgumentAcceptingOptionSpec;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
 import gg.uhc.flagcommands.tab.OnlinePlayerTabComplete;
-import gg.uhc.flagcommands.tab.TeamNameTabComplete;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
-
-import java.util.Set;
 
 public class TeamRemoveCommand extends OptionCommand {
 
-    protected static final String COMPLETE = ChatColor.AQUA + "Removed %d players, team is now: " + ChatColor.DARK_PURPLE + "%s";
+    protected static final String COMPLETE = ChatColor.AQUA + "Removed %d players from their teams";
 
-    protected final ArgumentAcceptingOptionSpec<Team> teamSpec;
+    protected final Scoreboard scoreboard;
     protected final OptionSpec<OfflinePlayer> playersSpec;
-    protected final OptionSpec<Void> removeAllSpec;
 
     public TeamRemoveCommand(TeamModule module) {
-        teamSpec = parser
-                .acceptsAll(ImmutableList.of("t", "team"), "Name of the team to remove players from")
-                .withRequiredArg()
-                .required()
-                .withValuesConvertedBy(new TeamConverter(module.getScoreboard()));
-        completers.put(teamSpec, new TeamNameTabComplete(module.getScoreboard()));
+        this.scoreboard = module.scoreboard;
 
         playersSpec = parser
-                .nonOptions("List of player names to remove from the specified team")
+                .nonOptions("List of player names to remove from their team")
                 .withValuesConvertedBy(new OfflinePlayerConverter());
         nonOptionsTabComplete = new NonDuplicateTabComplete(OnlinePlayerTabComplete.INSTANCE);
-
-        removeAllSpec = parser
-                .acceptsAll(ImmutableList.of("a", "all"), "Remove all players from the team");
     }
 
     @Override
     protected boolean runCommand(CommandSender sender, OptionSet options) {
-        Team team = teamSpec.value(options);
+        int count = 0;
 
-        Set<OfflinePlayer> players;
-        if (options.has(removeAllSpec)) {
-            players = team.getPlayers();
-        } else {
-            players = Sets.intersection(team.getPlayers(), Sets.newHashSet(playersSpec.values(options)));
-        }
+        for (OfflinePlayer player : playersSpec.values(options)) {
+            Team team = scoreboard.getPlayerTeam(player);
 
-        for (OfflinePlayer player : players) {
+            if (team == null) {
+                continue;
+            }
+
+            count++;
+
             team.removePlayer(player);
         }
 
-        Set<OfflinePlayer> finalTeam = team.getPlayers();
-        String members = finalTeam.size() == 0 ? ChatColor.DARK_GRAY + "No members" : Joiner.on(", ").join(Iterables.transform(team.getPlayers(), FunctionalUtil.PLAYER_NAME_FETCHER));
-
-        sender.sendMessage(String.format(COMPLETE, players.size(), members));
+        sender.sendMessage(String.format(COMPLETE, count));
         return true;
     }
 }

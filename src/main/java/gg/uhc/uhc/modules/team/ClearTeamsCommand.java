@@ -29,8 +29,11 @@ package gg.uhc.uhc.modules.team;
 
 import com.google.common.collect.ImmutableList;
 import gg.uhc.flagcommands.commands.OptionCommand;
+import gg.uhc.flagcommands.converters.TeamConverter;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
+import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
+import gg.uhc.flagcommands.tab.TeamNameTabComplete;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -44,18 +47,28 @@ public class ClearTeamsCommand extends OptionCommand {
 
     protected final TeamModule module;
 
+    protected final OptionSpec<Team> teamSpec;
     protected final OptionSpec<Void> allSpec;
 
     public ClearTeamsCommand(TeamModule module) {
         this.module = module;
 
         allSpec = parser
-                .acceptsAll(ImmutableList.of("a", "all"), "Clears all teams, not just UHC ones");
+                .acceptsAll(ImmutableList.of("a", "all"), "Clears all teams, not just UHC ones (when providing no team names)");
+
+        teamSpec = parser
+                .nonOptions("List of team names to clear players out of. If none provided clears all UHC teams")
+                .withValuesConvertedBy(new TeamConverter(module.getScoreboard()));
+        nonOptionsTabComplete = new NonDuplicateTabComplete(new TeamNameTabComplete(module.getScoreboard()));
     }
 
     @Override
     protected boolean runCommand(CommandSender sender, OptionSet options) {
-        Collection<Team> teams = options.has(allSpec) ? module.getScoreboard().getTeams() : module.getTeams().values();
+        Collection<Team> teams = teamSpec.values(options);
+
+        if (teams.size() == 0) {
+            teams = options.has(allSpec) ? module.getScoreboard().getTeams() : module.getTeams().values();
+        }
 
         int count = 0;
         for (Team team : teams) {

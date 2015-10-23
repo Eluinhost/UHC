@@ -27,9 +27,7 @@ Names of player names to create a team from (do not need to be online)
 
 ## `/team remove`
 
-Same as `/team add` but with removing players with one extra:
-
-`-a` - remove all players from the given team
+Removes all specified players from their teams
 
 ## Permissions
 
