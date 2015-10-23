@@ -34,8 +34,12 @@ import com.google.common.collect.Sets;
 import gg.uhc.flagcommands.commands.OptionCommand;
 import gg.uhc.flagcommands.converters.OfflinePlayerConverter;
 import gg.uhc.flagcommands.converters.TeamConverter;
+import gg.uhc.flagcommands.joptsimple.ArgumentAcceptingOptionSpec;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
+import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
+import gg.uhc.flagcommands.tab.OnlinePlayerTabComplete;
+import gg.uhc.flagcommands.tab.TeamNameTabComplete;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -47,7 +51,7 @@ public class TeamAddCommand extends OptionCommand {
 
     protected static final String COMPLETE = ChatColor.AQUA + "Added %d players, team is now: " + ChatColor.DARK_PURPLE + "%s";
 
-    protected final OptionSpec<Team> teamSpec;
+    protected final ArgumentAcceptingOptionSpec<Team> teamSpec;
     protected final OptionSpec<OfflinePlayer> playersSpec;
 
     public TeamAddCommand(TeamModule module) {
@@ -60,6 +64,9 @@ public class TeamAddCommand extends OptionCommand {
         playersSpec = parser
                 .nonOptions("List of player names to add to the specified team")
                 .withValuesConvertedBy(new OfflinePlayerConverter());
+
+        completers.put(teamSpec, new TeamNameTabComplete(module.getScoreboard()));
+        nonOptionsTabComplete = new NonDuplicateTabComplete(OnlinePlayerTabComplete.INSTANCE);
     }
 
     @Override

@@ -30,8 +30,10 @@ package gg.uhc.uhc.modules.timer;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import gg.uhc.flagcommands.commands.OptionCommand;
+import gg.uhc.flagcommands.joptsimple.ArgumentAcceptingOptionSpec;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
+import gg.uhc.flagcommands.tab.FixedValuesTabComplete;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -48,7 +50,7 @@ public class TimerCommand extends OptionCommand {
 
     protected final OptionSpec<String> messageSpec;
     protected final OptionSpec<Void> cancelSpec;
-    protected final OptionSpec<Long> timeSpec;
+    protected final ArgumentAcceptingOptionSpec<Long> timeSpec;
 
     protected TimerMessage lastMessage = null;
 
@@ -63,6 +65,7 @@ public class TimerCommand extends OptionCommand {
                 .requiredUnless(cancelSpec)
                 .withRequiredArg()
                 .withValuesConvertedBy(new TimeConverter());
+        completers.put(timeSpec, new FixedValuesTabComplete("10m", "30m", "1h", "90m"));
 
         this.messageSpec = parser.nonOptions("Message to show on the timer, if none is supplied then the last message sent is used instead");
     }

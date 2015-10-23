@@ -39,9 +39,13 @@ import gg.uhc.flagcommands.commands.OptionCommand;
 import gg.uhc.flagcommands.converters.IntegerConverter;
 import gg.uhc.flagcommands.converters.OfflinePlayerConverter;
 import gg.uhc.flagcommands.converters.OnlinePlayerConverter;
+import gg.uhc.flagcommands.joptsimple.ArgumentAcceptingOptionSpec;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import gg.uhc.flagcommands.predicates.IntegerPredicates;
+import gg.uhc.flagcommands.tab.FixedValuesTabComplete;
+import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
+import gg.uhc.flagcommands.tab.OnlinePlayerTabComplete;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -61,9 +65,9 @@ public class RandomTeamsCommand extends OptionCommand {
     protected final TeamModule module;
 
     protected final OptionSpec<Player> playersSpec;
-    protected final OptionSpec<Integer> teamCountSpec;
-    protected final OptionSpec<Integer> teamSizeSpec;
-    protected final OptionSpec<OfflinePlayer> excludingSpec;
+    protected final ArgumentAcceptingOptionSpec<Integer> teamCountSpec;
+    protected final ArgumentAcceptingOptionSpec<Integer> teamSizeSpec;
+    protected final ArgumentAcceptingOptionSpec<OfflinePlayer> excludingSpec;
     protected final OptionSpec<Void> excludeExtrasSpec;
 
     public RandomTeamsCommand(TeamModule module) {
@@ -72,6 +76,7 @@ public class RandomTeamsCommand extends OptionCommand {
         playersSpec = parser
                 .nonOptions("Players to put into random teams, leave empty for all players online")
                 .withValuesConvertedBy(new OnlinePlayerConverter());
+        nonOptionsTabComplete = new NonDuplicateTabComplete(OnlinePlayerTabComplete.INSTANCE);
 
         excludeExtrasSpec = parser
                 .acceptsAll(ImmutableList.of("x"), "Players who don't fit into a team will be excluded instead of put into their own team");
@@ -80,17 +85,20 @@ public class RandomTeamsCommand extends OptionCommand {
                 .acceptsAll(ImmutableList.of("c", "count"), "How many teams to create, teams will be as even as possible. Cannot be used with -s")
                 .withRequiredArg()
                 .withValuesConvertedBy(new IntegerConverter().setPredicate(IntegerPredicates.GREATER_THAN_ZERO).setType("Integer > 0"));
+        completers.put(teamCountSpec, new FixedValuesTabComplete("4"));
 
         teamSizeSpec = parser
                 .acceptsAll(ImmutableList.of("s", "size"), "How big to attempt make each team. The final team may have less members. Cannot be used with -c")
                 .withRequiredArg()
                 .withValuesConvertedBy(new IntegerConverter().setPredicate(IntegerPredicates.GREATER_THAN_ZERO).setType("Integer > 0"));
+        completers.put(teamSizeSpec, new FixedValuesTabComplete("3"));
 
         excludingSpec = parser
                 .acceptsAll(ImmutableList.of("e", "exclude"), "List of players to exclude from selection separated with commas")
                 .withRequiredArg()
                 .withValuesSeparatedBy(",")
                 .withValuesConvertedBy(new OfflinePlayerConverter());
+        completers.put(excludingSpec, new NonDuplicateTabComplete(OnlinePlayerTabComplete.INSTANCE));
     }
 
     @Override

@@ -33,10 +33,13 @@ import gg.uhc.flagcommands.commands.OptionCommand;
 import gg.uhc.flagcommands.converters.DoubleConverter;
 import gg.uhc.flagcommands.converters.LongConverter;
 import gg.uhc.flagcommands.converters.WorldConverter;
+import gg.uhc.flagcommands.joptsimple.ArgumentAcceptingOptionSpec;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import gg.uhc.flagcommands.predicates.DoublePredicates;
 import gg.uhc.flagcommands.predicates.LongPredicates;
+import gg.uhc.flagcommands.tab.FixedValuesTabComplete;
+import gg.uhc.flagcommands.tab.WorldTabComplete;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
@@ -51,11 +54,11 @@ public class WorldBorderCommand extends OptionCommand {
     protected static final String SET_MESSAGE = ChatColor.AQUA + "World border in %s set to radius %.2f centred at %.2f:%.2f";
     protected static final String SHRINKING_MESSAGE = ChatColor.AQUA + "World border will shrink to %.2f in %d seconds";
 
-    protected final OptionSpec<Double> sizeSpec;
-    protected final OptionSpec<World> worldSpec;
-    protected final OptionSpec<Double> centreSpec;
+    protected final ArgumentAcceptingOptionSpec<Double> sizeSpec;
+    protected final ArgumentAcceptingOptionSpec<World> worldSpec;
+    protected final ArgumentAcceptingOptionSpec<Double> centreSpec;
     protected final OptionSpec<Void> resetSpec;
-    protected final OptionSpec<Long> timeSpec;
+    protected final ArgumentAcceptingOptionSpec<Long> timeSpec;
 
     public WorldBorderCommand() {
         resetSpec = parser
@@ -67,11 +70,13 @@ public class WorldBorderCommand extends OptionCommand {
                 .withRequiredArg()
                 .withValuesConvertedBy(new DoubleConverter().setPredicate(DoublePredicates.GREATER_THAN_ZERO).setType("Number > 0"))
                 .withValuesSeparatedBy('>');
+        completers.put(sizeSpec, new FixedValuesTabComplete("250", "500", "1000", "1000>200"));
 
         worldSpec = parser
                 .acceptsAll(ImmutableList.of("w", "world"), "The world to create the border in, defaults to the world you are in")
                 .withRequiredArg()
                 .withValuesConvertedBy(new WorldConverter());
+        completers.put(worldSpec, WorldTabComplete.INSTANCE);
 
         centreSpec = parser
                 .acceptsAll(ImmutableList.of("c", "centre"), "The centre coordinates x:z of the border to create")
@@ -79,11 +84,13 @@ public class WorldBorderCommand extends OptionCommand {
                 .withValuesConvertedBy(new DoubleConverter().setType("coordinate"))
                 .withValuesSeparatedBy(':')
                 .defaultsTo(new Double[]{0D, 0D});
+        completers.put(centreSpec, new FixedValuesTabComplete("0:0"));
 
         timeSpec = parser
                 .acceptsAll(ImmutableList.of("t", "time"), "How many seconds to move to the radius given from the previous value")
                 .withRequiredArg()
                 .withValuesConvertedBy(new LongConverter().setPredicate(LongPredicates.GREATER_THAN_ZERO_INC).setType("Integer > 0"));
+        completers.put(timeSpec, new FixedValuesTabComplete("300", "600", "900", "1200"));
     }
 
     protected Optional<World> getWorld(CommandSender sender) {

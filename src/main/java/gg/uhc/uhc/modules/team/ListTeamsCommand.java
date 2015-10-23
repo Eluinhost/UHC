@@ -35,13 +35,17 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import gg.uhc.flagcommands.commands.OptionCommand;
 import gg.uhc.flagcommands.converters.IntegerConverter;
+import gg.uhc.flagcommands.joptsimple.ArgumentAcceptingOptionSpec;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import gg.uhc.flagcommands.predicates.IntegerPredicates;
+import gg.uhc.flagcommands.tab.OptionsTabComplete;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scoreboard.Team;
+import org.bukkit.util.StringUtil;
 
 import java.util.List;
 import java.util.Set;
@@ -58,7 +62,7 @@ public class ListTeamsCommand extends OptionCommand {
 
     protected final OptionSpec<Void> showAllSpec;
     protected final OptionSpec<Void> emptyOnlySpec;
-    protected final OptionSpec<Integer> pageSpec;
+    protected final ArgumentAcceptingOptionSpec<Integer> pageSpec;
 
     public ListTeamsCommand(TeamModule teamModule) {
         this.teamModule = teamModule;
@@ -74,6 +78,21 @@ public class ListTeamsCommand extends OptionCommand {
                 .withRequiredArg()
                 .withValuesConvertedBy(new IntegerConverter().setPredicate(IntegerPredicates.GREATER_THAN_ZERO).setType("Integer > 0"))
                 .defaultsTo(1);
+
+        completers.put(pageSpec, new OptionsTabComplete() {
+            @Override
+            public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args, String complete, String[] others) {
+                List<String> results = Lists.newArrayList();
+
+                int pages = (int) Math.ceil((double) ListTeamsCommand.this.teamModule.getTeams().size() / (double) COUNT_PER_PAGE);
+
+                for (int i = 1; i <= pages; i++) {
+                    results.add(String.valueOf(i));
+                }
+
+                return StringUtil.copyPartialMatches(complete, results, Lists.<String>newArrayList());
+            }
+        });
     }
 
     @Override

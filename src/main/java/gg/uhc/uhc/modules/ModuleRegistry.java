@@ -76,6 +76,10 @@ public class ModuleRegistry {
         return ImmutableSet.copyOf(modules.entrySet());
     }
 
+    public Set<String> getIds() {
+        return ImmutableSet.copyOf(modules.keySet());
+    }
+
     public Optional<Module> get(String id) {
         return Optional.fromNullable(modules.get(id.toLowerCase()));
     }

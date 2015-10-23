@@ -32,6 +32,7 @@ import gg.uhc.flagcommands.converters.IntegerConverter;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import gg.uhc.flagcommands.predicates.IntegerPredicates;
+import gg.uhc.flagcommands.tab.FixedValuesTabComplete;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -50,6 +51,7 @@ public class GoldenHeadsHealthCommand extends OptionCommand {
 
         spec = parser.nonOptions("How much HP points to heal total with a golden apple")
                 .withValuesConvertedBy(new IntegerConverter().setPredicate(IntegerPredicates.GREATER_THAN_ZERO).setType("Integer > 0"));
+        nonOptionsTabComplete = new FixedValuesTabComplete("4", "5", "6", "7", "8");
 
         silentSpec = parser.accepts("s", "Sends the response only to you and not the entire server");
     }
@@ -70,7 +72,7 @@ public class GoldenHeadsHealthCommand extends OptionCommand {
         if (options.has(silentSpec)) {
             sender.sendMessage(response);
         } else {
-            Bukkit.broadcastMessage(response);
+            Bukkit.broadcastMessage("[UHC] " + response);
         }
         return true;
     }

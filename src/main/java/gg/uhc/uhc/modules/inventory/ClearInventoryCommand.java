@@ -31,6 +31,8 @@ import gg.uhc.flagcommands.commands.OptionCommand;
 import gg.uhc.flagcommands.converters.OnlinePlayerConverter;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
+import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
+import gg.uhc.flagcommands.tab.OnlinePlayerTabComplete;
 import gg.uhc.uhc.PlayerResetter;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -50,6 +52,7 @@ public class ClearInventoryCommand extends OptionCommand {
 
         playersSpec = parser.nonOptions("List of online players to clear inventories on, leave empty for all online")
                 .withValuesConvertedBy(new OnlinePlayerConverter());
+        nonOptionsTabComplete = new NonDuplicateTabComplete(OnlinePlayerTabComplete.INSTANCE);
     }
 
     @Override

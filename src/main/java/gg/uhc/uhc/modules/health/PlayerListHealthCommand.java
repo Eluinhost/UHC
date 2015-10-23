@@ -31,9 +31,12 @@ import com.google.common.collect.ImmutableList;
 import gg.uhc.flagcommands.commands.OptionCommand;
 import gg.uhc.flagcommands.converters.EnumConverter;
 import gg.uhc.flagcommands.converters.StringConverter;
+import gg.uhc.flagcommands.joptsimple.ArgumentAcceptingOptionSpec;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import gg.uhc.flagcommands.predicates.StringPredicates;
+import gg.uhc.flagcommands.tab.EnumTabComplete;
+import gg.uhc.flagcommands.tab.FixedValuesTabComplete;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -53,9 +56,9 @@ public class PlayerListHealthCommand extends OptionCommand {
 
     protected final OptionSpec<Void> forceSpec;
     protected final OptionSpec<Void> percentSpec;
-    protected final OptionSpec<String> nameSpec;
-    protected final OptionSpec<String> displayNameSpec;
-    protected final OptionSpec<DisplaySlot> slotSpec;
+    protected final ArgumentAcceptingOptionSpec<String> nameSpec;
+    protected final ArgumentAcceptingOptionSpec<String> displayNameSpec;
+    protected final ArgumentAcceptingOptionSpec<DisplaySlot> slotSpec;
 
     public PlayerListHealthCommand(PercentHealthObjectiveModule percentHealth, Scoreboard scoreboard, DisplaySlot defaultSlot, String objectiveName, String displayName) {
         this.percentHealth = percentHealth;
@@ -69,6 +72,7 @@ public class PlayerListHealthCommand extends OptionCommand {
                 .withRequiredArg()
                 .withValuesConvertedBy(new StringConverter().setPredicate(new StringPredicates.LessThanOrEqualLength(16)).setType("objective name (<= 16 chars)"))
                 .defaultsTo(objectiveName);
+        completers.put(nameSpec, new FixedValuesTabComplete(objectiveName));
 
         percentSpec = parser
                 .acceptsAll(ImmutableList.of("p", "percent"), "Use the objective from the percent health module");
@@ -78,12 +82,14 @@ public class PlayerListHealthCommand extends OptionCommand {
                 .withRequiredArg()
                 .withValuesConvertedBy(new StringConverter().setPredicate(new StringPredicates.LessThanOrEqualLength(32)).setType("display name (<= 32 chars)"))
                 .defaultsTo(displayName);
+        completers.put(displayNameSpec, new FixedValuesTabComplete(displayName));
 
         slotSpec = parser
                 .acceptsAll(ImmutableList.of("s", "slot"), "Slot to assign the objective to.")
                 .withRequiredArg()
                 .withValuesConvertedBy(EnumConverter.forEnum(DisplaySlot.class))
                 .defaultsTo(defaultSlot);
+        completers.put(slotSpec, new EnumTabComplete(DisplaySlot.class));
     }
 
     @Override

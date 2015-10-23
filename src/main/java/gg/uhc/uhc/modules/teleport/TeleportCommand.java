@@ -33,8 +33,13 @@ import gg.uhc.flagcommands.commands.OptionCommand;
 import gg.uhc.flagcommands.converters.IntegerConverter;
 import gg.uhc.flagcommands.converters.OnlinePlayerConverter;
 import gg.uhc.flagcommands.converters.WorldConverter;
+import gg.uhc.flagcommands.joptsimple.ArgumentAcceptingOptionSpec;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
+import gg.uhc.flagcommands.tab.FixedValuesTabComplete;
+import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
+import gg.uhc.flagcommands.tab.OnlinePlayerTabComplete;
+import gg.uhc.flagcommands.tab.WorldTabComplete;
 import gg.uhc.uhc.util.LocationUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -50,30 +55,34 @@ import java.util.List;
 public class TeleportCommand extends OptionCommand {
 
     protected final OptionSpec<Player> toTeleportSpec;
-    protected final OptionSpec<Integer> coordsSpec;
-    protected final OptionSpec<World> worldSpec;
-    protected final OptionSpec<Player> playerSpec;
+    protected final ArgumentAcceptingOptionSpec<Integer> coordsSpec;
+    protected final ArgumentAcceptingOptionSpec<World> worldSpec;
+    protected final ArgumentAcceptingOptionSpec<Player> playerSpec;
 
     public TeleportCommand() {
         this.toTeleportSpec = parser
                 .nonOptions("List of online players to teleport, provide no players to teleport all online")
                 .withValuesConvertedBy(new OnlinePlayerConverter());
+        nonOptionsTabComplete = new NonDuplicateTabComplete(OnlinePlayerTabComplete.INSTANCE);
 
         this.worldSpec = parser
                 .acceptsAll(ImmutableList.of("w", "world"), "The world to go along with the coordinates, defaults to the world the executor is in")
                 .withRequiredArg()
                 .withValuesConvertedBy(new WorldConverter());
+        completers.put(worldSpec, new NonDuplicateTabComplete(WorldTabComplete.INSTANCE));
 
         this.coordsSpec = parser
                 .acceptsAll(ImmutableList.of("c", "coords"), "The coords to teleport all specified players to - x,z or x,y,z - does not require -p")
                 .withRequiredArg()
                 .withValuesConvertedBy(new IntegerConverter().setType("Integer coordinate"))
                 .withValuesSeparatedBy(',');
+        completers.put(coordsSpec, new FixedValuesTabComplete("0,100,0"));
 
         this.playerSpec = parser
                 .acceptsAll(ImmutableList.of("p", "player"), "The name of the player to teleport players to, does not require -c")
                 .withRequiredArg()
                 .withValuesConvertedBy(new OnlinePlayerConverter());
+        completers.put(playerSpec, OnlinePlayerTabComplete.INSTANCE);
     }
 
 

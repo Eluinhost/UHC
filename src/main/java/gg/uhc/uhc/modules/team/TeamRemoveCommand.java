@@ -34,8 +34,12 @@ import com.google.common.collect.Sets;
 import gg.uhc.flagcommands.commands.OptionCommand;
 import gg.uhc.flagcommands.converters.OfflinePlayerConverter;
 import gg.uhc.flagcommands.converters.TeamConverter;
+import gg.uhc.flagcommands.joptsimple.ArgumentAcceptingOptionSpec;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
+import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
+import gg.uhc.flagcommands.tab.OnlinePlayerTabComplete;
+import gg.uhc.flagcommands.tab.TeamNameTabComplete;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -47,7 +51,7 @@ public class TeamRemoveCommand extends OptionCommand {
 
     protected static final String COMPLETE = ChatColor.AQUA + "Removed %d players, team is now: " + ChatColor.DARK_PURPLE + "%s";
 
-    protected final OptionSpec<Team> teamSpec;
+    protected final ArgumentAcceptingOptionSpec<Team> teamSpec;
     protected final OptionSpec<OfflinePlayer> playersSpec;
     protected final OptionSpec<Void> removeAllSpec;
 
@@ -57,10 +61,12 @@ public class TeamRemoveCommand extends OptionCommand {
                 .withRequiredArg()
                 .required()
                 .withValuesConvertedBy(new TeamConverter(module.getScoreboard()));
+        completers.put(teamSpec, new TeamNameTabComplete(module.getScoreboard()));
 
         playersSpec = parser
                 .nonOptions("List of player names to remove from the specified team")
                 .withValuesConvertedBy(new OfflinePlayerConverter());
+        nonOptionsTabComplete = new NonDuplicateTabComplete(OnlinePlayerTabComplete.INSTANCE);
 
         removeAllSpec = parser
                 .acceptsAll(ImmutableList.of("a", "all"), "Remove all players from the team");

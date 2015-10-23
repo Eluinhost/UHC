@@ -35,6 +35,7 @@ import com.google.common.collect.Lists;
 import gg.uhc.flagcommands.commands.OptionCommand;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
+import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.Module;
 import gg.uhc.uhc.modules.ModuleRegistry;
@@ -64,6 +65,7 @@ public class ModuleCommand extends OptionCommand {
         this.type = type;
 
         moduleSpec = parser.nonOptions("List of module ids to " + type.name().toLowerCase()).withValuesConvertedBy(new ModuleEntryConverter(registry));
+        nonOptionsTabComplete = new NonDuplicateTabComplete(new ModuleTabComplete(registry));
     }
 
     @Override

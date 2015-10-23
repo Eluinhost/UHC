@@ -34,9 +34,13 @@ import com.google.common.collect.Iterables;
 import gg.uhc.flagcommands.commands.OptionCommand;
 import gg.uhc.flagcommands.converters.OfflinePlayerConverter;
 import gg.uhc.flagcommands.converters.StringConverter;
+import gg.uhc.flagcommands.joptsimple.ArgumentAcceptingOptionSpec;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import gg.uhc.flagcommands.predicates.StringPredicates;
+import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
+import gg.uhc.flagcommands.tab.OnlinePlayerTabComplete;
+import gg.uhc.flagcommands.tab.TeamNameTabComplete;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -55,7 +59,7 @@ public class TeamupCommand extends OptionCommand {
 
     protected final TeamModule teamModule;
 
-    protected final OptionSpec<String> teamNameSpec;
+    protected final ArgumentAcceptingOptionSpec<String> teamNameSpec;
     protected final OptionSpec<OfflinePlayer> playersSpec;
 
     public TeamupCommand(TeamModule teamModule) {
@@ -65,10 +69,12 @@ public class TeamupCommand extends OptionCommand {
                 .acceptsAll(ImmutableList.of("n", "name", "team"), "Team name of the team to use. If not specified will use the first empty UHC team")
                 .withRequiredArg()
                 .withValuesConvertedBy(new StringConverter().setPredicate(new StringPredicates.LessThanOrEqualLength(16)).setType("team name (<= 16 chars)"));
+        completers.put(teamNameSpec, new TeamNameTabComplete(teamModule.getScoreboard()));
 
         playersSpec = parser
                 .nonOptions("List of player names to create a new team from")
                 .withValuesConvertedBy(new OfflinePlayerConverter());
+        nonOptionsTabComplete = new NonDuplicateTabComplete(OnlinePlayerTabComplete.INSTANCE);
     }
 
     @Override

@@ -27,12 +27,18 @@
 
 package gg.uhc.uhc.modules.team.requests;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
+import org.bukkit.util.StringUtil;
 
-public class RequestResponseCommand implements CommandExecutor {
+import java.util.List;
+
+public class RequestResponseCommand implements TabExecutor {
 
     protected static final String USAGE = ChatColor.RED + "USAGE: accept|deny <request id>";
     protected static final String NONE_WITH_ID = ChatColor.RED + "No request found with the ID %d";
@@ -71,4 +77,16 @@ public class RequestResponseCommand implements CommandExecutor {
 
         return true;
     }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+        return StringUtil.copyPartialMatches(args[args.length - 1], Iterables.transform(requestManager.getRequests(), GET_ID), Lists.<String>newArrayList());
+    }
+
+    protected static final Function<TeamRequest, String> GET_ID = new Function<TeamRequest, String>() {
+        @Override
+        public String apply(TeamRequest input) {
+            return String.valueOf(input.getId());
+        }
+    };
 }
