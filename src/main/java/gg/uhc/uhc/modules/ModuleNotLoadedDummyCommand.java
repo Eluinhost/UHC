@@ -27,7 +27,7 @@
 
 package gg.uhc.uhc.modules;
 
-import gg.uhc.uhc.command.StaticStringCommand;
+import gg.uhc.flagcommands.commands.StaticStringCommand;
 import org.bukkit.ChatColor;
 
 public class ModuleNotLoadedDummyCommand extends StaticStringCommand {
