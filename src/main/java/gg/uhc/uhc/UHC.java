@@ -101,6 +101,7 @@ public class UHC extends JavaPlugin {
         registry.register(new DeathBansModule(), "DeathBans");
         registry.register(new HorsesModule(), "Horses");
         registry.register(new HorseArmourModule(), "HorseArmour");
+        registry.register(new ChatHealthPrependModule(), "ChatHealth");
 
         AutoRespawnModule respawnModule = new AutoRespawnModule();
         boolean respawnModuleLoaded = registry.register(respawnModule, "AutoRespawn");
