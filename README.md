@@ -42,6 +42,8 @@ List of modules provided by the plugin:
 - [PVP](docs/modules/PVP.md)
 - [EnderpearlDamage](docs/modules/EnderpearlDamage.md)
 - [WitchSpawns](docs/modules/WitchSpawns.md)
+- [DeathMessages](docs/modules/DeathMessages.md)
+- [DeathLightning](docs/modules/DeathLightning.md)
 - [Nether](docs/modules/Nether.md)
 - [DeathBans](docs/modules/DeathBans.md)
 - [AutoRespawn](docs/modules/AutoRespawn.md)

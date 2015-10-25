@@ -36,6 +36,7 @@ import gg.uhc.uhc.modules.border.WorldBorderCommand;
 import gg.uhc.uhc.modules.commands.ModuleCommands;
 import gg.uhc.uhc.modules.death.DeathBansModule;
 import gg.uhc.uhc.modules.death.DeathLightningModule;
+import gg.uhc.uhc.modules.death.ModifiedDeathMessagesModule;
 import gg.uhc.uhc.modules.death.DeathStandsModule;
 import gg.uhc.uhc.modules.difficulty.DifficultyModule;
 import gg.uhc.uhc.modules.enderpearls.EnderpearlsModule;
@@ -103,6 +104,7 @@ public class UHC extends JavaPlugin {
         registry.register(new HorsesModule(), "Horses");
         registry.register(new HorseArmourModule(), "HorseArmour");
         registry.register(new DeathLightningModule(), "DeathLightning");
+        registry.register(new ModifiedDeathMessagesModule(), "DeathMessages");
 
         AutoRespawnModule respawnModule = new AutoRespawnModule();
         boolean respawnModuleLoaded = registry.register(respawnModule, "AutoRespawn");
