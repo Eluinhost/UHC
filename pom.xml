@@ -36,6 +36,13 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>com.github.spullara.mustache.java</groupId>
+            <artifactId>compiler</artifactId>
+            <version>0.8.18</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
             <version>1.8-R0.1-SNAPSHOT</version>
@@ -114,8 +121,17 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <artifactSet>
+                        <excludes>
+                            <exclude>*:guava</exclude>
+                        </excludes>
+                    </artifactSet>
                     <minimizeJar>true</minimizeJar>
                     <relocations>
+                        <relocation>
+                            <pattern>com.github.mustachejava</pattern>
+                            <shadedPattern>${project.groupId}.${project.artifactId}.mustache</shadedPattern>
+                        </relocation>
                         <relocation>
                             <pattern>gg.uhc.flagcommands</pattern>
                             <shadedPattern>${project.groupId}.${project.artifactId}.flagcommands</shadedPattern>
