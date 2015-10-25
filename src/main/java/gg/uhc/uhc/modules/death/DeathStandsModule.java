@@ -29,7 +29,6 @@ package gg.uhc.uhc.modules.death;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import gg.uhc.uhc.modules.DisableableModule;
 import org.bukkit.*;
@@ -82,27 +81,27 @@ public class DeathStandsModule extends DisableableModule implements Listener {
     }
 
     protected Map<EquipmentSlot, ItemStack> getItems(ArmorStand stand) {
-        return Maps.filterValues(ImmutableMap.<EquipmentSlot, ItemStack>builder()
-                .put(EquipmentSlot.HAND, stand.getItemInHand())
-                .put(EquipmentSlot.HEAD, stand.getHelmet())
-                .put(EquipmentSlot.CHEST, stand.getChestplate())
-                .put(EquipmentSlot.LEGS, stand.getLeggings())
-                .put(EquipmentSlot.FEET, stand.getBoots())
-                .build(),
-                Predicates.not(EMPTY_ITEM)
-        );
+        Map<EquipmentSlot, ItemStack> slots = Maps.newHashMapWithExpectedSize(5);
+
+        slots.put(EquipmentSlot.HAND, stand.getItemInHand());
+        slots.put(EquipmentSlot.HEAD, stand.getHelmet());
+        slots.put(EquipmentSlot.CHEST, stand.getChestplate());
+        slots.put(EquipmentSlot.LEGS, stand.getLeggings());
+        slots.put(EquipmentSlot.FEET, stand.getBoots());
+
+        return slots;
     }
 
     protected Map<EquipmentSlot, ItemStack> getItems(PlayerInventory inventory) {
-        return Maps.filterValues(ImmutableMap.<EquipmentSlot, ItemStack>builder()
-                        .put(EquipmentSlot.HAND, inventory.getItemInHand())
-                        .put(EquipmentSlot.HEAD, inventory.getHelmet())
-                        .put(EquipmentSlot.CHEST, inventory.getChestplate())
-                        .put(EquipmentSlot.LEGS, inventory.getLeggings())
-                        .put(EquipmentSlot.FEET, inventory.getBoots())
-                        .build(),
-                Predicates.not(EMPTY_ITEM)
-        );
+        Map<EquipmentSlot, ItemStack> slots = Maps.newHashMapWithExpectedSize(5);
+
+        slots.put(EquipmentSlot.HAND, inventory.getItemInHand());
+        slots.put(EquipmentSlot.HEAD, inventory.getHelmet());
+        slots.put(EquipmentSlot.CHEST, inventory.getChestplate());
+        slots.put(EquipmentSlot.LEGS, inventory.getLeggings());
+        slots.put(EquipmentSlot.FEET, inventory.getBoots());
+
+        return slots;
     }
 
     protected EnumMap<EquipmentSlot, ItemStack> getSavedSlots(Player player) {
@@ -160,10 +159,13 @@ public class DeathStandsModule extends DisableableModule implements Listener {
         stand.setVelocity(player.getVelocity().clone().multiply(1.5D).add(new Vector(0D, .2D, 0D)));
 
         // start with player's existing items in each slot (if exists)
-        Map<EquipmentSlot, ItemStack> toSet = Maps.newEnumMap(getItems(player.getInventory()));
+        Map<EquipmentSlot, ItemStack> toSet = getItems(player.getInventory());
 
         // overide with any saved items in the metadata
         toSet.putAll(getSavedSlots(player));
+
+        // filter out the invalid items
+        toSet = Maps.filterValues(toSet, Predicates.not(EMPTY_ITEM));
 
         List<ItemStack> drops = event.getDrops();
 
@@ -236,7 +238,7 @@ public class DeathStandsModule extends DisableableModule implements Listener {
         }
 
         // drop each of it's worn items
-        for (ItemStack stack : getItems(stand).values()) {
+        for (ItemStack stack : Maps.filterValues(getItems(stand), Predicates.not(EMPTY_ITEM)).values()) {
             world.dropItemNaturally(loc, stack);
         }
 
