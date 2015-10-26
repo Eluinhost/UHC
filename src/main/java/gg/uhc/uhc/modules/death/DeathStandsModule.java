@@ -31,6 +31,7 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Maps;
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -65,6 +66,7 @@ public class DeathStandsModule extends DisableableModule implements Listener {
         this.iconName = ICON_NAME;
 
         this.icon.setType(Material.ARMOR_STAND);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_DEATH);
     }
 
     @Override

@@ -31,6 +31,7 @@ import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -55,6 +56,7 @@ public class ModifiedDeathMessagesModule extends DisableableModule implements Li
     public ModifiedDeathMessagesModule() {
         this.iconName = ICON_NAME;
         this.icon.setType(Material.BANNER);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_DEATH);
     }
 
     @Override

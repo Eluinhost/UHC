@@ -31,6 +31,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import gg.uhc.uhc.modules.Module;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -49,7 +50,7 @@ public class TimerModule extends Module {
 
         this.icon.setDisplayName(ChatColor.GREEN + "Actionbar Timer");
         this.icon.setType(Material.WATCH);
-        this.icon.setWeight(100);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_MISC);
         this.icon.setLore("Handles running timers in the action bar", "Not disableable");
     }
 

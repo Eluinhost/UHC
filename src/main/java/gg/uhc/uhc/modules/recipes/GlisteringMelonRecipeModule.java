@@ -28,6 +28,7 @@
 package gg.uhc.uhc.modules.recipes;
 
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -44,7 +45,7 @@ public class GlisteringMelonRecipeModule extends DisableableModule implements Li
     public GlisteringMelonRecipeModule() {
         this.iconName = ICON_NAME;
         this.icon.setType(Material.SPECKLED_MELON);
-        this.icon.setWeight(10);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_RECIPIES);
 
         ShapelessRecipe modified = new ShapelessRecipe(new ItemStack(Material.SPECKLED_MELON, 1))
                 .addIngredient(1, Material.GOLD_BLOCK)

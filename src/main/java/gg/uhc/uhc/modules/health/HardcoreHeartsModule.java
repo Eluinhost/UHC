@@ -33,6 +33,7 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import gg.uhc.uhc.modules.Module;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.autorespawn.AutoRespawnModule;
 import gg.uhc.uhc.modules.events.ModuleDisableEvent;
 import org.bukkit.Material;
@@ -52,7 +53,7 @@ public class HardcoreHeartsModule extends Module implements Listener {
         this.respawnModule = respawnModule;
         this.icon.setType(Material.DOUBLE_PLANT);
         this.icon.setDurability((short) 4);
-        this.icon.setWeight(50);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_HEALTH);
         this.icon.setDisplayName(ICON_NAME);
         this.icon.setLore("Showing hardcore hearts on login");
     }

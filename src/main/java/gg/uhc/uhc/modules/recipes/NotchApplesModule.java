@@ -28,6 +28,7 @@
 package gg.uhc.uhc.modules.recipes;
 
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -43,6 +44,7 @@ public class NotchApplesModule extends DisableableModule implements Listener {
         this.iconName = ICON_NAME;
         this.icon.setType(Material.GOLDEN_APPLE);
         this.icon.setDurability((short) 1);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_RECIPIES);
     }
 
     @Override

@@ -28,6 +28,7 @@
 package gg.uhc.uhc.modules.food;
 
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -45,7 +46,7 @@ public class ExtendedSaturationModule extends DisableableModule implements Liste
         this.iconName = ICON_NAME;
 
         this.icon.setType(Material.COOKED_BEEF);
-        this.icon.setWeight(10);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_MISC);
     }
 
     public double getMultiplier() {

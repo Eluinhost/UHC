@@ -28,6 +28,7 @@
 package gg.uhc.uhc.modules.recipes;
 
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -44,7 +45,7 @@ public class GoldenCarrotRecipeModule extends DisableableModule implements Liste
     public GoldenCarrotRecipeModule() {
         this.iconName = ICON_NAME;
         this.icon.setType(Material.GOLDEN_CARROT);
-        this.icon.setWeight(10);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_RECIPIES);
 
         // register the new recipe
         ShapedRecipe modified = new ShapedRecipe(new ItemStack(Material.GOLDEN_CARROT, 1))

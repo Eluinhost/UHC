@@ -31,6 +31,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.team.FunctionalUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -48,6 +49,7 @@ public class NetherModule extends DisableableModule implements Listener {
     public NetherModule() {
         this.iconName = ICON_NAME;
         this.icon.setType(Material.NETHER_STALK);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_WORLD);
     }
 
     @Override

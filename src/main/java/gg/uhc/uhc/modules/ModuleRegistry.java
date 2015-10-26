@@ -45,6 +45,14 @@ import java.util.regex.Pattern;
 
 public class ModuleRegistry {
 
+    public static final int CATEGORY_WORLD = 0;
+    public static final int CATEGORY_APPLES = 10;
+    public static final int CATEGORY_POTIONS = 20;
+    public static final int CATEGORY_RECIPIES = 30;
+    public static final int CATEGORY_HEALTH = 40;
+    public static final int CATEGORY_DEATH = 50;
+    public static final int CATEGORY_MISC = 100;
+
     public static final String ADDON_INVENTORY_TITLE = ChatColor.DARK_PURPLE + "UHC Control Panel";
     public static final Pattern VALID_MODULE_NAME_REGEX = Pattern.compile("^\\w+$");
 

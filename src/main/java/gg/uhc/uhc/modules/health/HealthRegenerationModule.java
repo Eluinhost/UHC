@@ -29,6 +29,7 @@ package gg.uhc.uhc.modules.health;
 
 import com.google.common.collect.ImmutableList;
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.WorldMatcher;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -54,7 +55,7 @@ public class HealthRegenerationModule extends DisableableModule implements Liste
     public HealthRegenerationModule() {
         this.iconName = ICON_NAME;
         this.icon.setType(Material.POTION);
-        this.icon.setWeight(-10);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_HEALTH);
     }
 
     @Override

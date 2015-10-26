@@ -30,6 +30,7 @@ package gg.uhc.uhc.modules.horses;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -59,6 +60,7 @@ public class HorseArmourModule extends DisableableModule implements Listener {
         this.iconName = ICON_NAME;
 
         this.icon.setType(Material.DIAMOND_BARDING);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_MISC);
     }
 
     @Override
