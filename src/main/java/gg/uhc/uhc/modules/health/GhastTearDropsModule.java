@@ -28,6 +28,7 @@
 package gg.uhc.uhc.modules.health;
 
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
@@ -41,7 +42,7 @@ public class GhastTearDropsModule extends DisableableModule implements Listener 
 
     public GhastTearDropsModule() {
         this.iconName = ICON_NAME;
-        this.icon.setWeight(5);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_POTIONS);
     }
 
     @Override

@@ -28,6 +28,7 @@
 package gg.uhc.uhc.modules.autorespawn;
 
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -39,7 +40,7 @@ public class AutoRespawnModule extends DisableableModule implements Listener {
 
     public AutoRespawnModule() {
         this.icon.setType(Material.REDSTONE);
-        this.icon.setWeight(50);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_DEATH);
         this.iconName = ICON_NAME;
     }
 

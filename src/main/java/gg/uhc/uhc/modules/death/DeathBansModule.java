@@ -33,6 +33,7 @@ import com.google.common.collect.Maps;
 import gg.uhc.flagcommands.converters.EnumConverter;
 import gg.uhc.flagcommands.joptsimple.ValueConversionException;
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.timer.TimeUtil;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
@@ -66,6 +67,7 @@ public class DeathBansModule extends DisableableModule implements Listener {
     public DeathBansModule() {
         this.iconName = ICON_NAME;
         this.icon.setType(Material.BARRIER);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_DEATH);
     }
 
     @Override

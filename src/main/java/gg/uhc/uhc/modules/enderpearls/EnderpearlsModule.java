@@ -28,6 +28,7 @@
 package gg.uhc.uhc.modules.enderpearls;
 
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -42,6 +43,7 @@ public class EnderpearlsModule extends DisableableModule implements Listener {
     public EnderpearlsModule() {
         this.iconName = ICON_NAME;
         this.icon.setType(Material.ENDER_PEARL);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_MISC);
     }
 
     @Override

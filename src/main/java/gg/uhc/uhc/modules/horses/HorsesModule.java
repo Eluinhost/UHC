@@ -28,6 +28,7 @@
 package gg.uhc.uhc.modules.horses;
 
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -47,6 +48,7 @@ public class HorsesModule extends DisableableModule implements Listener {
 
         this.icon.setType(Material.MONSTER_EGG);
         this.icon.setDurability(EntityType.HORSE.getTypeId());
+        this.icon.setWeight(ModuleRegistry.CATEGORY_MISC);
     }
 
     @Override

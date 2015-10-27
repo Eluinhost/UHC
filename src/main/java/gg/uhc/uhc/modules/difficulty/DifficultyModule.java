@@ -29,6 +29,7 @@ package gg.uhc.uhc.modules.difficulty;
 
 import com.google.common.collect.ImmutableList;
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.WorldMatcher;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
@@ -49,7 +50,7 @@ public class DifficultyModule extends DisableableModule implements Listener {
     public DifficultyModule() {
         this.iconName = ICON_NAME;
         this.icon.setType(Material.ARROW);
-        this.icon.setWeight(-10);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_WORLD);
     }
 
     @Override

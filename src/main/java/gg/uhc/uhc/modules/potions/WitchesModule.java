@@ -28,6 +28,7 @@
 package gg.uhc.uhc.modules.potions;
 
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
@@ -41,6 +42,7 @@ public class WitchesModule extends DisableableModule implements Listener {
     public WitchesModule() {
         this.iconName = ICON_NAME;
         this.icon.setType(Material.FLOWER_POT_ITEM);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_MISC);
     }
 
     @Override

@@ -28,6 +28,7 @@
 package gg.uhc.uhc.modules.heads;
 
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -66,7 +67,7 @@ public class GoldenHeadsModule extends DisableableModule implements Listener {
         this.iconName = ICON_NAME;
         this.icon.setType(Material.SKULL_ITEM);
         this.icon.setDurability((short) 3);
-        this.icon.setWeight(-5);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_APPLES);
 
         // register the new recipe
         ShapedRecipe modified = new ShapedRecipe(new ItemStack(Material.GOLDEN_APPLE, 1))

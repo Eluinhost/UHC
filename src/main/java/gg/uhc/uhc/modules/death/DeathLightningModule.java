@@ -28,6 +28,7 @@
 package gg.uhc.uhc.modules.death;
 
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -40,6 +41,7 @@ public class DeathLightningModule extends DisableableModule {
         this.iconName = ICON_NAME;
 
         this.icon.setType(Material.EXPLOSIVE_MINECART);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_DEATH);
     }
 
     @Override

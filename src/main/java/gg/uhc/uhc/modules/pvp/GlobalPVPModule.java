@@ -29,6 +29,7 @@ package gg.uhc.uhc.modules.pvp;
 
 import com.google.common.collect.ImmutableList;
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.WorldMatcher;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -48,7 +49,7 @@ public class GlobalPVPModule extends DisableableModule implements Listener {
     public GlobalPVPModule() {
         this.iconName = ICON_NAME;
         this.icon.setType(Material.IRON_SWORD);
-        this.icon.setWeight(-5);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_WORLD);
     }
 
     @Override

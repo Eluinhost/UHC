@@ -28,6 +28,7 @@
 package gg.uhc.uhc.modules.potions;
 
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -42,6 +43,7 @@ public class AbsorptionModule extends DisableableModule implements Listener {
     public AbsorptionModule() {
         this.iconName = ICON_NAME;
         this.icon.setType(Material.POTION);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_POTIONS);
     }
 
     @Override

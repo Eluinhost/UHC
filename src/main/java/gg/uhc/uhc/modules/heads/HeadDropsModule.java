@@ -30,6 +30,7 @@ package gg.uhc.uhc.modules.heads;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.death.StandItemsMetadata;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -67,7 +68,7 @@ public class HeadDropsModule extends DisableableModule implements Listener {
         this.iconName = ICON_NAME;
         this.icon.setType(Material.SKULL_ITEM);
         this.icon.setDurability((short) 3);
-        this.icon.setWeight(-5);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_APPLES);
     }
 
     @Override

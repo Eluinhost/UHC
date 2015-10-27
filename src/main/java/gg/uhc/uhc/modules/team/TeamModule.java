@@ -36,6 +36,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import gg.uhc.uhc.modules.Module;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.team.prefixes.Prefix;
 import gg.uhc.uhc.modules.team.prefixes.PrefixColourPredicateConverter;
 import org.bukkit.Bukkit;
@@ -62,7 +63,7 @@ public class TeamModule extends Module {
         this.icon.setType(Material.WOOL);
         this.icon.setDurability((short) 3);
         this.icon.setDisplayName(ChatColor.GREEN + "Team Manager");
-        this.icon.setWeight(100);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_MISC);
     }
 
     public Scoreboard getScoreboard() {

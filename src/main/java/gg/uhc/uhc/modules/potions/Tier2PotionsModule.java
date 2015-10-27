@@ -28,6 +28,7 @@
 package gg.uhc.uhc.modules.potions;
 
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.potion.Potion;
@@ -47,6 +48,7 @@ public class Tier2PotionsModule extends DisableableModule {
 
         this.icon.setType(Material.POTION);
         this.icon.setDurability(potion.toDamageValue());
+        this.icon.setWeight(ModuleRegistry.CATEGORY_POTIONS);
         this.iconName = ICON_NAME;
     }
 

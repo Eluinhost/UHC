@@ -55,6 +55,7 @@ List of modules provided by the plugin:
 - [GoldenHeads](docs/modules/GoldenHeads.md)
 - [HeadDrops](docs/modules/HeadDrops.md)
 - [DeathStands](docs/modules/DeathStands.md)
+- [DeathItems](docs/modules/DeathItems.md)
 - [TeamManager](docs/modules/TeamManager.md)
 - [Horses](docs/modules/Horses.md)
 - [HorseArmour](docs/modules/HorseArmour.md)

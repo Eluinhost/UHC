@@ -30,6 +30,7 @@ package gg.uhc.uhc.modules.health;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -60,6 +61,7 @@ public class PercentHealthObjectiveModule extends DisableableModule {
     public PercentHealthObjectiveModule() {
         this.iconName = ICON_NAME;
         this.icon.setType(Material.DAYLIGHT_DETECTOR);
+        this.icon.setWeight(ModuleRegistry.CATEGORY_HEALTH);
     }
 
     public Objective getObjective() {
