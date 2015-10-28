@@ -67,6 +67,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.DisplaySlot;
+import org.mcstats.Metrics;
+
+import java.io.IOException;
 
 public class UHC extends JavaPlugin {
 
@@ -83,7 +86,17 @@ public class UHC extends JavaPlugin {
             }
         }, 40);
 
-        registry = new ModuleRegistry(this, getConfig());
+        Metrics metrics;
+        try {
+            metrics = new Metrics(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+            setEnabled(false);
+            getLogger().severe("Something stopped metrics from loading, cannot continue");
+            return;
+        }
+
+        registry = new ModuleRegistry(this, metrics, getConfig());
 
         registry.register(new DifficultyModule(), "HardDifficulty");
         registry.register(new HealthRegenerationModule(), "HealthRegen");
@@ -183,6 +196,8 @@ public class UHC extends JavaPlugin {
 
         // save config just to make sure at the end
         saveConfig();
+
+        metrics.start();
     }
 
     @Override

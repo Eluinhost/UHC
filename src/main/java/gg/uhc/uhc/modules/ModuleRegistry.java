@@ -38,6 +38,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+import org.mcstats.Metrics;
 
 import java.util.Map;
 import java.util.Set;
@@ -63,10 +64,16 @@ public class ModuleRegistry {
     protected final Map<String, Module> modules = Maps.newHashMap();
     protected final IconInventory addonInventory;
 
-    public ModuleRegistry(Plugin plugin, ConfigurationSection config) {
+    protected final Metrics metrics;
+    protected final Metrics.Graph loadedModulesGraph;
+
+    public ModuleRegistry(Plugin plugin, Metrics metrics, ConfigurationSection config) {
         this.plugin = plugin;
         this.pluginManager = plugin.getServer().getPluginManager();
         this.config = config;
+
+        this.metrics = metrics;
+        loadedModulesGraph = metrics.createGraph("Loaded modules");
 
         this.addonInventory = new IconInventory(ADDON_INVENTORY_TITLE);
         registerEvents(addonInventory);
@@ -102,10 +109,9 @@ public class ModuleRegistry {
         // make sure it's a new key
         Preconditions.checkArgument(!modules.containsKey(id), "Module `" + id + "` is already registered");
 
-        // initialize the plugin for config saving
+        // initialize the module with dependants
         module.setPlugin(plugin);
-
-        // set the module ID
+        module.setMetrics(metrics);
         module.setId(id);
 
         String sectionId = "modules." + id;
@@ -121,12 +127,22 @@ public class ModuleRegistry {
             section.set("load", true);
         }
 
+        final boolean load = section.getBoolean("load");
+
+        // add plot for loaded modules
+        loadedModulesGraph.addPlotter(new Metrics.Plotter(id) {
+            @Override
+            public int getValue() {
+                return load ? 1 : 0;
+            }
+        });
+
         // if it's configured to not load then don't load it
-        if (!section.getBoolean("load")) {
+        if (!load) {
             return false;
         }
 
-        // attempt initiaization from config section
+        // attempt initialization from config section
         try {
             module.initialize(section);
         } catch (InvalidConfigurationException ex) {

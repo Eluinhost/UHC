@@ -33,16 +33,22 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.Plugin;
+import org.mcstats.Metrics;
 
 public abstract class Module {
 
     protected final IconStack icon = new IconStack(Material.BARRIER, 1);
     protected ConfigurationSection config;
     protected Plugin plugin;
+    protected Metrics metrics;
     protected String id;
 
     protected void setPlugin(Plugin plugin) {
         this.plugin = plugin;
+    }
+
+    protected void setMetrics(Metrics metrics) {
+        this.metrics = metrics;
     }
 
     public void initialize(ConfigurationSection config) throws InvalidConfigurationException {

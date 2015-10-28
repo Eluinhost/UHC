@@ -42,6 +42,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
+import org.mcstats.Metrics;
 
 public abstract class DisableableModule extends Module implements ClickHandler {
 
@@ -61,6 +62,8 @@ public abstract class DisableableModule extends Module implements ClickHandler {
             player.sendMessage(ChatColor.RED + "Cancelled toggle");
         }
     };
+
+    protected static Metrics.Graph enabledGraph;
 
     protected boolean enabled;
     protected IconInventory confirmation;
@@ -85,6 +88,19 @@ public abstract class DisableableModule extends Module implements ClickHandler {
         // store inverted version to trigger change
         this.enabled = !config.getBoolean("enabled");
         toggle();
+
+        // create graph if it doesn't exist yet
+        if (enabledGraph == null) {
+            enabledGraph = metrics.createGraph("Enabled modules");
+        }
+
+        // add a plotter for this module
+        enabledGraph.addPlotter(new Metrics.Plotter(id) {
+            @Override
+            public int getValue() {
+                return isEnabled() ? 1 : 0;
+            }
+        });
 
         // register a click handler on our icon to show the confirmation inventory
         icon.registerClickHandler(new ClickHandler() {

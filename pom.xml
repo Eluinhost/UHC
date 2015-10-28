@@ -25,6 +25,10 @@
             <id>dmulloy2-repo</id>
             <url>http://repo.dmulloy2.net/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>Plugin Metrics</id>
+            <url>http://repo.mcstats.org/content/repositories/public</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -40,6 +44,12 @@
             <artifactId>compiler</artifactId>
             <version>0.8.18</version>
             <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mcstats.bukkit</groupId>
+            <artifactId>metrics</artifactId>
+            <version>R8-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -128,6 +138,10 @@
                     </artifactSet>
                     <minimizeJar>true</minimizeJar>
                     <relocations>
+                        <relocation>
+                            <pattern>org.mcstats</pattern>
+                            <shadedPattern>${project.groupId}.${project.artifactId}.mcstats</shadedPattern>
+                        </relocation>
                         <relocation>
                             <pattern>com.github.mustachejava</pattern>
                             <shadedPattern>${project.groupId}.${project.artifactId}.mustache</shadedPattern>

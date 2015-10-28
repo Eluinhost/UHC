@@ -43,6 +43,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.mcstats.Metrics;
 
 import java.text.NumberFormat;
 
@@ -104,6 +105,14 @@ public class GoldenHeadsModule extends DisableableModule implements Listener {
             throw new InvalidConfigurationException("Invalid value at " + section.getCurrentPath() + ".heal amount (" + section.get("heal amount"));
 
         healAmount = section.getInt("heal amount");
+
+        // add a graph for how much heads heal
+        metrics.createGraph("Head healing amount (half hearts)").addPlotter(new Metrics.Plotter() {
+            @Override
+            public int getValue() {
+                return getHealAmount();
+            }
+        });
 
         super.initialize(section);
     }
