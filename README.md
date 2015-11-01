@@ -60,6 +60,7 @@ List of modules provided by the plugin:
 - [Horses](docs/modules/Horses.md)
 - [HorseArmour](docs/modules/HorseArmour.md)
 - [ChatHealth](docs/modules/ChatHealth.md)
+- [NerfQuartzXP](docs/modules/NerfQuartzXP.md)
 
 Each module has the a section in the config.yml like this:
 
