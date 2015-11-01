@@ -31,9 +31,10 @@ import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-public class DeathLightningModule extends DisableableModule {
+public class DeathLightningModule extends DisableableModule implements Listener {
 
     protected static final String ICON_NAME = "Death Lightning";
 
