@@ -47,7 +47,7 @@ import gg.uhc.uhc.modules.health.*;
 import gg.uhc.uhc.modules.horses.HorseArmourModule;
 import gg.uhc.uhc.modules.horses.HorsesModule;
 import gg.uhc.uhc.modules.inventory.ClearInventoryCommand;
-import gg.uhc.uhc.modules.inventory.ClearXPCommand;
+import gg.uhc.uhc.modules.xp.ClearXPCommand;
 import gg.uhc.uhc.modules.inventory.ResetPlayerCommand;
 import gg.uhc.uhc.modules.portals.NetherModule;
 import gg.uhc.uhc.modules.potions.*;
@@ -63,6 +63,7 @@ import gg.uhc.uhc.modules.team.requests.TeamRequestCommand;
 import gg.uhc.uhc.modules.teleport.TeleportCommand;
 import gg.uhc.uhc.modules.timer.TimerCommand;
 import gg.uhc.uhc.modules.timer.TimerModule;
+import gg.uhc.uhc.modules.xp.NerfQuartzXPModule;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -104,6 +105,7 @@ public class UHC extends JavaPlugin {
         registry.register(new ModifiedDeathMessagesModule(), "DeathMessages");
         registry.register(new DeathItemsModule(), "DeathItems");
         registry.register(new ChatHealthPrependModule(), "ChatHealth");
+        registry.register(new NerfQuartzXPModule(), "NerfQuartzXP");
 
         AutoRespawnModule respawnModule = new AutoRespawnModule();
         boolean respawnModuleLoaded = registry.register(respawnModule, "AutoRespawn");

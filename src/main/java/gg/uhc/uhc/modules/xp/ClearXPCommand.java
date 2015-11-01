@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.modules.inventory.ClearXPCommand
+ * Class: gg.uhc.uhc.modules.xp.ClearXPCommand
  *
  * The MIT License (MIT)
  *
@@ -25,7 +25,7 @@
  * THE SOFTWARE.
  */
 
-package gg.uhc.uhc.modules.inventory;
+package gg.uhc.uhc.modules.xp;
 
 import gg.uhc.flagcommands.commands.OptionCommand;
 import gg.uhc.flagcommands.converters.OnlinePlayerConverter;
