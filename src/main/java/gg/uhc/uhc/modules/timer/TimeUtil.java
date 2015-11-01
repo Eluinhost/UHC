@@ -58,7 +58,11 @@ public class TimeUtil {
             String unit = matcher.group("unit").toLowerCase();
             String size = matcher.group("size");
 
-            map.put(UNIT_MAP.get(unit.charAt(0)), Long.parseLong(size));
+            TimeUnit type = UNIT_MAP.get(unit.charAt(0));
+
+            if (type == null) continue;
+
+            map.put(type, Long.parseLong(size));
         }
 
         return map.build();

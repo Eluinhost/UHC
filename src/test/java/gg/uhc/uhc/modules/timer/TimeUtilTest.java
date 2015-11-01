@@ -61,6 +61,9 @@ public class TimeUtilTest {
         // nothing
         assertThat(TimeUtil.getUnits("").isEmpty());
         assertThat(TimeUtil.getUnits("askhdiushfiuh").isEmpty());
+
+        // invalid unit
+        assertThat(TimeUtil.getUnits("12w")).isEmpty();
     }
 
     @Test
