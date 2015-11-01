@@ -214,7 +214,7 @@ public class DeathStandsModule extends DisableableModule implements Listener {
         // they're removing an item from the armour stand. If there
         // is only 1 item on the stand then this is the final item
         // on the armour stand so kill it (fire optional)
-        if (getItems(stand).size() == 1)  {
+        if (Maps.filterValues(getItems(stand), Predicates.not(EMPTY_ITEM)).values().size() == 1)  {
             stand.remove();
         }
     }
