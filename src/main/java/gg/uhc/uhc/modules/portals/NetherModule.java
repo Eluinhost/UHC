@@ -103,8 +103,10 @@ public class NetherModule extends DisableableModule implements Listener {
     public void on(PlayerPortalEvent event) {
         if (isEnabled()) return;
 
-        if (event.getTo().getWorld().getEnvironment() == World.Environment.NETHER)
+        if (event.getTo().getWorld().getEnvironment() == World.Environment.NETHER) {
             event.setCancelled(true);
+            event.getPlayer().sendMessage(ChatColor.RED + "The nether is disabled");
+        }
     }
 
     @Override
