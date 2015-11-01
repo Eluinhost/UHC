@@ -44,17 +44,17 @@ public class ChatHealthPrependModule extends DisableableModule implements Listen
 
     protected final NavigableMap<Double, String> PREFIXES = ImmutableSortedMap
             .<Double, String>naturalOrder()
-            .put(0D,                                   ChatColor.RED + "||||||||||")
-            .put(10D,  ChatColor.GREEN + "|" +         ChatColor.RED + "|||||||||")
-            .put(20D,  ChatColor.GREEN + "||" +        ChatColor.RED + "||||||||")
-            .put(30D,  ChatColor.GREEN + "|||" +       ChatColor.RED + "|||||||")
-            .put(40D,  ChatColor.GREEN + "||||" +      ChatColor.RED + "||||||")
-            .put(50D,  ChatColor.GREEN + "|||||" +     ChatColor.RED + "|||||")
-            .put(60D,  ChatColor.GREEN + "||||||" +    ChatColor.RED + "||||")
-            .put(70D,  ChatColor.GREEN + "|||||||" +   ChatColor.RED + "|||")
-            .put(80D,  ChatColor.GREEN + "||||||||" +  ChatColor.RED + "||")
-            .put(90D,  ChatColor.GREEN + "|||||||||" + ChatColor.RED + "|")
-            .put(100D, ChatColor.GREEN + "||||||||||")
+            .put(0D,                               ChatColor.DARK_RED + "❘❘❘❘❘❘❘❘❘❘")
+            .put(10D,  ChatColor.DARK_GREEN + "❘" + ChatColor.DARK_RED + "❘❘❘❘❘❘❘❘❘")
+            .put(20D,  ChatColor.DARK_GREEN + "❘❘" + ChatColor.DARK_RED + "❘❘❘❘❘❘❘❘")
+            .put(30D,  ChatColor.DARK_GREEN + "❘❘❘" + ChatColor.DARK_RED + "❘❘❘❘❘❘❘")
+            .put(40D,  ChatColor.DARK_GREEN + "❘❘❘❘" + ChatColor.DARK_RED + "❘❘❘❘❘❘")
+            .put(50D,  ChatColor.DARK_GREEN + "❘❘❘❘❘" + ChatColor.DARK_RED + "❘❘❘❘❘")
+            .put(60D,  ChatColor.DARK_GREEN + "❘❘❘❘❘❘" + ChatColor.DARK_RED + "❘❘❘❘")
+            .put(70D,  ChatColor.DARK_GREEN + "❘❘❘❘❘❘❘" + ChatColor.DARK_RED + "❘❘❘")
+            .put(80D,  ChatColor.DARK_GREEN + "❘❘❘❘❘❘❘❘" + ChatColor.DARK_RED + "❘❘")
+            .put(90D,  ChatColor.DARK_GREEN + "❘❘❘❘❘❘❘❘❘" + ChatColor.DARK_RED + "❘")
+            .put(100D, ChatColor.DARK_GREEN + "❘❘❘❘❘❘❘❘❘❘")
             .build();
 
     public ChatHealthPrependModule() {
