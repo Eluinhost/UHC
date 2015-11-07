@@ -151,6 +151,7 @@ public class UHC extends JavaPlugin {
             getCommand("pmt").setExecutor(new TeamPMCommand(teamModule));
             getCommand("randomteams").setExecutor(new RandomTeamsCommand(teamModule));
             getCommand("clearteams").setExecutor(new ClearTeamsCommand(teamModule));
+            getCommand("tc").setExecutor(new TeamCoordinatesCommand(teamModule));
 
             RequestManager requestManager = new RequestManager(this, teamModule, 20 * 120);
             SubcommandCommand teamrequest = new SubcommandCommand();
@@ -167,6 +168,7 @@ public class UHC extends JavaPlugin {
             getCommand("pmt").setExecutor(teamsNotLoaded);
             getCommand("randomteams").setExecutor(teamsNotLoaded);
             getCommand("clearteams").setExecutor(teamsNotLoaded);
+            getCommand("tc").setExecutor(teamsNotLoaded);
             getCommand("teamrequest").setExecutor(teamsNotLoaded);
         }
 

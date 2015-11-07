@@ -16,3 +16,5 @@ All of the below commands require that the [TeamManager module](../../modules/Te
 [`/clearteams`](clearteams.md) - Empties teams
 
 [`/teamrequest`](teamrequest.md) - Player created team requests
+
+[`/tc`](tc.md) - Send your coords to your team

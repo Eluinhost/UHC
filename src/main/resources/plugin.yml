@@ -43,6 +43,8 @@ commands:
     permission: uhc.command.tpp
   teamrequest:
     permission: uhc.command.teamrequest
+  tc:
+    permission: uhc.command.tc
 permissions:
   uhc.command.showhealth:
     default: op
@@ -86,3 +88,5 @@ permissions:
     default: true
   uhc.command.teamrequestadmin:
     default: op
+  uhc.command.tc:
+    default: true
