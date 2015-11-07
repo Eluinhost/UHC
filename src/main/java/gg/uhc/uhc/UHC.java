@@ -184,6 +184,7 @@ public class UHC extends JavaPlugin {
         getCommand("cleareffects").setExecutor(new ClearPotionsCommand(resetter));
 
         getCommand("tpp").setExecutor(new TeleportCommand());
+        getCommand("h").setExecutor(new HealthCommand());
 
         // save config just to make sure at the end
         saveConfig();
