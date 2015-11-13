@@ -47,6 +47,8 @@ commands:
     permission: uhc.command.tc
   h:
     permission: uhc.command.health
+  wlist:
+    permission: uhc.command.wlist
 permissions:
   uhc.command.showhealth:
     default: op
@@ -94,3 +96,5 @@ permissions:
     default: true
   uhc.command.health:
     default: true
+  uhc.command.wlist:
+    default: op

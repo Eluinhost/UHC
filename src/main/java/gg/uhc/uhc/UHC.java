@@ -47,6 +47,8 @@ import gg.uhc.uhc.modules.health.*;
 import gg.uhc.uhc.modules.horses.HorseArmourModule;
 import gg.uhc.uhc.modules.horses.HorsesModule;
 import gg.uhc.uhc.modules.inventory.ClearInventoryCommand;
+import gg.uhc.uhc.modules.whitelist.WhitelistClearCommand;
+import gg.uhc.uhc.modules.whitelist.WhitelistOnlineCommand;
 import gg.uhc.uhc.modules.xp.ClearXPCommand;
 import gg.uhc.uhc.modules.inventory.ResetPlayerCommand;
 import gg.uhc.uhc.modules.portals.NetherModule;
@@ -185,6 +187,11 @@ public class UHC extends JavaPlugin {
 
         getCommand("tpp").setExecutor(new TeleportCommand());
         getCommand("h").setExecutor(new HealthCommand());
+
+        SubcommandCommand wlist = new SubcommandCommand();
+        wlist.registerSubcommand("clear", new WhitelistClearCommand());
+        wlist.registerSubcommand("", new WhitelistOnlineCommand());
+        getCommand("wlist").setExecutor(wlist);
 
         // save config just to make sure at the end
         saveConfig();
