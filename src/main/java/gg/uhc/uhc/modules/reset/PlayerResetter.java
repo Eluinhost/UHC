@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.PlayerResetter
+ * Class: gg.uhc.uhc.modules.reset.PlayerResetter
  *
  * The MIT License (MIT)
  *
@@ -25,7 +25,7 @@
  * THE SOFTWARE.
  */
 
-package gg.uhc.uhc;
+package gg.uhc.uhc.modules.reset;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

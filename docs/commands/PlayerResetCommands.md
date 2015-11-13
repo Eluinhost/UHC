@@ -5,7 +5,9 @@ All of the following commands work the same.
 
 `/command player1 player2` runs the command for each supplied player
 
-`/command` runs the command for all online players
+`/command` runs the command for just yourself
+
+`/command -a` runs for all online players
 
 ## `/heal`
 

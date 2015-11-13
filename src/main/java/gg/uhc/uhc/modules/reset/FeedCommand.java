@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.modules.food.FeedCommand
+ * Class: gg.uhc.uhc.modules.reset.FeedCommand
  *
  * The MIT License (MIT)
  *
@@ -25,51 +25,30 @@
  * THE SOFTWARE.
  */
 
-package gg.uhc.uhc.modules.food;
+package gg.uhc.uhc.modules.reset;
 
-import gg.uhc.flagcommands.commands.OptionCommand;
-import gg.uhc.flagcommands.converters.OnlinePlayerConverter;
-import gg.uhc.flagcommands.joptsimple.OptionSet;
-import gg.uhc.flagcommands.joptsimple.OptionSpec;
-import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
-import gg.uhc.flagcommands.tab.OnlinePlayerTabComplete;
-import gg.uhc.uhc.PlayerResetter;
+import com.google.common.base.Optional;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
 
-public class FeedCommand extends OptionCommand {
+public class FeedCommand extends PlayerAffectingCommand {
 
-    protected final OptionSpec<Player> playersSpec;
-
-    protected final PlayerResetter resetter;
+    protected static final String FOR_PLAYER = ChatColor.AQUA + "You were fed back to full hunger/saturation";
+    protected static final String FOR_SENDER = ChatColor.AQUA + "Fed %d players";
 
     public FeedCommand(PlayerResetter resetter) {
-        this.resetter = resetter;
-
-        playersSpec = parser.nonOptions("List of online players to feed, leave empty to feed all online")
-                .withValuesConvertedBy(new OnlinePlayerConverter());
-
-        nonOptionsTabComplete = new NonDuplicateTabComplete(OnlinePlayerTabComplete.INSTANCE);
+        super(resetter);
     }
 
     @Override
-    protected boolean runCommand(CommandSender sender, OptionSet options) {
-        Collection<? extends Player> toFeed = playersSpec.values(options);
-
-        if (toFeed.size() == 0) {
-            toFeed = Bukkit.getOnlinePlayers();
-        }
-
-        for (Player player : toFeed) {
+    public Optional<String> affectPlayers(Collection<? extends Player> players) {
+        for (Player player : players) {
             resetter.resetFood(player);
-            player.sendMessage(ChatColor.AQUA + "You were fed back to full hunger");
+            player.sendMessage(FOR_PLAYER);
         }
 
-        sender.sendMessage(ChatColor.AQUA + "Players fed");
-        return true;
+        return Optional.of(String.format(FOR_SENDER, players.size()));
     }
 }
