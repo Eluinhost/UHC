@@ -190,7 +190,7 @@ public class UHC extends JavaPlugin {
 
         SubcommandCommand wlist = new SubcommandCommand();
         wlist.registerSubcommand("clear", new WhitelistClearCommand());
-        wlist.registerSubcommand("", new WhitelistOnlineCommand());
+        wlist.registerSubcommand(SubcommandCommand.NO_ARG_SPECIAL, new WhitelistOnlineCommand());
         getCommand("wlist").setExecutor(wlist);
 
         // save config just to make sure at the end

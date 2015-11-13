@@ -35,7 +35,7 @@
         <dependency>
             <groupId>gg.uhc</groupId>
             <artifactId>flagcommands</artifactId>
-            <version>1.1.2</version>
+            <version>1.2.0</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
