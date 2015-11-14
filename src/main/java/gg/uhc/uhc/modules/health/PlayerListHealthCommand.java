@@ -78,10 +78,9 @@ public class PlayerListHealthCommand extends OptionCommand {
                 .acceptsAll(ImmutableList.of("p", "percent"), "Use the objective from the percent health module");
 
         displayNameSpec = parser
-                .acceptsAll(ImmutableList.of("d", "displayName"), "Display name of the objective.")
+                .acceptsAll(ImmutableList.of("d", "displayName"), "Change the display name of the objective.")
                 .withRequiredArg()
-                .withValuesConvertedBy(new StringConverter().setPredicate(new StringPredicates.LessThanOrEqualLength(32)).setType("display name (<= 32 chars)"))
-                .defaultsTo(displayName);
+                .withValuesConvertedBy(new StringConverter().setPredicate(new StringPredicates.LessThanOrEqualLength(32)).setType("display name (<= 32 chars)"));
         completers.put(displayNameSpec, new FixedValuesTabComplete(displayName));
 
         slotSpec = parser
@@ -95,7 +94,6 @@ public class PlayerListHealthCommand extends OptionCommand {
     @Override
     protected boolean runCommand(CommandSender sender, OptionSet options) {
         String objectiveName = nameSpec.value(options);
-        String displayName = displayNameSpec.value(options);
         boolean force = options.has(forceSpec);
         DisplaySlot slot = slotSpec.value(options);
 
@@ -137,8 +135,10 @@ public class PlayerListHealthCommand extends OptionCommand {
             }
         }
 
-        // set display name
-        objective.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayName));
+        // set display name if needed
+        if (options.has(displayNameSpec)) {
+            objective.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayNameSpec.value(options)));
+        }
 
         // set the slot to render in
         objective.setDisplaySlot(slot);

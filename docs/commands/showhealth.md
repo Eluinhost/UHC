@@ -10,8 +10,7 @@ be unregistered and recreated. Defaults to `UHCHealth` if not provided.
 
 `-d`, `--displayName`
 
-The display name to give the objective. Chat colours can be used i.e. `&c`. Defaults to `Health`
-if not provided
+Change the display name for given objective. Chat colours can be used i.e. `&c`.
 
 `-s`, `--slot`
 
