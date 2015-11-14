@@ -122,10 +122,8 @@ public class UHC extends JavaPlugin {
             }
         }
 
-        PercentHealthObjectiveModule percentHealth = new PercentHealthObjectiveModule();
-        boolean percentHealthLoaded = registry.register(percentHealth, "PercentHealth");
+        registry.register(new PercentHealthObjectiveModule(), "PercentHealth");
         getCommand("showhealth").setExecutor(new PlayerListHealthCommand(
-                percentHealthLoaded ? percentHealth : null,
                 Bukkit.getScoreboardManager().getMainScoreboard(),
                 DisplaySlot.PLAYER_LIST,
                 "UHCHealth",
