@@ -28,13 +28,16 @@
 package gg.uhc.uhc.modules.health;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -42,6 +45,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -50,12 +54,13 @@ public class PercentHealthObjectiveModule extends DisableableModule {
     protected static final String ICON_NAME = "Health Percent Objective";
 
     protected static final String OBJECTIVE_NAME_KEY = "objective name";
+    protected static final String OBJECTIVE_DISPLAY_NAME_KEY = "objective display name";
     protected static final String UPDATE_PERIOD_KEY = "update period";
 
     protected final Map<UUID, Double> trackedHealth = Maps.newHashMap();
 
     protected Optional<BukkitRunnable> task = Optional.absent();
-    protected Objective objective;
+    protected List<Objective> objectives;
     protected int updatePeriod;
 
     public PercentHealthObjectiveModule() {
@@ -64,19 +69,19 @@ public class PercentHealthObjectiveModule extends DisableableModule {
         this.icon.setWeight(ModuleRegistry.CATEGORY_HEALTH);
     }
 
-    public Objective getObjective() {
-        return objective;
-    }
-
     public void updatePlayers() {
-        double current;
+        Double current;
         Double old;
         for (Player player : Bukkit.getOnlinePlayers()) {
             current = player.getHealth();
             old = trackedHealth.put(player.getUniqueId(), current);
 
-            if (old == null || old != current) {
-                objective.getScore(player).setScore((int) Math.ceil(current * 5));
+            if (!current.equals(old)) {
+                int display = (int) Math.ceil(current * 5);
+
+                for (Objective objective : objectives) {
+                    objective.getScore(player.getName()).setScore(display);
+                }
             }
         }
     }
@@ -92,7 +97,18 @@ public class PercentHealthObjectiveModule extends DisableableModule {
     public void rerender() {
         super.rerender();
 
-        icon.setLore(isEnabled() ? "Player health objective (" + objective.getName() + ") is being updated" : "Health percent objective is not being updated");
+        if (isEnabled()) {
+            List<String> lore = Lists.newArrayList();
+            lore.add("Percent health objectives are being updated:");
+
+            for (Objective objective : objectives) {
+                lore.add("   " + objective.getName());
+            }
+
+            icon.setLore(lore.toArray(new String[lore.size()]));
+        } else {
+            icon.setLore("Health percent objectives are not being updated");
+        }
     }
 
     @Override
@@ -111,26 +127,65 @@ public class PercentHealthObjectiveModule extends DisableableModule {
 
     @Override
     public void initialize(ConfigurationSection section) throws InvalidConfigurationException {
-        if (!section.contains(OBJECTIVE_NAME_KEY)) {
-            section.set(OBJECTIVE_NAME_KEY, "UHCHealthPercent");
+        // setup default list if there isn't one
+        if (!section.contains("objectives")) {
+            // default for under player name
+            ConfigurationSection name = new MemoryConfiguration();
+            name.set(OBJECTIVE_NAME_KEY, "UHCHealthName");
+            name.set(OBJECTIVE_DISPLAY_NAME_KEY, "&c&h");
+
+            // default for player list
+            ConfigurationSection list = new MemoryConfiguration();
+            list.set(OBJECTIVE_NAME_KEY, "UHCHealthList");
+            list.set(OBJECTIVE_DISPLAY_NAME_KEY, "Health");
+
+            section.set("objectives", Lists.newArrayList(name, list));
         }
 
         if (!section.contains(UPDATE_PERIOD_KEY)) {
             section.set(UPDATE_PERIOD_KEY, 20);
         }
 
+        List<Map<String, Object>> objectivesSpecs = (List<Map<String, Object>>) section.getList("objectives");
+
+        objectives = Lists.newArrayList();
+        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+
+        for (Map<String, Object> objectiveSpec : objectivesSpecs) {
+            if (!objectiveSpec.containsKey(OBJECTIVE_NAME_KEY)) {
+                throw new InvalidConfigurationException("Missing required parameter `" + OBJECTIVE_NAME_KEY + "` for a percent health objective");
+            }
+
+            if (!objectiveSpec.containsKey(OBJECTIVE_DISPLAY_NAME_KEY)) {
+                throw new InvalidConfigurationException("Missing required parameter `" + OBJECTIVE_DISPLAY_NAME_KEY + "` for a percent health objective");
+            }
+
+            String objectiveName = (String) objectiveSpec.get(OBJECTIVE_NAME_KEY);
+
+            // translate colours with an extra &h for a heart icon
+            String displayName = ChatColor.translateAlternateColorCodes('&', (String) objectiveSpec.get(OBJECTIVE_DISPLAY_NAME_KEY)).replace("&h", "♥");
+
+            Objective objective = scoreboard.getObjective(objectiveName);
+
+            // check for an invalid type and reregister it
+            if (objective != null && !"dummy".equals(objective.getCriteria())) {
+                plugin.getLogger().severe("Percent health objective '" + objectiveName + "' was registered as " + objective.getCriteria() + " instead of dummy, reregistering it");
+                objective.unregister();
+                objective = null;
+            }
+
+            // register a new one if needed
+            if (objective == null) {
+                objective = scoreboard.registerNewObjective(objectiveName, "dummy");
+            }
+
+            objective.setDisplayName(displayName);
+            objectives.add(objective);
+        }
+
         updatePeriod = section.getInt(UPDATE_PERIOD_KEY);
 
         if (updatePeriod <= 0) throw new InvalidConfigurationException("Update period must be >= 1, provided: " + section.get(UPDATE_PERIOD_KEY));
-
-        String objectiveName = section.getString(OBJECTIVE_NAME_KEY);
-
-        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-        objective = scoreboard.getObjective(objectiveName);
-
-        if (objective == null) {
-            objective = scoreboard.registerNewObjective(objectiveName, "dummy");
-        }
 
         super.initialize(section);
     }

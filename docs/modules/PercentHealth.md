@@ -3,20 +3,25 @@ PercentHealth
 
 The icon for this module is a daylight sensor.
 
-When enabled this module will update the objective with player's health 
-in percent.
+When enabled this module will update all of the configured objectives with player's health
+in percentages.
 
-When disabled the modules stops updating the objective.
-
-This module needs to be loaded for the [/showhealth command](../commands/showhealth.md) to use percentage health
+When disabled the modules stops updating the objectives.
 
 ### Configuration
 
 ```yaml
-objective name: UHCHealthPercent
 update period: 20
+objectives:
+- objective name: UHCHealthName
+	objective display name: '&c&h'
+- objective name: UHCHealthList
+	objective display name: Health
 ```
 
-`objective name` - the name of the objetive to create/update  
 `update period` - how often to update player's health (in ticks)
+`objectives` - a list of objectives to create/track
+	`objective name` - the name of the objetive to create/update
+	`objective display name` - the display name to give the objective, can use colour codes like `&c`.
+Using `&h` will be replaced with a heart.
 
