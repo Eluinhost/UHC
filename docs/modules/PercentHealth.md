@@ -17,6 +17,7 @@ objectives:
 	objective display name: '&c&h'
 - objective name: UHCHealthList
 	objective display name: Health
+	scaling: 5
 ```
 
 `update period` - how often to update player's health (in ticks)
@@ -24,4 +25,4 @@ objectives:
 	`objective name` - the name of the objetive to create/update
 	`objective display name` - the display name to give the objective, can use colour codes like `&c`.
 Using `&h` will be replaced with a heart.
-
+  `scaling` - int, how much to multiply the player's health by. Defaults to `5` if not provided (changes 0-20 into 0-100)

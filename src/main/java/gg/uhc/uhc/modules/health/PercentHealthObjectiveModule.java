@@ -55,12 +55,13 @@ public class PercentHealthObjectiveModule extends DisableableModule {
 
     protected static final String OBJECTIVE_NAME_KEY = "objective name";
     protected static final String OBJECTIVE_DISPLAY_NAME_KEY = "objective display name";
+    protected static final String OBJECTIVE_SCALING_KEY = "scaling";
     protected static final String UPDATE_PERIOD_KEY = "update period";
 
     protected final Map<UUID, Double> trackedHealth = Maps.newHashMap();
 
     protected Optional<BukkitRunnable> task = Optional.absent();
-    protected List<Objective> objectives;
+    protected Map<Objective, Integer> objectives;
     protected int updatePeriod;
 
     public PercentHealthObjectiveModule() {
@@ -77,10 +78,8 @@ public class PercentHealthObjectiveModule extends DisableableModule {
             old = trackedHealth.put(player.getUniqueId(), current);
 
             if (!current.equals(old)) {
-                int display = (int) Math.ceil(current * 5);
-
-                for (Objective objective : objectives) {
-                    objective.getScore(player.getName()).setScore(display);
+                for (Map.Entry<Objective, Integer> objective : objectives.entrySet()) {
+                    objective.getKey().getScore(player.getName()).setScore((int) Math.ceil(current * objective.getValue()));
                 }
             }
         }
@@ -101,7 +100,7 @@ public class PercentHealthObjectiveModule extends DisableableModule {
             List<String> lore = Lists.newArrayList();
             lore.add("Percent health objectives are being updated:");
 
-            for (Objective objective : objectives) {
+            for (Objective objective : objectives.keySet()) {
                 lore.add("   " + objective.getName());
             }
 
@@ -133,11 +132,13 @@ public class PercentHealthObjectiveModule extends DisableableModule {
             ConfigurationSection name = new MemoryConfiguration();
             name.set(OBJECTIVE_NAME_KEY, "UHCHealthName");
             name.set(OBJECTIVE_DISPLAY_NAME_KEY, "&c&h");
+            name.set(OBJECTIVE_SCALING_KEY, 5);
 
             // default for player list
             ConfigurationSection list = new MemoryConfiguration();
             list.set(OBJECTIVE_NAME_KEY, "UHCHealthList");
             list.set(OBJECTIVE_DISPLAY_NAME_KEY, "Health");
+            list.set(OBJECTIVE_SCALING_KEY, 5);
 
             section.set("objectives", Lists.newArrayList(name, list));
         }
@@ -148,7 +149,7 @@ public class PercentHealthObjectiveModule extends DisableableModule {
 
         List<Map<String, Object>> objectivesSpecs = (List<Map<String, Object>>) section.getList("objectives");
 
-        objectives = Lists.newArrayList();
+        objectives = Maps.newHashMap();
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
 
         for (Map<String, Object> objectiveSpec : objectivesSpecs) {
@@ -165,6 +166,8 @@ public class PercentHealthObjectiveModule extends DisableableModule {
             // translate colours with an extra &h for a heart icon
             String displayName = ChatColor.translateAlternateColorCodes('&', (String) objectiveSpec.get(OBJECTIVE_DISPLAY_NAME_KEY)).replace("&h", "♥");
 
+            Integer scaling = objectiveSpec.containsKey(OBJECTIVE_SCALING_KEY) ? (Integer) objectiveSpec.get(OBJECTIVE_SCALING_KEY) : 5;
+
             Objective objective = scoreboard.getObjective(objectiveName);
 
             // check for an invalid type and reregister it
@@ -180,7 +183,8 @@ public class PercentHealthObjectiveModule extends DisableableModule {
             }
 
             objective.setDisplayName(displayName);
-            objectives.add(objective);
+
+            objectives.put(objective, scaling);
         }
 
         updatePeriod = section.getInt(UPDATE_PERIOD_KEY);
