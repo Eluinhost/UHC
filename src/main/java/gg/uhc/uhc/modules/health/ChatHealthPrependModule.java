@@ -31,18 +31,29 @@ import com.google.common.collect.ImmutableSortedMap;
 import gg.uhc.uhc.modules.DisableableModule;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import java.text.NumberFormat;
 import java.util.NavigableMap;
 
 public class ChatHealthPrependModule extends DisableableModule implements Listener {
 
     protected static final String ICON_NAME = "Health before chat";
+    protected static final String TYPE_KEY = "use numbers";
+    protected static final NumberFormat FORMATTER = NumberFormat.getInstance();
 
-    protected final NavigableMap<Double, String> PREFIXES = ImmutableSortedMap
+    static {
+        FORMATTER.setMaximumFractionDigits(1);
+        FORMATTER.setMinimumFractionDigits(0);
+        FORMATTER.setMinimumIntegerDigits(2);
+    }
+
+    protected final NavigableMap<Double, String> BARS = ImmutableSortedMap
             .<Double, String>naturalOrder()
             .put(0D,                               ChatColor.DARK_RED + "❘❘❘❘❘❘❘❘❘❘")
             .put(10D,  ChatColor.DARK_GREEN + "❘" + ChatColor.DARK_RED + "❘❘❘❘❘❘❘❘❘")
@@ -57,6 +68,16 @@ public class ChatHealthPrependModule extends DisableableModule implements Listen
             .put(100D, ChatColor.DARK_GREEN + "❘❘❘❘❘❘❘❘❘❘")
             .build();
 
+    protected final NavigableMap<Double, String> PERCENTAGE_COLOURS = ImmutableSortedMap
+            .<Double, String>naturalOrder()
+            .put(0D, ChatColor.GRAY.toString())
+            .put(33D, ChatColor.RED.toString())
+            .put(66D, ChatColor.YELLOW.toString())
+            .put(100D, ChatColor.GREEN.toString())
+            .build();
+
+    protected boolean useNumbers;
+
     public ChatHealthPrependModule() {
         this.iconName = ICON_NAME;
 
@@ -64,10 +85,21 @@ public class ChatHealthPrependModule extends DisableableModule implements Listen
     }
 
     @Override
+    public void initialize(ConfigurationSection section) throws InvalidConfigurationException {
+        if (!section.contains(TYPE_KEY)) {
+            section.set(TYPE_KEY, false);
+        }
+
+        useNumbers = section.getBoolean(TYPE_KEY);
+
+        super.initialize(section);
+    }
+
+    @Override
     public void rerender() {
         super.rerender();
 
-        icon.setLore(isEnabled() ? "Health is shown before chat messages" : "Chat messages are not modified");
+        icon.setLore(isEnabled() ? "Health is shown before chat messages as " + (useNumbers ? "percentage numbers" : "bars") : "Chat messages are not modified");
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -76,7 +108,21 @@ public class ChatHealthPrependModule extends DisableableModule implements Listen
 
         double percent = event.getPlayer().getHealth() / event.getPlayer().getMaxHealth() * 100D;
 
-        event.setFormat(PREFIXES.ceilingEntry(percent).getValue() + ChatColor.RESET + " " + event.getFormat());
+        StringBuilder format = new StringBuilder();
+
+        if (useNumbers) {
+            format.append(PERCENTAGE_COLOURS.ceilingEntry(percent).getValue())
+                    .append(FORMATTER.format(percent))
+                    .append("%");
+        } else {
+            format.append(BARS.ceilingEntry(percent).getValue());
+        }
+
+        format.append(ChatColor.RESET)
+                .append(" ")
+                .append(event.getFormat());
+
+        event.setFormat(format.toString());
     }
 
     @Override
