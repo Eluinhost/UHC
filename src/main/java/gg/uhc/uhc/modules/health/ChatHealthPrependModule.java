@@ -50,7 +50,6 @@ public class ChatHealthPrependModule extends DisableableModule implements Listen
     static {
         FORMATTER.setMaximumFractionDigits(1);
         FORMATTER.setMinimumFractionDigits(0);
-        FORMATTER.setMinimumIntegerDigits(2);
     }
 
     protected final NavigableMap<Double, String> BARS = ImmutableSortedMap
