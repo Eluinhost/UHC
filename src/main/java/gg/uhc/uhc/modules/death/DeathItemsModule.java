@@ -57,9 +57,9 @@ public class DeathItemsModule extends DisableableModule implements Listener {
     }
 
     @Override
-    public void initialize(ConfigurationSection section) throws InvalidConfigurationException {
-        if (!section.contains("items")) {
-            ConfigurationSection s = section.createSection("items");
+    public void initialize() throws InvalidConfigurationException {
+        if (!config.contains("items")) {
+            ConfigurationSection s = config.createSection("items");
             ConfigurationSection wool = s.createSection("example wool");
             ConfigurationSection dirt = s.createSection("example dirt");
 
@@ -70,7 +70,7 @@ public class DeathItemsModule extends DisableableModule implements Listener {
             dirt.set("type", "DIRT");
             dirt.set("amount", 3);
         }
-        ConfigurationSection itemsSection = section.getConfigurationSection("items");
+        ConfigurationSection itemsSection = config.getConfigurationSection("items");
 
         for (String key : itemsSection.getKeys(false)) {
             ConfigurationSection itemSection = itemsSection.getConfigurationSection(key);
@@ -98,7 +98,7 @@ public class DeathItemsModule extends DisableableModule implements Listener {
             stacks.add(stack);
         }
 
-        super.initialize(section);
+        super.initialize();
     }
 
     @Override

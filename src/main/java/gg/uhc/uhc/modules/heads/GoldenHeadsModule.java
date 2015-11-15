@@ -32,7 +32,6 @@ import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -95,17 +94,17 @@ public class GoldenHeadsModule extends DisableableModule implements Listener {
     }
 
     @Override
-    public void initialize(ConfigurationSection section) throws InvalidConfigurationException {
-        if (!section.contains("heal amount")) {
-            section.set("heal amount", 6);
+    public void initialize() throws InvalidConfigurationException {
+        if (!config.contains("heal amount")) {
+            config.set("heal amount", 6);
         }
 
-        if (!section.isInt("heal amount"))
-            throw new InvalidConfigurationException("Invalid value at " + section.getCurrentPath() + ".heal amount (" + section.get("heal amount"));
+        if (!config.isInt("heal amount"))
+            throw new InvalidConfigurationException("Invalid value at " + config.getCurrentPath() + ".heal amount (" + config.get("heal amount"));
 
-        healAmount = section.getInt("heal amount");
+        healAmount = config.getInt("heal amount");
 
-        super.initialize(section);
+        super.initialize();
     }
 
     @Override

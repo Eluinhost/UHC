@@ -34,7 +34,6 @@ import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.death.StandItemsMetadata;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -77,17 +76,17 @@ public class HeadDropsModule extends DisableableModule implements Listener {
     }
 
     @Override
-    public void initialize(ConfigurationSection section) throws InvalidConfigurationException {
-        if (!section.contains("drop chance")) {
-            section.set("drop chance", 100D);
+    public void initialize() throws InvalidConfigurationException {
+        if (!config.contains("drop chance")) {
+            config.set("drop chance", 100D);
         }
 
-        if (!section.isDouble("drop chance") && !section.isInt("drop chance"))
-            throw new InvalidConfigurationException("Invalid value at " + section.getCurrentPath() + ".drop chance (" + section.get("drop chance"));
+        if (!config.isDouble("drop chance") && !config.isInt("drop chance"))
+            throw new InvalidConfigurationException("Invalid value at " + config.getCurrentPath() + ".drop chance (" + config.get("drop chance"));
 
-        dropRate = section.getDouble("drop chance") / 100D;
+        dropRate = config.getDouble("drop chance") / 100D;
 
-        super.initialize(section);
+        super.initialize();
     }
 
     public double getDropRate() {

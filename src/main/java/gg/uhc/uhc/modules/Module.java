@@ -45,9 +45,11 @@ public abstract class Module {
         this.plugin = plugin;
     }
 
-    public void initialize(ConfigurationSection config) throws InvalidConfigurationException {
-        this.config = config;
+    protected void setConfig(ConfigurationSection section) {
+        this.config = section;
     }
+
+    public void initialize() throws InvalidConfigurationException { }
 
     protected void saveConfig() {
         plugin.saveConfig();

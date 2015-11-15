@@ -39,7 +39,6 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 
@@ -72,9 +71,7 @@ public abstract class DisableableModule extends Module implements ClickHandler {
     protected abstract boolean isEnabledByDefault();
 
     @Override
-    public void initialize(ConfigurationSection config) throws InvalidConfigurationException {
-        super.initialize(config);
-
+    public void initialize() throws InvalidConfigurationException {
         if (!config.contains("enabled")) {
             config.set("enabled", isEnabledByDefault());
         }

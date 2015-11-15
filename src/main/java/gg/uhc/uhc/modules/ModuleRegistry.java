@@ -34,7 +34,6 @@ import com.google.common.collect.Maps;
 import gg.uhc.uhc.inventory.IconInventory;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -116,6 +115,9 @@ public class ModuleRegistry {
 
         ConfigurationSection section = config.getConfigurationSection(sectionId);
 
+        // add the configuration
+        module.setConfig(section);
+
         // set load parameter if it doesn't exist
         if (!section.contains("load")) {
             section.set("load", true);
@@ -126,10 +128,10 @@ public class ModuleRegistry {
             return false;
         }
 
-        // attempt initiaization from config section
+        // attempt initiaization
         try {
-            module.initialize(section);
-        } catch (InvalidConfigurationException ex) {
+            module.initialize();
+        } catch (Exception ex) {
             ex.printStackTrace();
             // dont add the module if it failed to load
             return false;

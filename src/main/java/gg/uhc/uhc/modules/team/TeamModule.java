@@ -42,7 +42,6 @@ import gg.uhc.uhc.modules.team.prefixes.PrefixColourPredicateConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -79,9 +78,9 @@ public class TeamModule extends Module {
     }
 
     @Override
-    public void initialize(ConfigurationSection section) throws InvalidConfigurationException {
-        if (!section.contains("removed team combos")) {
-            section.set("removed team combos", Lists.newArrayList(
+    public void initialize() throws InvalidConfigurationException {
+        if (!config.contains("removed team combos")) {
+            config.set("removed team combos", Lists.newArrayList(
                     "RESET",
                     "STRIKETHROUGH",
                     "MAGIC",
@@ -93,7 +92,7 @@ public class TeamModule extends Module {
 
         Predicate<Prefix> isFiltered;
         try {
-            List<String> removedCombos = section.getStringList("removed team combos");
+            List<String> removedCombos = config.getStringList("removed team combos");
             List<Predicate<Prefix>> temp = Lists.newArrayListWithCapacity(removedCombos.size());
 
             PrefixColourPredicateConverter converter = new PrefixColourPredicateConverter();

@@ -39,7 +39,6 @@ import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -71,23 +70,23 @@ public class DeathBansModule extends DisableableModule implements Listener {
     }
 
     @Override
-    public void initialize(ConfigurationSection section) throws InvalidConfigurationException {
-        if (!section.contains("action")) {
-            section.set("action", "BAN+KICK");
+    public void initialize() throws InvalidConfigurationException {
+        if (!config.contains("action")) {
+            config.set("action", "BAN+KICK");
         }
 
-        if (!section.contains("message")) {
-            section.set("message", "RIP");
+        if (!config.contains("message")) {
+            config.set("message", "RIP");
         }
-        this.message = section.getString("message");
+        this.message = config.getString("message");
 
-        if (!section.contains("delay seconds")) {
-            section.set("delay seconds", 20);
+        if (!config.contains("delay seconds")) {
+            config.set("delay seconds", 20);
         }
-        this.delay = section.getInt("delay seconds");
+        this.delay = config.getInt("delay seconds");
 
         ImmutableSet.Builder<BanType> types = ImmutableSet.builder();
-        for (String banTypeString : section.getString("action").split("\\+")) {
+        for (String banTypeString : config.getString("action").split("\\+")) {
             try {
                 types.add(BAN_PARSER.convert(banTypeString));
             } catch (ValueConversionException ex) {
@@ -101,26 +100,26 @@ public class DeathBansModule extends DisableableModule implements Listener {
         for (BanType type : this.types) {
             switch (type) {
                 case BAN:
-                    if (!section.contains("duration")) {
-                        section.set("duration", "1d");
+                    if (!config.contains("duration")) {
+                        config.set("duration", "1d");
                     }
-                    duration = TimeUtil.getSeconds(section.getString("duration"));
+                    duration = TimeUtil.getSeconds(config.getString("duration"));
                 case MOVE_WORLD:
-                    if (!section.contains("world name")) {
-                        section.set("world name", "world");
+                    if (!config.contains("world name")) {
+                        config.set("world name", "world");
                     }
-                    worldName = section.getString("world name");
+                    worldName = config.getString("world name");
                     break;
                 case MOVE_SERVER:
-                    if (!section.contains("server name")) {
-                        section.set("server name", "lobby");
+                    if (!config.contains("server name")) {
+                        config.set("server name", "lobby");
                     }
-                    serverName = section.getString("server name");
+                    serverName = config.getString("server name");
                     break;
             }
         }
 
-        super.initialize(section);
+        super.initialize();
     }
 
     @Override

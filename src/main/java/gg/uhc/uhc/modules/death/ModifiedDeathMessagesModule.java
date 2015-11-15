@@ -34,7 +34,6 @@ import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -60,17 +59,17 @@ public class ModifiedDeathMessagesModule extends DisableableModule implements Li
     }
 
     @Override
-    public void initialize(ConfigurationSection section) throws InvalidConfigurationException {
-        if (!section.contains(FORMAT_KEY)) {
-            section.set(FORMAT_KEY, "&c{{original}} at {{player.world}},{{player.blockCoords}}");
+    public void initialize() throws InvalidConfigurationException {
+        if (!config.contains(FORMAT_KEY)) {
+            config.set(FORMAT_KEY, "&c{{original}} at {{player.world}},{{player.blockCoords}}");
         }
 
-        if (!section.contains(FORMAT_EXPLANATION_KEY)) {
-            section.set(FORMAT_EXPLANATION_KEY, "<message> at <coords>");
+        if (!config.contains(FORMAT_EXPLANATION_KEY)) {
+            config.set(FORMAT_EXPLANATION_KEY, "<message> at <coords>");
         }
 
-        String format = section.getString(FORMAT_KEY);
-        formatExplanation = section.getString(FORMAT_EXPLANATION_KEY);
+        String format = config.getString(FORMAT_KEY);
+        formatExplanation = config.getString(FORMAT_EXPLANATION_KEY);
 
         MustacheFactory mf = new DefaultMustacheFactory();
         try {
@@ -79,7 +78,7 @@ public class ModifiedDeathMessagesModule extends DisableableModule implements Li
             throw new InvalidConfigurationException("Error parsing death message template", ex);
         }
 
-        super.initialize(section);
+        super.initialize();
     }
 
     @Override

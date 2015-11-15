@@ -37,7 +37,6 @@ import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.autorespawn.AutoRespawnModule;
 import gg.uhc.uhc.modules.events.ModuleDisableEvent;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -59,16 +58,15 @@ public class HardcoreHeartsModule extends Module implements Listener {
     }
 
     @Override
-    public void initialize(ConfigurationSection section) throws InvalidConfigurationException {
-        ProtocolLibrary.getProtocolManager().addPacketListener(new HardcoreHeartsListener());
-
-        super.initialize(section);
+    public void initialize() throws InvalidConfigurationException {
         // make sure to enable the respawn module
         respawnModule.enable();
 
         if (!respawnModule.isEnabled()){
             throw new InvalidConfigurationException("Error enabling the respawn module. The respawn module is required to run hardcore hearts");
         }
+
+        ProtocolLibrary.getProtocolManager().addPacketListener(new HardcoreHeartsListener());
     }
 
     @EventHandler(priority = EventPriority.HIGH)

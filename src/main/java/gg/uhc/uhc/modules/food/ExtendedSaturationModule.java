@@ -30,7 +30,6 @@ package gg.uhc.uhc.modules.food;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -66,16 +65,17 @@ public class ExtendedSaturationModule extends DisableableModule implements Liste
     }
 
     @Override
-    public void initialize(ConfigurationSection section) throws InvalidConfigurationException {
-        if (!section.contains("multiplier")) {
-            section.set("multiplier", 2.5D);
+    public void initialize() throws InvalidConfigurationException {
+        if (!config.contains("multiplier")) {
+            config.set("multiplier", 2.5D);
         }
 
-        if (!section.isDouble("multiplier") && !section.isInt("multiplier"))
-            throw new InvalidConfigurationException("Invalid value at " + section.getCurrentPath() + ".multiplier (" + section.get("multiplier") + ")");
+        if (!config.isDouble("multiplier") && !config.isInt("multiplier"))
+            throw new InvalidConfigurationException("Invalid value at " + config.getCurrentPath() + ".multiplier (" + config.get("multiplier") + ")");
 
-        multiplier = section.getDouble("multiplier");
-        super.initialize(section);
+        multiplier = config.getDouble("multiplier");
+
+        super.initialize();
     }
 
     @Override

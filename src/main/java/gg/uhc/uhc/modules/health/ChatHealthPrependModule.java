@@ -31,7 +31,6 @@ import com.google.common.collect.ImmutableSortedMap;
 import gg.uhc.uhc.modules.DisableableModule;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -84,14 +83,14 @@ public class ChatHealthPrependModule extends DisableableModule implements Listen
     }
 
     @Override
-    public void initialize(ConfigurationSection section) throws InvalidConfigurationException {
-        if (!section.contains(TYPE_KEY)) {
-            section.set(TYPE_KEY, false);
+    public void initialize() throws InvalidConfigurationException {
+        if (!config.contains(TYPE_KEY)) {
+            config.set(TYPE_KEY, false);
         }
 
-        useNumbers = section.getBoolean(TYPE_KEY);
+        useNumbers = config.getBoolean(TYPE_KEY);
 
-        super.initialize(section);
+        super.initialize();
     }
 
     @Override

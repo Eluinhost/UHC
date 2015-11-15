@@ -35,7 +35,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -54,10 +53,10 @@ public class DifficultyModule extends DisableableModule implements Listener {
     }
 
     @Override
-    public void initialize(ConfigurationSection section) throws InvalidConfigurationException {
-        worlds = new WorldMatcher(section, ImmutableList.of("world to not touch on enable/disable"), false);
+    public void initialize() throws InvalidConfigurationException {
+        worlds = new WorldMatcher(config, ImmutableList.of("world to not touch on enable/disable"), false);
 
-        super.initialize(section);
+        super.initialize();
     }
 
     @Override

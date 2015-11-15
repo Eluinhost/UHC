@@ -125,9 +125,9 @@ public class PercentHealthObjectiveModule extends DisableableModule {
     }
 
     @Override
-    public void initialize(ConfigurationSection section) throws InvalidConfigurationException {
+    public void initialize() throws InvalidConfigurationException {
         // setup default list if there isn't one
-        if (!section.contains("objectives")) {
+        if (!config.contains("objectives")) {
             // default for under player name
             ConfigurationSection name = new MemoryConfiguration();
             name.set(OBJECTIVE_NAME_KEY, "UHCHealthName");
@@ -140,14 +140,14 @@ public class PercentHealthObjectiveModule extends DisableableModule {
             list.set(OBJECTIVE_DISPLAY_NAME_KEY, "Health");
             list.set(OBJECTIVE_SCALING_KEY, 5);
 
-            section.set("objectives", Lists.newArrayList(name, list));
+            config.set("objectives", Lists.newArrayList(name, list));
         }
 
-        if (!section.contains(UPDATE_PERIOD_KEY)) {
-            section.set(UPDATE_PERIOD_KEY, 20);
+        if (!config.contains(UPDATE_PERIOD_KEY)) {
+            config.set(UPDATE_PERIOD_KEY, 20);
         }
 
-        List<Map<String, Object>> objectivesSpecs = (List<Map<String, Object>>) section.getList("objectives");
+        List<Map<String, Object>> objectivesSpecs = (List<Map<String, Object>>) config.getList("objectives");
 
         objectives = Maps.newHashMap();
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
@@ -187,11 +187,11 @@ public class PercentHealthObjectiveModule extends DisableableModule {
             objectives.put(objective, scaling);
         }
 
-        updatePeriod = section.getInt(UPDATE_PERIOD_KEY);
+        updatePeriod = config.getInt(UPDATE_PERIOD_KEY);
 
-        if (updatePeriod <= 0) throw new InvalidConfigurationException("Update period must be >= 1, provided: " + section.get(UPDATE_PERIOD_KEY));
+        if (updatePeriod <= 0) throw new InvalidConfigurationException("Update period must be >= 1, provided: " + config.get(UPDATE_PERIOD_KEY));
 
-        super.initialize(section);
+        super.initialize();
     }
 
     @Override

@@ -31,7 +31,6 @@ import com.google.common.base.Preconditions;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -56,23 +55,23 @@ public class NerfQuartzXPModule extends DisableableModule implements Listener {
     }
 
     @Override
-    public void initialize(ConfigurationSection section) throws InvalidConfigurationException {
-        if (!section.contains(DROP_COUNT_LOWER_KEY)) {
-            section.set(DROP_COUNT_LOWER_KEY, 1);
+    public void initialize() throws InvalidConfigurationException {
+        if (!config.contains(DROP_COUNT_LOWER_KEY)) {
+            config.set(DROP_COUNT_LOWER_KEY, 1);
         }
 
-        if (!section.contains(DROP_COUNT_HIGHER_KEY)) {
-            section.set(DROP_COUNT_HIGHER_KEY, 2);
+        if (!config.contains(DROP_COUNT_HIGHER_KEY)) {
+            config.set(DROP_COUNT_HIGHER_KEY, 2);
         }
 
-        lower = section.getInt(DROP_COUNT_LOWER_KEY);
-        higher = section.getInt(DROP_COUNT_HIGHER_KEY);
+        lower = config.getInt(DROP_COUNT_LOWER_KEY);
+        higher = config.getInt(DROP_COUNT_HIGHER_KEY);
 
         Preconditions.checkArgument(lower >= 0, "Min value must be >= 0");
         Preconditions.checkArgument(higher >= 0, "Max value must be >= 0");
         Preconditions.checkArgument(higher >= lower, "Max but be >= min");
 
-        super.initialize(section);
+        super.initialize();
     }
 
     @Override
