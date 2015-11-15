@@ -113,7 +113,7 @@ public class ChatHealthPrependModule extends DisableableModule implements Listen
         if (useNumbers) {
             format.append(PERCENTAGE_COLOURS.ceilingEntry(percent).getValue())
                     .append(FORMATTER.format(percent))
-                    .append("%");
+                    .append("%%"); // double percent because it is a string.format string
         } else {
             format.append(BARS.ceilingEntry(percent).getValue());
         }
