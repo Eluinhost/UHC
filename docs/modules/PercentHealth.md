@@ -14,10 +14,10 @@ When disabled the modules stops updating the objectives.
 update period: 20
 objectives:
 - objective name: UHCHealthName
-	objective display name: '&c&h'
+  objective display name: '&c&h'
 - objective name: UHCHealthList
-	objective display name: Health
-	scaling: 5
+  objective display name: Health
+  scaling: 5
 ```
 
 `update period` - how often to update player's health (in ticks)  
