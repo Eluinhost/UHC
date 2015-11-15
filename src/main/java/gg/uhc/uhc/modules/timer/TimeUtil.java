@@ -29,6 +29,7 @@ package gg.uhc.uhc.modules.timer;
 
 import com.google.common.collect.ImmutableMap;
 
+import java.text.NumberFormat;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -46,6 +47,13 @@ public class TimeUtil {
     private static final String UNIT_NAME = "(?<unit>[a-z]+)";
     private static final String UNIT_SIZE = "(?<size>[-\\d]+)";
     private static final String OPTIONAL_WHITESPACE = "\\s*";
+
+    private static final NumberFormat FORMATTER = NumberFormat.getInstance();
+
+    static {
+        FORMATTER.setParseIntegerOnly(true);
+        FORMATTER.setMinimumIntegerDigits(2);
+    }
 
     private static final Pattern PART_PATTERN = Pattern.compile("(?:" + UNIT_SIZE + OPTIONAL_WHITESPACE + UNIT_NAME + ")", Pattern.CASE_INSENSITIVE);
 
@@ -98,13 +106,15 @@ public class TimeUtil {
             long count = unit.convert(seconds, TimeUnit.SECONDS);
 
             if (count > 0) {
-                builder.append(count).append(unit.name().toLowerCase().charAt(0)).append(" ");
+                builder.append(FORMATTER.format(count))
+                        .append(unit.name().toLowerCase().charAt(0))
+                        .append(" ");
                 seconds -= unit.toSeconds(count);
             }
         }
 
         if (builder.length() == 0) {
-            return "0s";
+            return "00s";
         }
 
         builder.setLength(builder.length() - 1);

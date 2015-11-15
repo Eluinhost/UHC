@@ -77,21 +77,21 @@ public class TimeUtilTest {
     @Test
     public void testSecondsToString() {
         assertThat(TimeUtil.secondsToString(-10)).isEqualTo("-10s");
-        assertThat(TimeUtil.secondsToString(-0)).isEqualTo("0s");
-        assertThat(TimeUtil.secondsToString(0)).isEqualTo("0s");
+        assertThat(TimeUtil.secondsToString(-0)).isEqualTo("00s");
+        assertThat(TimeUtil.secondsToString(0)).isEqualTo("00s");
         assertThat(TimeUtil.secondsToString(10)).isEqualTo("10s");
         assertThat(TimeUtil.secondsToString(30)).isEqualTo("30s");
         assertThat(TimeUtil.secondsToString(59)).isEqualTo("59s");
-        assertThat(TimeUtil.secondsToString(60)).isEqualTo("1m");
-        assertThat(TimeUtil.secondsToString(186)).isEqualTo("3m 6s");
-        assertThat(TimeUtil.secondsToString(360)).isEqualTo("6m");
+        assertThat(TimeUtil.secondsToString(60)).isEqualTo("01m");
+        assertThat(TimeUtil.secondsToString(186)).isEqualTo("03m 06s");
+        assertThat(TimeUtil.secondsToString(360)).isEqualTo("06m");
         assertThat(TimeUtil.secondsToString(3599)).isEqualTo("59m 59s");
-        assertThat(TimeUtil.secondsToString(3600)).isEqualTo("1h");
-        assertThat(TimeUtil.secondsToString(3601)).isEqualTo("1h 1s");
-        assertThat(TimeUtil.secondsToString(3660)).isEqualTo("1h 1m");
-        assertThat(TimeUtil.secondsToString(3661)).isEqualTo("1h 1m 1s");
-        assertThat(TimeUtil.secondsToString(3661)).isEqualTo("1h 1m 1s");
-        assertThat(TimeUtil.secondsToString(86400)).isEqualTo("1d");
-        assertThat(TimeUtil.secondsToString(90061)).isEqualTo("1d 1h 1m 1s");
+        assertThat(TimeUtil.secondsToString(3600)).isEqualTo("01h");
+        assertThat(TimeUtil.secondsToString(3601)).isEqualTo("01h 01s");
+        assertThat(TimeUtil.secondsToString(3660)).isEqualTo("01h 01m");
+        assertThat(TimeUtil.secondsToString(3661)).isEqualTo("01h 01m 01s");
+        assertThat(TimeUtil.secondsToString(3661)).isEqualTo("01h 01m 01s");
+        assertThat(TimeUtil.secondsToString(86400)).isEqualTo("01d");
+        assertThat(TimeUtil.secondsToString(90061)).isEqualTo("01d 01h 01m 01s");
     }
 }
