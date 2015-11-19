@@ -9,6 +9,9 @@ All of the following commands work the same.
 
 `/command -a` runs for all online players
 
+`/command -u` undoes the last invocation of the command from yourself (does not undo other peoples commands). All of the
+command allow an undo for up to 30 seconds after running the command.
+
 ## `/heal`
 
 Heals player to full health.

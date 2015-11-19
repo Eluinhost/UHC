@@ -27,7 +27,6 @@
 
 package gg.uhc.uhc.modules.reset;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import gg.uhc.flagcommands.commands.OptionCommand;
@@ -36,6 +35,8 @@ import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
 import gg.uhc.flagcommands.tab.OnlinePlayerTabComplete;
+import gg.uhc.uhc.modules.reset.resetters.PlayerResetter;
+import gg.uhc.uhc.modules.reset.actions.Action;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -43,24 +44,31 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
+import java.util.List;
 
-public abstract class PlayerAffectingCommand extends OptionCommand {
+public class PlayerAffectingCommand extends OptionCommand {
 
     protected final PlayerResetter resetter;
+    protected final String forPlayer;
+    protected final String forSender;
+
     protected final OptionSpec<Player> playersSpec;
     protected final OptionSpec<Void> allPlayerSpec;
+    protected final OptionSpec<Void> undoSpec;
 
-    public PlayerAffectingCommand(PlayerResetter resetter) {
+    public PlayerAffectingCommand(PlayerResetter resetter, String forPlayer, String forSender) {
         this.resetter = resetter;
+        this.forPlayer = forPlayer;
+        this.forSender = forSender;
 
         playersSpec = parser.nonOptions("List of online players to affect, leave empty to only just on yourself")
                 .withValuesConvertedBy(new OnlinePlayerConverter());
         nonOptionsTabComplete = new NonDuplicateTabComplete(OnlinePlayerTabComplete.INSTANCE);
 
         allPlayerSpec = parser.acceptsAll(ImmutableSet.of("a", "all"), "Affect all online players");
-    }
 
-    public abstract Optional<String> affectPlayers(Collection<? extends Player> players);
+        undoSpec = parser.acceptsAll(ImmutableSet.of("u", "undo"), "Undo the last command you ran (within " + resetter.getCacheTicks() + " server ticks)");
+    }
 
     // override to show a message when ran with *
     @Override
@@ -75,10 +83,26 @@ public abstract class PlayerAffectingCommand extends OptionCommand {
 
     @Override
     protected boolean runCommand(CommandSender sender, OptionSet options) {
-        Collection<? extends Player> players;
+        if (options.has(undoSpec)) {
+            List<Action> actions = resetter.getLastActions(sender.getName());
 
+            if (actions.size() == 0) {
+                sender.sendMessage(ChatColor.RED + "There was nothing left to undo");
+                return true;
+            }
+
+            int reverted = 0;
+            for (Action revertable : actions) {
+                if (revertable.revert()) reverted++;
+            }
+
+            sender.sendMessage(ChatColor.AQUA + "Undone for " + reverted + "/" + actions.size() + " original affected players.");
+            return true;
+        }
+
+        Collection<Player> players;
         if (options.has(allPlayerSpec)) {
-            players = Bukkit.getOnlinePlayers();
+            players = Lists.newArrayList(Bukkit.getOnlinePlayers());
         } else {
             players = playersSpec.values(options);
 
@@ -93,12 +117,18 @@ public abstract class PlayerAffectingCommand extends OptionCommand {
             }
         }
 
-        Optional<String> message = affectPlayers(players);
+        List<Action> toRun = resetter.createActions(sender.getName(), players);
 
-        if (message.isPresent()) {
-            sender.sendMessage(message.get());
+        int affected = 0;
+        for (Action action : toRun) {
+            if (action.run()) affected++;
         }
 
+        for (Player player : players) {
+            player.sendMessage(forPlayer);
+        }
+
+        sender.sendMessage(String.format(forSender, affected, toRun.size()));
         return true;
     }
 }

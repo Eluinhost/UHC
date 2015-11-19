@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.modules.reset.ClearPotionsCommand
+ * Class: gg.uhc.uhc.modules.reset.resetters.FullPlayerResetter
  *
  * The MIT License (MIT)
  *
@@ -25,30 +25,31 @@
  * THE SOFTWARE.
  */
 
-package gg.uhc.uhc.modules.reset;
+package gg.uhc.uhc.modules.reset.resetters;
 
-import com.google.common.base.Optional;
-import net.md_5.bungee.api.ChatColor;
+import gg.uhc.uhc.modules.reset.actions.*;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
-import java.util.Collection;
+import java.util.UUID;
 
-public class ClearPotionsCommand extends PlayerAffectingCommand {
+public class FullPlayerResetter extends PlayerResetter {
 
-    protected static final String FOR_PLAYER = ChatColor.AQUA + "Your potion effects were removed";
-    protected static final String FOR_SENDER = ChatColor.AQUA + "Removed effects from %d players";
-
-    public ClearPotionsCommand(PlayerResetter resetter) {
-        super(resetter);
+    public FullPlayerResetter(Plugin plugin, long cacheTicks) {
+        super(plugin, cacheTicks);
     }
 
     @Override
-    public Optional<String> affectPlayers(Collection<? extends Player> players) {
-        for (Player player : players) {
-            resetter.resetEffects(player);
-            player.sendMessage(FOR_PLAYER);
-        }
+    protected Action getActionForPlayer(Player player) {
+        UUID uuid = player.getUniqueId();
 
-        return Optional.of(String.format(FOR_SENDER, players.size()));
+        return new ComboAction(
+                uuid,
+                new ClearInventoryAction(uuid),
+                new ClearPotionEffectsAction(uuid),
+                new ClearXPAction(uuid),
+                new FullHealthAction(uuid),
+                new FullHungerAction(uuid)
+        );
     }
 }

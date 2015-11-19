@@ -52,6 +52,7 @@ import gg.uhc.uhc.modules.recipes.GlisteringMelonRecipeModule;
 import gg.uhc.uhc.modules.recipes.GoldenCarrotRecipeModule;
 import gg.uhc.uhc.modules.recipes.NotchApplesModule;
 import gg.uhc.uhc.modules.reset.*;
+import gg.uhc.uhc.modules.reset.resetters.*;
 import gg.uhc.uhc.modules.team.*;
 import gg.uhc.uhc.modules.team.requests.RequestListCommand;
 import gg.uhc.uhc.modules.team.requests.RequestManager;
@@ -63,6 +64,7 @@ import gg.uhc.uhc.modules.timer.TimerModule;
 import gg.uhc.uhc.modules.whitelist.WhitelistClearCommand;
 import gg.uhc.uhc.modules.whitelist.WhitelistOnlineCommand;
 import gg.uhc.uhc.modules.xp.NerfQuartzXPModule;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -172,13 +174,42 @@ public class UHC extends JavaPlugin {
         getCommand("border").setExecutor(new WorldBorderCommand());
         getCommand("uhc").setExecutor(new ModuleCommands(registry, new ShowIconsCommand(registry.getInventory())));
 
-        PlayerResetter resetter = new PlayerResetter();
-        getCommand("heal").setExecutor(new HealCommand(resetter));
-        getCommand("feed").setExecutor(new FeedCommand(resetter));
-        getCommand("clearxp").setExecutor(new ClearXPCommand(resetter));
-        getCommand("ci").setExecutor(new ClearInventoryCommand(resetter));
-        getCommand("reset").setExecutor(new ResetPlayerCommand(resetter));
-        getCommand("cleareffects").setExecutor(new ClearPotionsCommand(resetter));
+        long cacheTicks = 30 * 20;
+        getCommand("heal").setExecutor(new PlayerAffectingCommand(
+                new PlayerHealthResetter(this, cacheTicks),
+                ChatColor.AQUA + "You were healed back to full health",
+                ChatColor.AQUA + "Healed %d/%d players"
+        ));
+
+        getCommand("feed").setExecutor(new PlayerAffectingCommand(
+                new PlayerFoodResetter(this, cacheTicks),
+                ChatColor.AQUA + "You were fed back up to full health",
+                ChatColor.AQUA + "Fed %d/%d players"
+        ));
+
+        getCommand("clearxp").setExecutor(new PlayerAffectingCommand(
+                new PlayerXPResetter(this, cacheTicks),
+                ChatColor.AQUA + "Your XP was cleared",
+                ChatColor.AQUA + "Cleared XP for %d/%d players"
+        ));
+
+        getCommand("ci").setExecutor(new PlayerAffectingCommand(
+                new PlayerInventoryResetter(this, cacheTicks),
+                ChatColor.AQUA + "Your inventory was cleared",
+                ChatColor.AQUA + "Cleared inventory for %d/%d players"
+        ));
+
+        getCommand("cleareffects").setExecutor(new PlayerAffectingCommand(
+                new PlayerPotionsResetter(this, cacheTicks),
+                ChatColor.AQUA + "Your potion effects were cleared",
+                ChatColor.AQUA + "Cleared potion effects for %d/%d players"
+        ));
+
+        getCommand("reset").setExecutor(new PlayerAffectingCommand(
+                new FullPlayerResetter(this, cacheTicks),
+                ChatColor.AQUA + "You were reset",
+                ChatColor.AQUA + "Reset %d/%d players"
+        ));
 
         getCommand("tpp").setExecutor(new TeleportCommand());
         getCommand("h").setExecutor(new HealthCommand());
