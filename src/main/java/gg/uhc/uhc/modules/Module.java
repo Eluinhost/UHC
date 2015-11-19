@@ -47,7 +47,7 @@ public abstract class Module {
         this.plugin = plugin;
     }
 
-    protected void setMessages(MessageTemplates messages) {
+    public void setMessageTemplates(MessageTemplates messages) {
         this.messages = messages;
     }
 

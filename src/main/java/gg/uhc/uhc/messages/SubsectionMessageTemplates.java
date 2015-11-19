@@ -37,7 +37,7 @@ public class SubsectionMessageTemplates implements MessageTemplates {
 
     public SubsectionMessageTemplates(MessageTemplates parent, String subPath) {
         this.parent = parent;
-        this.subPath = subPath;
+        this.subPath = subPath + ".";
     }
 
     public MessageTemplates getParent() {

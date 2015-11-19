@@ -105,14 +105,14 @@ public class ModuleRegistry {
         // make sure it's a new key
         Preconditions.checkArgument(!modules.containsKey(id), "Module `" + id + "` is already registered");
 
+        String sectionId = "modules." + id;
+
         // initialize the plugin for config saving and strings
         module.setPlugin(plugin);
-        module.setMessages(new SubsectionMessageTemplates(strings, "modules." + id + "."));
+        module.setMessageTemplates(new SubsectionMessageTemplates(strings, sectionId));
 
         // set the module ID
         module.setId(id);
-
-        String sectionId = "modules." + id;
 
         if (!config.contains(sectionId)) {
             config.createSection(sectionId);
