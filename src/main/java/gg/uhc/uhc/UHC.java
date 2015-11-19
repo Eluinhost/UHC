@@ -27,9 +27,6 @@
 
 package gg.uhc.uhc;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
-import com.google.common.io.Resources;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigResolveOptions;
@@ -271,11 +268,10 @@ public class UHC extends JavaPlugin {
 
     protected Config setupMessagesConfig() throws IOException {
         // copy reference across
-        File reference = new File(getDataFolder(), "messages.reference.conf");
-        Resources.asCharSource(getClassLoader().getResource("messages.conf"), Charsets.UTF_8)
-                .copyTo(Files.asCharSink(reference, Charsets.UTF_8));
+        saveResource("messages.reference.conf", true);
 
         // parse fallback config
+        File reference = new File(getDataFolder(), "messages.reference.conf");
         Config fallback = ConfigFactory.parseFile(reference);
 
         // parse user provided config
