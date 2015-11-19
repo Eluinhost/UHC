@@ -67,7 +67,7 @@ public class PlayerAffectingCommand extends OptionCommand {
 
         allPlayerSpec = parser.acceptsAll(ImmutableSet.of("a", "all"), "Affect all online players");
 
-        undoSpec = parser.acceptsAll(ImmutableSet.of("u", "undo"), "Undo the last command you ran (within " + resetter.getCacheTicks() + " server ticks)");
+        undoSpec = parser.acceptsAll(ImmutableSet.of("u", "undo"), "Undo the last command you ran (within ~" + (int) (resetter.getCacheTicks() / 20) + " seconds of running it)");
     }
 
     // override to show a message when ran with *
@@ -129,6 +129,7 @@ public class PlayerAffectingCommand extends OptionCommand {
         }
 
         sender.sendMessage(String.format(forSender, affected, toRun.size()));
+        sender.sendMessage(ChatColor.DARK_GRAY + "Run the command again with -u to undo (within ~" + ((int) (resetter.getCacheTicks() / 20)) + " seconds)");
         return true;
     }
 }
