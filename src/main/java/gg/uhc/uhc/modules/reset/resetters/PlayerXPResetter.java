@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.modules.reset.ClearInventoryCommand
+ * Class: gg.uhc.uhc.modules.reset.resetters.PlayerXPResetter
  *
  * The MIT License (MIT)
  *
@@ -25,30 +25,21 @@
  * THE SOFTWARE.
  */
 
-package gg.uhc.uhc.modules.reset;
+package gg.uhc.uhc.modules.reset.resetters;
 
-import com.google.common.base.Optional;
-import net.md_5.bungee.api.ChatColor;
+import gg.uhc.uhc.modules.reset.actions.Action;
+import gg.uhc.uhc.modules.reset.actions.ClearXPAction;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
-import java.util.Collection;
+public class PlayerXPResetter extends PlayerResetter {
 
-public class ClearInventoryCommand extends PlayerAffectingCommand {
-
-    protected static final String FOR_PLAYER = ChatColor.AQUA + "You inventory was cleared";
-    protected static final String FOR_SENDER = ChatColor.AQUA + "Cleared %d inventories";
-
-    public ClearInventoryCommand(PlayerResetter resetter) {
-        super(resetter);
+    public PlayerXPResetter(Plugin plugin, long cacheTicks) {
+        super(plugin, cacheTicks);
     }
 
     @Override
-    public Optional<String> affectPlayers(Collection<? extends Player> players) {
-        for (Player player : players) {
-            resetter.resetInventory(player);
-            player.sendMessage(FOR_PLAYER);
-        }
-
-        return Optional.of(String.format(FOR_SENDER, players.size()));
+    protected Action getActionForPlayer(Player player) {
+        return new ClearXPAction(player.getUniqueId());
     }
 }

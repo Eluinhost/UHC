@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.modules.reset.ResetPlayerCommand
+ * Class: gg.uhc.uhc.modules.reset.actions.ClearPotionEffectsAction
  *
  * The MIT License (MIT)
  *
@@ -25,30 +25,35 @@
  * THE SOFTWARE.
  */
 
-package gg.uhc.uhc.modules.reset;
+package gg.uhc.uhc.modules.reset.actions;
 
-import com.google.common.base.Optional;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 
 import java.util.Collection;
+import java.util.UUID;
 
-public class ResetPlayerCommand extends PlayerAffectingCommand {
+public class ClearPotionEffectsAction extends Action {
 
-    protected static final String FOR_PLAYER = ChatColor.AQUA + "You were reset";
-    protected static final String FOR_SENDER = ChatColor.AQUA + "Reset %d players";
+    protected Collection<PotionEffect> effects;
 
-    public ResetPlayerCommand(PlayerResetter resetter) {
-        super(resetter);
+    public ClearPotionEffectsAction(UUID uuid) {
+        super(uuid);
     }
 
     @Override
-    public Optional<String> affectPlayers(Collection<? extends Player> players) {
-        for (Player player : players) {
-            resetter.reset(player);
-            player.sendMessage(FOR_PLAYER);
-        }
+    protected void run(Player player) {
+        effects = player.getActivePotionEffects();
 
-        return Optional.of(String.format(FOR_SENDER, players.size()));
+        for (PotionEffect effect : effects) {
+            player.removePotionEffect(effect.getType());
+        }
+    }
+
+    @Override
+    protected void revert(Player player) {
+        for (PotionEffect effect : effects) {
+            player.addPotionEffect(effect);
+        }
     }
 }

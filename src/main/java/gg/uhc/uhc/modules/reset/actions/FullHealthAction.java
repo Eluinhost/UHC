@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.modules.reset.ClearXPCommand
+ * Class: gg.uhc.uhc.modules.reset.actions.FullHealthAction
  *
  * The MIT License (MIT)
  *
@@ -25,30 +25,30 @@
  * THE SOFTWARE.
  */
 
-package gg.uhc.uhc.modules.reset;
+package gg.uhc.uhc.modules.reset.actions;
 
-import com.google.common.base.Optional;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.Collection;
+import java.util.UUID;
 
-public class ClearXPCommand extends PlayerAffectingCommand {
+public class FullHealthAction extends Action {
 
-    protected static final String FOR_PLAYER = ChatColor.AQUA + "Your XP was reset";
-    protected static final String FOR_SENDER = ChatColor.AQUA + "Cleared XP from %d players";
+    protected double revertHealth;
 
-    public ClearXPCommand(PlayerResetter resetter) {
-        super(resetter);
+    public FullHealthAction(UUID uuid) {
+        super(uuid);
     }
 
     @Override
-    public Optional<String> affectPlayers(Collection<? extends Player> players) {
-        for (Player player : players) {
-            resetter.resetExp(player);
-            player.sendMessage(FOR_PLAYER);
-        }
+    protected void run(Player player) {
+        revertHealth = player.getHealth();
 
-        return Optional.of(String.format(FOR_SENDER, players.size()));
+        // set to max health
+        player.setHealth(player.getMaxHealth());
+    }
+
+    @Override
+    protected void revert(Player player) {
+        player.setHealth(revertHealth);
     }
 }

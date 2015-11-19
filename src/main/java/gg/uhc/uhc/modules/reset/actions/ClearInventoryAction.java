@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.modules.reset.PlayerResetter
+ * Class: gg.uhc.uhc.modules.reset.actions.ClearInventoryAction
  *
  * The MIT License (MIT)
  *
@@ -25,69 +25,68 @@
  * THE SOFTWARE.
  */
 
-package gg.uhc.uhc.modules.reset;
+package gg.uhc.uhc.modules.reset.actions;
 
+import com.google.common.base.Optional;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.potion.PotionEffect;
 
-import java.util.Collection;
+import java.util.UUID;
 
-public class PlayerResetter {
+public class ClearInventoryAction extends Action {
 
-    public void reset(Player player) {
-        resetHealth(player);
-        resetFood(player);
-        resetExp(player);
-        resetInventory(player);
-        resetEffects(player);
+    protected ItemStack[] contents;
+    protected ItemStack[] armourContents;
+    protected ItemStack onCursor;
+    protected Optional<ItemStack[]> crafting;
+
+
+    public ClearInventoryAction(UUID uuid) {
+        super(uuid);
     }
 
-    public void resetEffects(Player player) {
-        Collection<PotionEffect> effects = player.getActivePotionEffects();
-
-        for (PotionEffect effect : effects) {
-            player.removePotionEffect(effect.getType());
-        }
-    }
-
-    public void resetHealth(Player player) {
-        player.setHealth(player.getMaxHealth());
-    }
-
-    public void resetFood(Player player) {
-        player.setFoodLevel(20);
-        player.setSaturation(5.0F);
-        player.setExhaustion(0F);
-    }
-
-    public void resetExp(Player player) {
-        player.setExp(0F);
-        player.setLevel(0);
-        player.setTotalExperience(0);
-    }
-
-    public void resetInventory(Player player) {
+    @Override
+    protected void run(Player player) {
         PlayerInventory inv = player.getInventory();
 
         // clear main inventory
+        contents = inv.getContents();
         inv.clear();
 
         // clear armour slots
+        armourContents = inv.getArmorContents();
         inv.setArmorContents(null);
 
         // clear if they have something on their cursour currently
+        onCursor = player.getItemOnCursor();
         player.setItemOnCursor(new ItemStack(Material.AIR));
 
         // if they have a crafting inventory open clear items from it too
         // stops storing items in crafting slots bypassing clear inventories
         InventoryView openInventory = player.getOpenInventory();
         if(openInventory.getType() == InventoryType.CRAFTING) {
+            crafting = Optional.of(openInventory.getTopInventory().getContents());
             openInventory.getTopInventory().clear();
+        } else {
+            crafting = Optional.absent();
+        }
+    }
+
+    @Override
+    protected void revert(Player player) {
+        PlayerInventory inv = player.getInventory();
+
+        inv.setContents(contents);
+        inv.setArmorContents(armourContents);
+        player.setItemOnCursor(onCursor);
+
+        if (crafting.isPresent()) {
+            // add back to main inventory instead of the crafting slots
+            inv.addItem(crafting.get());
         }
     }
 }
