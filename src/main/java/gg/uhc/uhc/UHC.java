@@ -37,6 +37,7 @@ import gg.uhc.flagcommands.commands.SubcommandCommand;
 import gg.uhc.uhc.inventory.ShowIconsCommand;
 import gg.uhc.uhc.messages.BaseMessageTemplates;
 import gg.uhc.uhc.messages.MessageTemplates;
+import gg.uhc.uhc.messages.SubsectionMessageTemplates;
 import gg.uhc.uhc.modules.ModuleNotLoadedDummyCommand;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.autorespawn.AutoRespawnModule;
@@ -108,6 +109,8 @@ public class UHC extends JavaPlugin {
             setEnabled(false);
             return;
         }
+
+        MessageTemplates commandMessages = new SubsectionMessageTemplates(messages, "commands");
 
         registry = new ModuleRegistry(this, messages, configuration);
 
@@ -195,7 +198,7 @@ public class UHC extends JavaPlugin {
             getCommand("teamrequest").setExecutor(teamsNotLoaded);
         }
 
-        getCommand("border").setExecutor(new WorldBorderCommand());
+        getCommand("border").setExecutor(new WorldBorderCommand(new SubsectionMessageTemplates(commandMessages, "border")));
         getCommand("uhc").setExecutor(new ModuleCommands(registry, new ShowIconsCommand(registry.getInventory())));
 
         long cacheTicks = 30 * 20;
