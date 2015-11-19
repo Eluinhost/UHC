@@ -34,7 +34,6 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigResolveOptions;
 import gg.uhc.flagcommands.commands.SubcommandCommand;
-import gg.uhc.uhc.inventory.ShowIconsCommand;
 import gg.uhc.uhc.messages.BaseMessageTemplates;
 import gg.uhc.uhc.messages.MessageTemplates;
 import gg.uhc.uhc.messages.SubsectionMessageTemplates;
@@ -88,6 +87,9 @@ public class UHC extends JavaPlugin {
     protected ModuleRegistry registry;
     protected DebouncedRunnable configSaver;
 
+    protected MessageTemplates baseMessages;
+    protected MessageTemplates baseCommandMessages;
+
     @Override
     public void onEnable() {
         // setup to save the config with a debounce of 2 seconds
@@ -100,9 +102,8 @@ public class UHC extends JavaPlugin {
 
         FileConfiguration configuration = getConfig();
 
-        MessageTemplates messages;
         try {
-            messages = new BaseMessageTemplates(setupMessagesConfig());
+            baseMessages = new BaseMessageTemplates(setupMessagesConfig());
         } catch (Exception e) {
             e.printStackTrace();
             getLogger().severe("Failed to load the messages configuration file, cannot start the plugin");
@@ -110,9 +111,9 @@ public class UHC extends JavaPlugin {
             return;
         }
 
-        MessageTemplates commandMessages = new SubsectionMessageTemplates(messages, "commands");
+        baseCommandMessages = new SubsectionMessageTemplates(baseMessages, "commands");
 
-        registry = new ModuleRegistry(this, messages, configuration);
+        registry = new ModuleRegistry(this, baseMessages, configuration);
 
         registry.register(new DifficultyModule(), "HardDifficulty");
         registry.register(new HealthRegenerationModule(), "HealthRegen");
@@ -198,8 +199,8 @@ public class UHC extends JavaPlugin {
             getCommand("teamrequest").setExecutor(teamsNotLoaded);
         }
 
-        getCommand("border").setExecutor(new WorldBorderCommand(new SubsectionMessageTemplates(commandMessages, "border")));
-        getCommand("uhc").setExecutor(new ModuleCommands(registry, new ShowIconsCommand(registry.getInventory())));
+        getCommand("border").setExecutor(new WorldBorderCommand(forCommand("border")));
+        getCommand("uhc").setExecutor(new ModuleCommands(forCommand("uhc"), registry));
 
         long cacheTicks = 30 * 20;
         getCommand("heal").setExecutor(new PlayerAffectingCommand(
@@ -248,6 +249,10 @@ public class UHC extends JavaPlugin {
 
         // save config just to make sure at the end
         saveConfig();
+    }
+
+    private MessageTemplates forCommand(String command) {
+        return new SubsectionMessageTemplates(baseCommandMessages, command);
     }
 
     @Override
