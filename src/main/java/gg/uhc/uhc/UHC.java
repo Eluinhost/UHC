@@ -35,6 +35,7 @@ import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigResolveOptions;
 import gg.uhc.flagcommands.commands.SubcommandCommand;
 import gg.uhc.uhc.inventory.ShowIconsCommand;
+import gg.uhc.uhc.messages.BaseMessageTemplates;
 import gg.uhc.uhc.messages.MessageTemplates;
 import gg.uhc.uhc.modules.ModuleNotLoadedDummyCommand;
 import gg.uhc.uhc.modules.ModuleRegistry;
@@ -58,7 +59,7 @@ import gg.uhc.uhc.modules.pvp.GlobalPVPModule;
 import gg.uhc.uhc.modules.recipes.GlisteringMelonRecipeModule;
 import gg.uhc.uhc.modules.recipes.GoldenCarrotRecipeModule;
 import gg.uhc.uhc.modules.recipes.NotchApplesModule;
-import gg.uhc.uhc.modules.reset.*;
+import gg.uhc.uhc.modules.reset.PlayerAffectingCommand;
 import gg.uhc.uhc.modules.reset.resetters.*;
 import gg.uhc.uhc.modules.team.*;
 import gg.uhc.uhc.modules.team.requests.RequestListCommand;
@@ -100,7 +101,7 @@ public class UHC extends JavaPlugin {
 
         MessageTemplates messages;
         try {
-            messages = new MessageTemplates(setupMessagesConfig());
+            messages = new BaseMessageTemplates(setupMessagesConfig());
         } catch (Exception e) {
             e.printStackTrace();
             getLogger().severe("Failed to load the messages configuration file, cannot start the plugin");

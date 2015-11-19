@@ -27,7 +27,6 @@
 
 package gg.uhc.uhc.modules;
 
-import com.github.mustachejava.Mustache;
 import com.google.common.base.Preconditions;
 import gg.uhc.uhc.inventory.IconStack;
 import gg.uhc.uhc.messages.MessageTemplates;
@@ -54,18 +53,6 @@ public abstract class Module {
 
     protected void setConfig(ConfigurationSection section) {
         this.config = section;
-    }
-
-    protected String getSimpleMessage(String key) {
-        return messages.getRaw("modules." + id + "." + key);
-    }
-
-    protected String evalModuleTemplate(String key, Object... contexts) {
-        return messages.evalTemplate("modules." + id + "." + key, contexts);
-    }
-
-    protected Mustache getModuleTemplate(String key) {
-        return messages.getTemplate("modules." + id + "." + key);
     }
 
     public void initialize() throws InvalidConfigurationException { }

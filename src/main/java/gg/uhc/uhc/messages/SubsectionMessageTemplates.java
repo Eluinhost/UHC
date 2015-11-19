@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.messages.MessageTemplates
+ * Class: gg.uhc.uhc.messages.SubsectionMessageTemplates
  *
  * The MIT License (MIT)
  *
@@ -30,12 +30,37 @@ package gg.uhc.uhc.messages;
 import com.github.mustachejava.Mustache;
 import com.typesafe.config.Config;
 
-public interface MessageTemplates {
-    Config getConfig();
+public class SubsectionMessageTemplates implements MessageTemplates {
 
-    String getRaw(String key);
+    protected final MessageTemplates parent;
+    protected final String subPath;
 
-    Mustache getTemplate(String key);
+    public SubsectionMessageTemplates(MessageTemplates parent, String subPath) {
+        this.parent = parent;
+        this.subPath = subPath;
+    }
 
-    String evalTemplate(String key, Object... context);
+    public MessageTemplates getParent() {
+        return parent;
+    }
+
+    @Override
+    public Config getConfig() {
+        return parent.getConfig();
+    }
+
+    @Override
+    public String getRaw(String key) {
+        return parent.getRaw(subPath + key);
+    }
+
+    @Override
+    public Mustache getTemplate(String key) {
+        return parent.getTemplate(subPath + key);
+    }
+
+    @Override
+    public String evalTemplate(String key, Object... context) {
+        return parent.evalTemplate(subPath + key, context);
+    }
 }

@@ -33,6 +33,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import gg.uhc.uhc.inventory.IconInventory;
 import gg.uhc.uhc.messages.MessageTemplates;
+import gg.uhc.uhc.messages.SubsectionMessageTemplates;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Listener;
@@ -106,7 +107,7 @@ public class ModuleRegistry {
 
         // initialize the plugin for config saving and strings
         module.setPlugin(plugin);
-        module.setMessages(strings);
+        module.setMessages(new SubsectionMessageTemplates(strings, "modules." + id + "."));
 
         // set the module ID
         module.setId(id);
