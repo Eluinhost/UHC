@@ -27,8 +27,15 @@
 
 package gg.uhc.uhc;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+import com.google.common.io.Resources;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigResolveOptions;
 import gg.uhc.flagcommands.commands.SubcommandCommand;
 import gg.uhc.uhc.inventory.ShowIconsCommand;
+import gg.uhc.uhc.messages.MessageTemplates;
 import gg.uhc.uhc.modules.ModuleNotLoadedDummyCommand;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.autorespawn.AutoRespawnModule;
@@ -65,8 +72,12 @@ import gg.uhc.uhc.modules.whitelist.WhitelistOnlineCommand;
 import gg.uhc.uhc.modules.xp.NerfQuartzXPModule;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.DisplaySlot;
+
+import java.io.File;
+import java.io.IOException;
 
 public class UHC extends JavaPlugin {
 
@@ -83,7 +94,19 @@ public class UHC extends JavaPlugin {
             }
         }, 40);
 
-        registry = new ModuleRegistry(this, getConfig());
+        FileConfiguration configuration = getConfig();
+
+        MessageTemplates messages;
+        try {
+            messages = new MessageTemplates(setupMessagesConfig());
+        } catch (Exception e) {
+            e.printStackTrace();
+            getLogger().severe("Failed to load the messages configuration file, cannot start the plugin");
+            setEnabled(false);
+            return;
+        }
+
+        registry = new ModuleRegistry(this, messages, configuration);
 
         registry.register(new DifficultyModule(), "HardDifficulty");
         registry.register(new HealthRegenerationModule(), "HealthRegen");
@@ -204,5 +227,27 @@ public class UHC extends JavaPlugin {
 
     public ModuleRegistry getRegistry() {
         return registry;
+    }
+
+    protected Config setupMessagesConfig() throws IOException {
+        // copy reference across
+        File reference = new File(getDataFolder(), "messages.reference.conf");
+        Resources.asCharSource(getClassLoader().getResource("messages.conf"), Charsets.UTF_8)
+                .copyTo(Files.asCharSink(reference, Charsets.UTF_8));
+
+        // parse fallback config
+        Config fallback = ConfigFactory.parseFile(reference);
+
+        // parse user provided config
+        File regular = new File(getDataFolder(), "messages.conf");
+
+        Config user;
+        if (regular.exists()) {
+            user = ConfigFactory.parseFile(regular);
+        } else {
+            user = ConfigFactory.empty();
+        }
+
+        return user.withFallback(fallback).resolve(ConfigResolveOptions.noSystem());
     }
 }
