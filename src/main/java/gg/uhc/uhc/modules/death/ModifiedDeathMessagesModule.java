@@ -30,6 +30,7 @@ package gg.uhc.uhc.modules.death;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
+import com.google.common.collect.ImmutableMap;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.ChatColor;
@@ -86,10 +87,10 @@ public class ModifiedDeathMessagesModule extends DisableableModule implements Li
         super.rerender();
 
         if (isEnabled()) {
-            icon.setLore("Death messages are modified", "Format: " + formatExplanation);
+            icon.setLore(messages.getRaw("enabled lore.description"), messages.evalTemplate("enabled lore.format", ImmutableMap.of("formatDescription", formatExplanation)));
         }
         else {
-            icon.setLore("Death messages are not modified");
+            icon.setLore(messages.getRaw("disabled lore"));
         }
     }
 

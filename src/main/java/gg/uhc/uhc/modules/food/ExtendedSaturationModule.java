@@ -27,6 +27,7 @@
 
 package gg.uhc.uhc.modules.food;
 
+import com.google.common.collect.ImmutableMap;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Material;
@@ -83,9 +84,9 @@ public class ExtendedSaturationModule extends DisableableModule implements Liste
         super.rerender();
 
         if (isEnabled()) {
-            this.icon.setLore("Food gives " + multiplier + " times the saturation");
+            icon.setLore(messages.evalTemplate("enabled lore", ImmutableMap.of("multiplier", multiplier)));
         } else {
-            this.icon.setLore("Food gives regular levels of saturation");
+            icon.setLore(messages.getRaw("disabled lore"));
         }
     }
 

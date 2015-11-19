@@ -75,10 +75,10 @@ public class HealthRegenerationModule extends DisableableModule implements Liste
 
         if (isEnabled()) {
             icon.setDurability(ENABLED_DATA);
-            icon.setLore("Natural health regeneration is enabled");
+            icon.setLore(messages.getRaw("enabled lore"));
         } else {
             icon.setDurability(DISABLED_DATA);
-            icon.setLore("Natural health regeneration is disabled");
+            icon.setLore(messages.getRaw("disabled lore"));
         }
     }
 

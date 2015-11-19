@@ -28,11 +28,11 @@
 package gg.uhc.uhc.modules.heads;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.death.StandItemsMetadata;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
@@ -105,11 +105,7 @@ public class HeadDropsModule extends DisableableModule implements Listener {
     protected void rerender() {
         super.rerender();
 
-        if (isEnabled()) {
-            icon.setLore(ChatColor.GREEN + "Drop rate: " + formatter.format(dropRate * 100) + "%");
-        } else {
-            icon.setLore("Heads do not drop");
-        }
+        icon.setLore(isEnabled() ? messages.evalTemplate("enabled lore", ImmutableMap.of("rate", formatter.format(dropRate * 100))) : messages.getRaw("disabled lore"));
     }
 
     @EventHandler(priority = EventPriority.LOW)

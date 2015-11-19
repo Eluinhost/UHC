@@ -55,7 +55,7 @@ public class EnderpearlsModule extends DisableableModule implements Listener {
     protected void rerender() {
         super.rerender();
 
-        icon.setLore(isEnabled() ? "Enderpearls do damage" : "Enderpearls do no damage");
+        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
     }
 
     @EventHandler(ignoreCancelled = true)

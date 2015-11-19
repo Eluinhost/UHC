@@ -48,11 +48,7 @@ public class AutoRespawnModule extends DisableableModule implements Listener {
     public void rerender() {
         super.rerender();
 
-        if (isEnabled()) {
-            icon.setLore("You will automatically respawn on death");
-        } else {
-            icon.setLore("Autorespawn is disabled");
-        }
+        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
     }
 
     @EventHandler

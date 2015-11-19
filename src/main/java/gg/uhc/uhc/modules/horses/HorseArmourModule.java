@@ -31,7 +31,6 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -67,7 +66,7 @@ public class HorseArmourModule extends DisableableModule implements Listener {
     public void rerender() {
         super.rerender();
 
-        icon.setLore(isEnabled() ? "Player ridden horses can wear armour" : "Player ridden horse have their armour removed");
+        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
     }
 
     @Override
@@ -77,7 +76,7 @@ public class HorseArmourModule extends DisableableModule implements Listener {
                 Entity vehicle = player.getVehicle();
 
                 if (vehicle.getType() == EntityType.HORSE && removeHorseArmour((Horse) vehicle)) {
-                    player.sendMessage(ChatColor.RED + "Dropped horse's armour on the ground as it is disabled");
+                    player.sendMessage(messages.getRaw("dropped armour"));
                 }
             }
         }
@@ -101,7 +100,7 @@ public class HorseArmourModule extends DisableableModule implements Listener {
         if (isEnabled() || event.getEntityType() != EntityType.PLAYER || event.getMount().getType() != EntityType.HORSE) return;
 
         if (removeHorseArmour((Horse) event.getMount())) {
-            event.getEntity().sendMessage(ChatColor.RED + "Dropped horse's armour on the ground as it is disabled");
+            event.getEntity().sendMessage(messages.getRaw("dropped armour"));
         }
     }
 
@@ -115,7 +114,7 @@ public class HorseArmourModule extends DisableableModule implements Listener {
         // if it's not a disabled type do nothing
         if (!DISABLED.contains(event.getOldCursor().getType())) return;
 
-        event.getWhoClicked().sendMessage(ChatColor.RED + "Horse armour is disabled");
+        event.getWhoClicked().sendMessage(messages.getRaw("disabled message"));
         event.setCancelled(true);
     }
 
@@ -157,7 +156,7 @@ public class HorseArmourModule extends DisableableModule implements Listener {
         }
 
         if (relevant.isPresent() && DISABLED.contains(relevant.get().getType())) {
-            event.getWhoClicked().sendMessage(ChatColor.RED + "Horse armour is disabled");
+            event.getWhoClicked().sendMessage(messages.getRaw("disabled message"));
             event.setCancelled(true);
         }
     }

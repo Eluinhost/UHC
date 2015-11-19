@@ -29,7 +29,6 @@ package gg.uhc.uhc.modules.potions;
 
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
@@ -56,11 +55,7 @@ public class SplashPotionsModule extends DisableableModule {
     public void rerender() {
         super.rerender();
 
-        if (isEnabled()) {
-            icon.setLore("Splash potions are brewable");
-        } else {
-            icon.setLore("Disabled splash potion brewing");
-        }
+        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
     }
 
     @Override
@@ -70,7 +65,7 @@ public class SplashPotionsModule extends DisableableModule {
 
     @Override
     public void onDisable() {
-        listener.addMaterial(Material.SULPHUR, ChatColor.RED + "Splash potions are unbrewable.");
+        listener.addMaterial(Material.SULPHUR, messages.getRaw("disabled message"));
     }
 
     @Override

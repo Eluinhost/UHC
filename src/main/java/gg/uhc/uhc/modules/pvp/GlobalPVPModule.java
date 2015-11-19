@@ -61,7 +61,8 @@ public class GlobalPVPModule extends DisableableModule implements Listener {
     @Override
     public void rerender() {
         super.rerender();
-        icon.setLore(isEnabled() ? "PVP is enabled in all worlds" : "PVP is disabled in all worlds");
+
+        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
     }
 
     @Override

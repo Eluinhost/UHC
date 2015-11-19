@@ -108,7 +108,7 @@ public class TeamModule extends Module {
         }
 
         setupTeams(Predicates.not(isFiltered));
-        this.icon.setLore("Managing " + teams.size() + " teams", "Not disableable");
+        this.icon.setLore(messages.evalTemplate("lore", ImmutableMap.of("count", teams.size())));
     }
 
     protected void setupTeams(Predicate<Prefix> allowedPrefixes) {

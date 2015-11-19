@@ -55,11 +55,7 @@ public class AbsorptionModule extends DisableableModule implements Listener {
     protected void rerender() {
         super.rerender();
 
-        if (isEnabled()) {
-            icon.setLore("Absorption is enabled");
-        } else {
-            icon.setLore("Absorption is disabled");
-        }
+        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

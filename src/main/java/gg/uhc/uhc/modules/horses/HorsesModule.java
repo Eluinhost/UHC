@@ -30,7 +30,6 @@ package gg.uhc.uhc.modules.horses;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -55,7 +54,7 @@ public class HorsesModule extends DisableableModule implements Listener {
     public void rerender() {
         super.rerender();
 
-        icon.setLore(isEnabled() ? "Riding horses is allowed" : "Riding horses is disabled");
+        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
     }
 
     protected void kickOffHorse(Player player) {
@@ -63,7 +62,7 @@ public class HorsesModule extends DisableableModule implements Listener {
         if (vehicle == null) return;
 
         vehicle.eject();
-        player.sendMessage(ChatColor.RED + "You were removed from your horse because horses are disabled");
+        player.sendMessage(messages.getRaw("disabled message"));
     }
 
     @Override
@@ -80,7 +79,7 @@ public class HorsesModule extends DisableableModule implements Listener {
 
         if (event.getMount().getType() == EntityType.HORSE) {
             event.setCancelled(true);
-            event.getEntity().sendMessage(ChatColor.RED + "Horses are disabled");
+            event.getEntity().sendMessage(messages.getRaw("disabled message"));
         }
     }
 

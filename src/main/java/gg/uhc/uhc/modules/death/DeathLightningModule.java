@@ -49,7 +49,7 @@ public class DeathLightningModule extends DisableableModule implements Listener 
     public void rerender() {
         super.rerender();
 
-        icon.setLore(isEnabled() ? "Fake lightning strikes at death location when a player dies" : "Death lightning is disabled");
+        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
     }
 
     @EventHandler

@@ -65,11 +65,7 @@ public class GoldenCarrotRecipeModule extends DisableableModule implements Liste
     protected void rerender() {
         super.rerender();
 
-        if (isEnabled()) {
-            icon.setLore("Requires golden ingots to craft");
-        } else {
-            icon.setLore("Requires golden nuggets to craft");
-        }
+        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
     }
 
     @EventHandler

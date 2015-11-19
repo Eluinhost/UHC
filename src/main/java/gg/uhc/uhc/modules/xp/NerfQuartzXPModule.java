@@ -28,6 +28,7 @@
 package gg.uhc.uhc.modules.xp;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Material;
@@ -78,7 +79,10 @@ public class NerfQuartzXPModule extends DisableableModule implements Listener {
     public void rerender() {
         super.rerender();
 
-        icon.setLore("Quartz drops " + (isEnabled() ? "[" + lower + "-" + higher + "]" : "[2-5]") + " XP");
+        int l = isEnabled() ? lower : 2;
+        int h = isEnabled() ? higher : 5;
+
+        icon.setLore(messages.evalTemplate("lore", ImmutableMap.of("lower", l, "higher", h)));
     }
 
     @EventHandler(ignoreCancelled = true)

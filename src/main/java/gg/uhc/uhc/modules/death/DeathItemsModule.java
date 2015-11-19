@@ -27,7 +27,6 @@
 
 package gg.uhc.uhc.modules.death;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import gg.uhc.flagcommands.converters.EnumConverter;
 import gg.uhc.flagcommands.joptsimple.ValueConversionException;
@@ -107,12 +106,15 @@ public class DeathItemsModule extends DisableableModule implements Listener {
 
         if (isEnabled()) {
             List<String> lore = Lists.newArrayListWithCapacity(1 + stacks.size());
-            lore.add("Players drop these extra items on death:");
-            lore.addAll(Lists.transform(stacks, STACK_DESCRIPTION));
+            lore.add(messages.getRaw("enabled lore.header"));
+
+            for (ItemStack stack : stacks) {
+                lore.add(messages.evalTemplate("enabled lore.stack", new StackContext(stack)));
+            }
 
             icon.setLore(lore.toArray(new String[lore.size()]));
         } else {
-            icon.setLore("No extra items are dropped on death");
+            icon.setLore(messages.getRaw("disabled lore"));
         }
     }
 
@@ -129,16 +131,27 @@ public class DeathItemsModule extends DisableableModule implements Listener {
         return false;
     }
 
-    protected static final Function<ItemStack, String> STACK_DESCRIPTION = new Function<ItemStack, String>() {
-        @Override
-        public String apply(ItemStack input) {
-            String message = input.getAmount() + "x " + input.getType().name();
+    protected static class StackContext {
+        protected final ItemStack stack;
 
-            short durability = input.getDurability();
-
-            if (durability != 0) message += ":" + durability;
-
-            return message;
+        public StackContext(ItemStack stack) {
+            this.stack = stack;
         }
-    };
+
+        public String amount() {
+            return String.valueOf(stack.getAmount());
+        }
+
+        public String type() {
+            return stack.getType().name();
+        }
+
+        public String data() {
+            if (stack.getDurability() == 0) {
+                return "";
+            }
+
+            return ":" + stack.getDurability();
+        }
+    }
 }

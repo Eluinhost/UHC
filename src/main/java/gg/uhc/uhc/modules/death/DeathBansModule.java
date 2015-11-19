@@ -27,6 +27,7 @@
 
 package gg.uhc.uhc.modules.death;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -128,24 +129,24 @@ public class DeathBansModule extends DisableableModule implements Listener {
 
         if (isEnabled()) {
             List<String> parts = Lists.newArrayList();
-            parts.add("Death bans are enabled, delay is " + TimeUtil.secondsToString(delay));
-            parts.add("Actions: ");
+            parts.add(messages.evalTemplate("enabled lore.header", ImmutableMap.of("delay", TimeUtil.secondsToString(delay))));
+            parts.add(messages.getRaw("enabled lore.actions.header"));
 
             for (BanType type : types) {
                 switch (type) {
                     case MOVE_WORLD:
-                        parts.add("Sets respawn location to spawn of world `" + worldName + "`"); break;
+                        parts.add(messages.evalTemplate("enabled lore.actions.move world", ImmutableMap.of("world", worldName))); break;
                     case BAN:
-                        parts.add("Adds ban entry for " + TimeUtil.secondsToString(duration)); break;
+                        parts.add(messages.evalTemplate("enabled lore.actions.ban", ImmutableMap.of("duration", TimeUtil.secondsToString(duration)))); break;
                     case MOVE_SERVER:
-                        parts.add("Moves to the server `" + serverName + "`"); break;
+                        parts.add(messages.evalTemplate("enabled lore.actions.server", ImmutableMap.of("server", serverName))); break;
                     case KICK:
-                        parts.add("Kicks player from the server"); break;
+                        parts.add(messages.getRaw("enabled lore.actions.kick")); break;
                 }
             }
             icon.setLore(parts.toArray(new String[parts.size()]));
         } else {
-            icon.setLore("Death bans are disabled");
+            icon.setLore(messages.getRaw("disabled lore"));
         }
     }
 
