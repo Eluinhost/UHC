@@ -149,6 +149,7 @@ public class UHC extends JavaPlugin {
 
         registry.register(new PercentHealthObjectiveModule(), "PercentHealth");
         getCommand("showhealth").setExecutor(new PlayerListHealthCommand(
+                forCommand("showhealth"),
                 Bukkit.getScoreboardManager().getMainScoreboard(),
                 DisplaySlot.PLAYER_LIST,
                 "UHCHealth",

@@ -28,7 +28,7 @@
 package gg.uhc.uhc.modules.health;
 
 import com.google.common.collect.ImmutableList;
-import gg.uhc.flagcommands.commands.OptionCommand;
+import com.google.common.collect.ImmutableMap;
 import gg.uhc.flagcommands.converters.EnumConverter;
 import gg.uhc.flagcommands.converters.StringConverter;
 import gg.uhc.flagcommands.joptsimple.ArgumentAcceptingOptionSpec;
@@ -37,6 +37,8 @@ import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import gg.uhc.flagcommands.predicates.StringPredicates;
 import gg.uhc.flagcommands.tab.EnumTabComplete;
 import gg.uhc.flagcommands.tab.FixedValuesTabComplete;
+import gg.uhc.uhc.commands.TemplatedOptionCommand;
+import gg.uhc.uhc.messages.MessageTemplates;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -45,10 +47,7 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
-public class PlayerListHealthCommand extends OptionCommand {
-
-    protected static final String CONFIRMATION = ChatColor.AQUA + "Registered health objective %s (%s) to the slot %s";
-    protected static final String UNREGISTERD = ChatColor.AQUA + "Unregistered old objective `%s`";
+public class PlayerListHealthCommand extends TemplatedOptionCommand {
 
     protected final Scoreboard scoreboard;
 
@@ -57,7 +56,8 @@ public class PlayerListHealthCommand extends OptionCommand {
     protected final ArgumentAcceptingOptionSpec<String> displayNameSpec;
     protected final ArgumentAcceptingOptionSpec<DisplaySlot> slotSpec;
 
-    public PlayerListHealthCommand(Scoreboard scoreboard, DisplaySlot defaultSlot, String objectiveName, String displayName) {
+    public PlayerListHealthCommand(MessageTemplates messages, Scoreboard scoreboard, DisplaySlot defaultSlot, String objectiveName, String displayName) {
+        super(messages);
         this.scoreboard = scoreboard;
 
         forceSpec = parser
@@ -94,7 +94,7 @@ public class PlayerListHealthCommand extends OptionCommand {
 
         // unregister the current objective if it exists and we want to force remake it
         if (objective != null && force) {
-            sender.sendMessage(String.format(UNREGISTERD, objective.getName()));
+            sender.sendMessage(messages.evalTemplate("unregistered", ImmutableMap.of("name", objective.getName())));
             objective.unregister();
             objective = null;
         }
@@ -117,7 +117,7 @@ public class PlayerListHealthCommand extends OptionCommand {
         // set the slot to render in
         objective.setDisplaySlot(slot);
 
-        sender.sendMessage(String.format(CONFIRMATION, objective.getName(), objective.getDisplayName(), slot.name()));
+        sender.sendMessage(messages.evalTemplate("assigned", ImmutableMap.of("name", objective.getName(), "display", objective.getDisplayName(), "slot", objective.getDisplaySlot().name())));
         return true;
     }
 }
