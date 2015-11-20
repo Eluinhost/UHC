@@ -29,54 +29,89 @@ package gg.uhc.uhc.modules.health;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import gg.uhc.flagcommands.commands.OptionCommand;
 import gg.uhc.flagcommands.converters.OnlinePlayerConverter;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
 import gg.uhc.flagcommands.tab.OnlinePlayerTabComplete;
-import net.md_5.bungee.api.ChatColor;
+import gg.uhc.uhc.commands.TemplatedOptionCommand;
+import gg.uhc.uhc.messages.MessageTemplates;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.text.NumberFormat;
 import java.util.List;
 
-public class HealthCommand extends OptionCommand {
+public class HealthCommand extends TemplatedOptionCommand {
 
-    protected final NumberFormat format;
+    protected static final NumberFormat FORMAT = NumberFormat.getInstance();
+
+    static {
+        FORMAT.setMaximumFractionDigits(2);
+        FORMAT.setMinimumFractionDigits(0);
+    }
+
     protected final OptionSpec<Player> playerSpec;
-    protected final Function<Player, String> getHealthString;
 
-    public HealthCommand() {
+    public HealthCommand(MessageTemplates messages) {
+        super(messages);
+
         playerSpec = parser.nonOptions("List of player names to check the health of")
                 .withValuesConvertedBy(new OnlinePlayerConverter());
 
         nonOptionsTabComplete = new NonDuplicateTabComplete(OnlinePlayerTabComplete.INSTANCE);
-
-        format = NumberFormat.getInstance();
-        format.setMaximumFractionDigits(2);
-        format.setMinimumFractionDigits(0);
-
-        getHealthString = new Function<Player, String>() {
-            @Override
-            public String apply(Player input) {
-                return input.getName() + ": " + format.format(input.getHealth() / input.getMaxHealth() * 100D) + "%";
-            }
-        };
     }
 
     @Override
     protected boolean runCommand(CommandSender commandSender, OptionSet optionSet) {
         List<Player> toShow = playerSpec.values(optionSet);
 
-        if (toShow.size() == 0 && commandSender instanceof Player) {
-            toShow = Lists.newArrayList((Player) commandSender);
+        if (toShow.size() == 0) {
+            if (commandSender instanceof Player) {
+                toShow = Lists.newArrayList((Player) commandSender);
+            } else {
+                commandSender.sendMessage(messages.getRaw("no players"));
+                return true;
+            }
         }
 
-        commandSender.sendMessage(ChatColor.AQUA + "Player healths (" + toShow.size() + "): " + ChatColor.DARK_PURPLE + Joiner.on(" ").join(Iterables.transform(toShow, getHealthString)));
+        String playerPart = Joiner.on(messages.getRaw("player separator")).join(Iterables.transform(toShow, convert));
+
+        commandSender.sendMessage(messages.evalTemplate("message", ImmutableMap.of("total", toShow.size(), "players", playerPart)));
         return true;
     }
+
+    protected static class PlayerContext {
+        private final Player player;
+
+        public PlayerContext(Player player) {
+            this.player = player;
+        }
+
+        public String name() {
+            return player.getName();
+        }
+
+        public String health() {
+            return FORMAT.format(player.getHealth());
+        }
+
+        public String maxHealth() {
+            return FORMAT.format(player.getMaxHealth());
+        }
+
+        public String percentage() {
+            return FORMAT.format(player.getHealth() / player.getMaxHealth() * 100D);
+        }
+    }
+
+    protected Function<Player, String> convert = new Function<Player, String>() {
+        @Override
+        public String apply(Player input) {
+            return messages.evalTemplate("player", new PlayerContext(input));
+        }
+    };
 }

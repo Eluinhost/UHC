@@ -237,7 +237,7 @@ public class UHC extends JavaPlugin {
         ));
 
         getCommand("tpp").setExecutor(new TeleportCommand());
-        getCommand("h").setExecutor(new HealthCommand());
+        getCommand("h").setExecutor(new HealthCommand(forCommand("h")));
 
         SubcommandCommand wlist = new SubcommandCommand();
         wlist.registerSubcommand("clear", new WhitelistClearCommand());
