@@ -27,17 +27,18 @@
 
 package gg.uhc.uhc.modules.reset;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import gg.uhc.flagcommands.commands.OptionCommand;
 import gg.uhc.flagcommands.converters.OnlinePlayerConverter;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
 import gg.uhc.flagcommands.tab.OnlinePlayerTabComplete;
-import gg.uhc.uhc.modules.reset.resetters.PlayerResetter;
+import gg.uhc.uhc.commands.TemplatedOptionCommand;
+import gg.uhc.uhc.messages.MessageTemplates;
 import gg.uhc.uhc.modules.reset.actions.Action;
-import net.md_5.bungee.api.ChatColor;
+import gg.uhc.uhc.modules.reset.resetters.PlayerResetter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -46,20 +47,17 @@ import org.bukkit.entity.Player;
 import java.util.Collection;
 import java.util.List;
 
-public class PlayerAffectingCommand extends OptionCommand {
+public class PlayerAffectingCommand extends TemplatedOptionCommand {
 
     protected final PlayerResetter resetter;
-    protected final String forPlayer;
-    protected final String forSender;
 
     protected final OptionSpec<Player> playersSpec;
     protected final OptionSpec<Void> allPlayerSpec;
     protected final OptionSpec<Void> undoSpec;
 
-    public PlayerAffectingCommand(PlayerResetter resetter, String forPlayer, String forSender) {
+    public PlayerAffectingCommand(MessageTemplates messages, PlayerResetter resetter) {
+        super(messages);
         this.resetter = resetter;
-        this.forPlayer = forPlayer;
-        this.forSender = forSender;
 
         playersSpec = parser.nonOptions("List of online players to affect, leave empty to only just on yourself")
                 .withValuesConvertedBy(new OnlinePlayerConverter());
@@ -74,7 +72,7 @@ public class PlayerAffectingCommand extends OptionCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 1 && "*".equals(args[0])) {
-            sender.sendMessage(ChatColor.RED + "Usage of * is no longer allowed, please use -a instead");
+            sender.sendMessage(messages.evalTemplate("dont use start"));
             return true;
         }
 
@@ -87,7 +85,7 @@ public class PlayerAffectingCommand extends OptionCommand {
             List<Action> actions = resetter.getLastActions(sender.getName());
 
             if (actions.size() == 0) {
-                sender.sendMessage(ChatColor.RED + "There was nothing left to undo");
+                sender.sendMessage(messages.getRaw("nothing to undo"));
                 return true;
             }
 
@@ -96,7 +94,7 @@ public class PlayerAffectingCommand extends OptionCommand {
                 if (revertable.revert()) reverted++;
             }
 
-            sender.sendMessage(ChatColor.AQUA + "Undone for " + reverted + "/" + actions.size() + " original affected players.");
+            sender.sendMessage(messages.evalTemplate("undone", ImmutableMap.of("count", reverted, "total", actions.size())));
             return true;
         }
 
@@ -111,7 +109,7 @@ public class PlayerAffectingCommand extends OptionCommand {
                 if (sender instanceof Player) {
                     players = Lists.newArrayList((Player) sender);
                 } else {
-                    sender.sendMessage(ChatColor.RED + "You can only run this command without arguments as a player");
+                    sender.sendMessage(messages.getRaw("players only"));
                     return true;
                 }
             }
@@ -125,11 +123,11 @@ public class PlayerAffectingCommand extends OptionCommand {
         }
 
         for (Player player : players) {
-            player.sendMessage(forPlayer);
+            player.sendMessage(messages.getRaw("for player"));
         }
 
-        sender.sendMessage(String.format(forSender, affected, toRun.size()));
-        sender.sendMessage(ChatColor.DARK_GRAY + "Run the command again with -u to undo (within ~" + ((int) (resetter.getCacheTicks() / 20)) + " seconds)");
+        sender.sendMessage(messages.evalTemplate("for sender", ImmutableMap.of("count", affected, "total", toRun.size())));
+        sender.sendMessage(messages.evalTemplate("notice", ImmutableMap.of("cache", (int) (resetter.getCacheTicks() / 20))));
         return true;
     }
 }
