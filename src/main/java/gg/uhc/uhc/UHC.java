@@ -164,7 +164,7 @@ public class UHC extends JavaPlugin {
         PlayerHeadProvider headProvider = new PlayerHeadProvider();
         GoldenHeadsModule gheadModule = new GoldenHeadsModule(headProvider);
         boolean gheadsLoaded = registry.register(gheadModule, "GoldenHeads");
-        getCommand("ghead").setExecutor(gheadsLoaded ? new GoldenHeadsHealthCommand(gheadModule) : new ModuleNotLoadedDummyCommand("GoldenHeads"));
+        getCommand("ghead").setExecutor(gheadsLoaded ? new GoldenHeadsHealthCommand(forCommand("ghead"), gheadModule) : new ModuleNotLoadedDummyCommand("GoldenHeads"));
         registry.register(new HeadDropsModule(headProvider), "HeadDrops");
         registry.register(new DeathStandsModule(), "DeathStands");
 

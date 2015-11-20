@@ -27,26 +27,28 @@
 
 package gg.uhc.uhc.modules.heads;
 
-import gg.uhc.flagcommands.commands.OptionCommand;
+import com.google.common.collect.ImmutableMap;
 import gg.uhc.flagcommands.converters.IntegerConverter;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import gg.uhc.flagcommands.predicates.IntegerPredicates;
 import gg.uhc.flagcommands.tab.FixedValuesTabComplete;
-import net.md_5.bungee.api.ChatColor;
+import gg.uhc.uhc.commands.TemplatedOptionCommand;
+import gg.uhc.uhc.messages.MessageTemplates;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-public class GoldenHeadsHealthCommand extends OptionCommand {
+public class GoldenHeadsHealthCommand extends TemplatedOptionCommand {
 
     protected final GoldenHeadsModule module;
 
     protected final OptionSpec<Integer> spec;
     protected final OptionSpec<Void> silentSpec;
 
-    public GoldenHeadsHealthCommand(GoldenHeadsModule module) {
+    public GoldenHeadsHealthCommand(MessageTemplates messages, GoldenHeadsModule module) {
+        super(messages);
         this.module = module;
 
         spec = parser.nonOptions("How much HP points to heal total with a golden apple")
@@ -61,19 +63,22 @@ public class GoldenHeadsHealthCommand extends OptionCommand {
         List<Integer> healths = spec.values(options);
 
         if (healths.size() == 0) {
-            sender.sendMessage(ChatColor.RED + "You must provide an Integer to set the amount of health healed to");
+            sender.sendMessage(messages.getRaw("provide number"));
             return true;
         }
 
         module.setHealAmount(healths.get(0));
 
-        String response = ChatColor.AQUA + "Golden heads now heal for " + module.getHealAmount() + " HP";
+        boolean silent = options.has(silentSpec);
+
+        String response = messages.evalTemplate(silent ? "silent" : "response", ImmutableMap.of("amount", module.getHealAmount()));
 
         if (options.has(silentSpec)) {
             sender.sendMessage(response);
         } else {
-            Bukkit.broadcastMessage("[UHC] " + response);
+            Bukkit.broadcastMessage(response);
         }
+
         return true;
     }
 }
