@@ -139,7 +139,7 @@ public class UHC extends JavaPlugin {
             TimerModule timer = new TimerModule();
 
             boolean timerLoaded = registry.register(timer, "Timer");
-            getCommand("timer").setExecutor(timerLoaded ? new TimerCommand(timer) : new ModuleNotLoadedDummyCommand("Timer"));
+            getCommand("timer").setExecutor(timerLoaded ? new TimerCommand(forCommand("timer"), timer) : new ModuleNotLoadedDummyCommand("Timer"));
 
             if (respawnModuleLoaded) {
                 registry.register(new HardcoreHeartsModule(respawnModule), "HardcoreHearts");
