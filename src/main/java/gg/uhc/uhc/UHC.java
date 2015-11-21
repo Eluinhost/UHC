@@ -211,8 +211,9 @@ public class UHC extends JavaPlugin {
         getCommand("h").setExecutor(new HealthCommand(forCommand("h")));
 
         SubcommandCommand wlist = new SubcommandCommand();
-        wlist.registerSubcommand("clear", new WhitelistClearCommand());
-        wlist.registerSubcommand(SubcommandCommand.NO_ARG_SPECIAL, new WhitelistOnlineCommand());
+        MessageTemplates forWlist = forCommand("wlist");
+        wlist.registerSubcommand("clear", new WhitelistClearCommand(forWlist));
+        wlist.registerSubcommand(SubcommandCommand.NO_ARG_SPECIAL, new WhitelistOnlineCommand(forWlist));
         getCommand("wlist").setExecutor(wlist);
 
         // save config just to make sure at the end

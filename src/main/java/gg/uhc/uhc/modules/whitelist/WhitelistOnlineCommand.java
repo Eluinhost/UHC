@@ -27,8 +27,9 @@
 
 package gg.uhc.uhc.modules.whitelist;
 
+import com.google.common.collect.ImmutableMap;
+import gg.uhc.uhc.messages.MessageTemplates;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -38,7 +39,11 @@ import java.util.Collection;
 
 public class WhitelistOnlineCommand implements CommandExecutor {
 
-    protected static final String FORMAT = ChatColor.AQUA + "Added %d of %d online players to the whitelist";
+    protected final MessageTemplates messages;
+
+    public WhitelistOnlineCommand(MessageTemplates messages) {
+        this.messages = messages;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -52,7 +57,7 @@ public class WhitelistOnlineCommand implements CommandExecutor {
             }
         }
 
-        sender.sendMessage(String.format(FORMAT, count, players.size()));
+        sender.sendMessage(messages.evalTemplate("add", ImmutableMap.of("count", count, "total", players.size())));
         return true;
     }
 }

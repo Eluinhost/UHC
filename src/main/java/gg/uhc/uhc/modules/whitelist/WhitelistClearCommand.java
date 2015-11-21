@@ -27,8 +27,9 @@
 
 package gg.uhc.uhc.modules.whitelist;
 
+import com.google.common.collect.ImmutableMap;
+import gg.uhc.uhc.messages.MessageTemplates;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -38,7 +39,11 @@ import java.util.Collection;
 
 public class WhitelistClearCommand implements CommandExecutor {
 
-    protected static final String FORMAT = ChatColor.AQUA + "Removed %d players from the whitelist";
+    protected final MessageTemplates messages;
+
+    public WhitelistClearCommand(MessageTemplates messages) {
+        this.messages = messages;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -48,7 +53,7 @@ public class WhitelistClearCommand implements CommandExecutor {
             player.setWhitelisted(false);
         }
 
-        sender.sendMessage(String.format(FORMAT, players.size()));
+        sender.sendMessage(messages.evalTemplate("remove", ImmutableMap.of("count", players.size())));
         return true;
     }
 }
