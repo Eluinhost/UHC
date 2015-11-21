@@ -175,7 +175,7 @@ public class UHC extends JavaPlugin {
             getCommand("pmt").setExecutor(new TeamPMCommand(forCommand("pmt"), teamModule));
             getCommand("randomteams").setExecutor(new RandomTeamsCommand(teamModule));
             getCommand("clearteams").setExecutor(new ClearTeamsCommand(teamModule));
-            getCommand("tc").setExecutor(new TeamCoordinatesCommand(teamModule));
+            getCommand("tc").setExecutor(new TeamCoordinatesCommand(forCommand("tc"), teamModule));
 
             RequestManager requestManager = new RequestManager(this, teamModule, 20 * 120);
             SubcommandCommand teamrequest = new SubcommandCommand();

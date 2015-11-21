@@ -27,7 +27,8 @@
 
 package gg.uhc.uhc.modules.team;
 
-import net.md_5.bungee.api.ChatColor;
+import com.google.common.collect.ImmutableMap;
+import gg.uhc.uhc.messages.MessageTemplates;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -36,20 +37,22 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
+import java.util.Map;
+
 public class TeamCoordinatesCommand implements CommandExecutor {
 
-    protected static final String FORMAT = "[Team Coords] %s: %s %d:%d:%d";
-
+    protected final MessageTemplates messages;
     protected final TeamModule module;
 
-    public TeamCoordinatesCommand(TeamModule module) {
+    public TeamCoordinatesCommand(MessageTemplates messages, TeamModule module) {
+        this.messages = messages;
         this.module = module;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "This command can only be ran by a player");
+            sender.sendMessage(messages.getRaw("players only"));
             return true;
         }
 
@@ -58,12 +61,21 @@ public class TeamCoordinatesCommand implements CommandExecutor {
         Team team = module.getScoreboard().getPlayerTeam(player);
 
         if (team == null) {
-            sender.sendMessage(ChatColor.RED + "You are not on a team!");
+            sender.sendMessage(messages.getRaw("not in team"));
             return true;
         }
 
         Location loc = player.getLocation();
-        String message = String.format(FORMAT, player.getName(), loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+        Map<String, String> context = ImmutableMap.<String, String>builder()
+                .put("name", player.getName())
+                .put("display name", player.getDisplayName())
+                .put("world", loc.getWorld().getName())
+                .put("x", String.valueOf(loc.getBlockX()))
+                .put("y", String.valueOf(loc.getBlockY()))
+                .put("z", String.valueOf(loc.getBlockZ()))
+                .build();
+
+        String message = messages.evalTemplate("format", context);
 
         for (OfflinePlayer p : team.getPlayers()) {
             if (p.isOnline()) {
