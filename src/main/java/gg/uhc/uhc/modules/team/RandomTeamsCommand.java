@@ -31,11 +31,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import gg.uhc.flagcommands.commands.OptionCommand;
+import com.google.common.collect.*;
 import gg.uhc.flagcommands.converters.IntegerConverter;
 import gg.uhc.flagcommands.converters.OfflinePlayerConverter;
 import gg.uhc.flagcommands.converters.OnlinePlayerConverter;
@@ -46,8 +42,9 @@ import gg.uhc.flagcommands.predicates.IntegerPredicates;
 import gg.uhc.flagcommands.tab.FixedValuesTabComplete;
 import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
 import gg.uhc.flagcommands.tab.OnlinePlayerTabComplete;
+import gg.uhc.uhc.commands.TemplatedOptionCommand;
+import gg.uhc.uhc.messages.MessageTemplates;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -55,12 +52,10 @@ import org.bukkit.scoreboard.Team;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-public class RandomTeamsCommand extends OptionCommand {
-
-    protected static final String TEAMUP_NOTIFICATION = ChatColor.AQUA + "You were teamed up into the team %s%s " + ChatColor.RESET + ChatColor.AQUA + "with: " + ChatColor.DARK_PURPLE + "%s";
-    protected static final String CREATED_TEAMS = ChatColor.AQUA + "Created %d teams of size %d from %d available players";
+public class RandomTeamsCommand extends TemplatedOptionCommand {
 
     protected final TeamModule module;
 
@@ -70,7 +65,8 @@ public class RandomTeamsCommand extends OptionCommand {
     protected final ArgumentAcceptingOptionSpec<OfflinePlayer> excludingSpec;
     protected final OptionSpec<Void> excludeExtrasSpec;
 
-    public RandomTeamsCommand(TeamModule module) {
+    public RandomTeamsCommand(MessageTemplates messages, TeamModule module) {
+        super(messages);
         this.module = module;
 
         playersSpec = parser
@@ -114,13 +110,8 @@ public class RandomTeamsCommand extends OptionCommand {
             size = teamSizeSpec.value(options);
         }
 
-        if (size == -1 && count == -1) {
-            sender.sendMessage(ChatColor.RED + "You must provide either `-c <number>` for team count or `-s <number>` for team size");
-            return true;
-        }
-
-        if (size != -1 && count != -1) {
-            sender.sendMessage(ChatColor.RED + "You must provide either `-c <number>` OR `-s <number>` not both");
+        if ((size == -1 && count == -1) || (size != -1 && count != -1)) {
+            sender.sendMessage(messages.getRaw("count or size"));
             return true;
         }
 
@@ -151,7 +142,7 @@ public class RandomTeamsCommand extends OptionCommand {
         );
 
         if (toAssign.size() == 0) {
-            sender.sendMessage(ChatColor.RED + "There are no players to add to teams");
+            sender.sendMessage(messages.getRaw("no players"));
             return true;
         }
 
@@ -172,7 +163,7 @@ public class RandomTeamsCommand extends OptionCommand {
         // then send a message saying no teams could be created.
         if (options.has(excludeExtrasSpec) && extras > 0) {
             if (teams.size() == 1) {
-                sender.sendMessage(ChatColor.RED + "Not enough players to make a team of size " + size);
+                sender.sendMessage(messages.evalTemplate("not enough players", ImmutableMap.of("size", size)));
                 return true;
             }
 
@@ -184,13 +175,23 @@ public class RandomTeamsCommand extends OptionCommand {
             Optional<Team> optional = module.findFirstEmptyTeam();
 
             if (!optional.isPresent()) {
-                sender.sendMessage(ChatColor.RED + "Ran out of teams to assign players to. Clear up the teams and try again");
+                sender.sendMessage(messages.getRaw("not enough teams"));
                 return true;
             }
 
             Team team = optional.get();
             String playerNames = Joiner.on(", ").join(Iterables.transform(teamPlayers, FunctionalUtil.PLAYER_NAME_FETCHER));
-            String message = String.format(TEAMUP_NOTIFICATION, team.getPrefix(), team.getDisplayName(), playerNames);
+
+            //"teamup notification" : ${colours.command}"You were teamed up into the team {{prefix}}{{name}}"${colours.reset}${colours.command}" with: "${colours.secondary}"{{players}}";
+
+            Map<String, String> context = ImmutableMap.<String, String>builder()
+                    .put("prefix", team.getPrefix())
+                    .put("name", team.getName())
+                    .put("display name", team.getDisplayName())
+                    .put("players", playerNames)
+                    .build();
+
+            String message = messages.evalTemplate("teamup notification", context);
 
             // add each player
             for (Player player : teamPlayers) {
@@ -199,10 +200,16 @@ public class RandomTeamsCommand extends OptionCommand {
             }
         }
 
-        sender.sendMessage(String.format(CREATED_TEAMS, teams.size(), teams.get(0).size(), toAssign.size()));
+        Map<String, Integer> context = ImmutableMap.<String, Integer>builder()
+                .put("count", teams.size())
+                .put("size", teams.get(0).size())
+                .put("players", toAssign.size())
+                .build();
+
+        sender.sendMessage(messages.evalTemplate("created", context));
 
         if (options.has(excludeExtrasSpec) && extras > 0) {
-            sender.sendMessage(ChatColor.AQUA + "Note: "  + extras + " players were not added to teams due to not enough players.");
+            sender.sendMessage(messages.evalTemplate("extras notice", ImmutableMap.of("extras", extras)));
         }
 
         return true;

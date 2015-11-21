@@ -30,9 +30,10 @@ package gg.uhc.uhc.modules.team;
 import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
+import gg.uhc.uhc.messages.MessageTemplates;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -40,11 +41,11 @@ import org.bukkit.entity.Player;
 
 public class NoTeamCommand implements CommandExecutor {
 
-    protected static final String FORMAT = ChatColor.AQUA + "Players without a team: " + ChatColor.DARK_PURPLE + "%s";
-
+    protected final MessageTemplates messages;
     protected final TeamModule module;
 
-    public NoTeamCommand(TeamModule module) {
+    public NoTeamCommand(MessageTemplates messages, TeamModule module) {
+        this.messages = messages;
         this.module = module;
     }
 
@@ -54,9 +55,9 @@ public class NoTeamCommand implements CommandExecutor {
 
         String noTeamNames = Joiner.on(", ").join(Iterables.transform(noTeam, FunctionalUtil.PLAYER_NAME_FETCHER));
 
-        if (noTeamNames.length() == 0) noTeamNames = ChatColor.DARK_GRAY + "No players found";
+        if (noTeamNames.length() == 0) noTeamNames = messages.getRaw("none");
 
-        sender.sendMessage(String.format(FORMAT, noTeamNames));
+        sender.sendMessage(messages.evalTemplate("list", ImmutableMap.of("players", noTeamNames)));
         return true;
     }
 

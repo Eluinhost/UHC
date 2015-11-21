@@ -30,8 +30,8 @@ package gg.uhc.uhc.modules.team;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
-import gg.uhc.flagcommands.commands.OptionCommand;
 import gg.uhc.flagcommands.converters.OfflinePlayerConverter;
 import gg.uhc.flagcommands.converters.StringConverter;
 import gg.uhc.flagcommands.joptsimple.ArgumentAcceptingOptionSpec;
@@ -41,28 +41,24 @@ import gg.uhc.flagcommands.predicates.StringPredicates;
 import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
 import gg.uhc.flagcommands.tab.OnlinePlayerTabComplete;
 import gg.uhc.flagcommands.tab.TeamNameTabComplete;
-import org.bukkit.ChatColor;
+import gg.uhc.uhc.commands.TemplatedOptionCommand;
+import gg.uhc.uhc.messages.MessageTemplates;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scoreboard.Team;
 
 import java.util.List;
+import java.util.Map;
 
-public class TeamupCommand extends OptionCommand {
-
-    protected static final String TEAM_DOESNT_EXIST = ChatColor.RED + "The team `%s` does not exist.";
-    protected static final String NO_UHC_TEAMS = ChatColor.RED + "No empty UHC teams found, cannot teamup players";
-    protected static final String SUPPLY_ONE_PLAYER = ChatColor.RED + "You must supply at least 1 player name to team up";
-    protected static final String TEAMUP_NOTIFICATION = ChatColor.AQUA + "You were teamed up into the team %s%s " + ChatColor.RESET + ChatColor.AQUA + "with: " + ChatColor.DARK_PURPLE + "%s";
-    protected static final String TEAM_NOT_EMPTY = ChatColor.RED + "That team is not empty, use the add command to add people to existing teams";
-    protected static final String TEAMED_UP = ChatColor.AQUA + "Teamed up %d players into team %s%s " + ChatColor.RESET + ChatColor.AQUA + ": %s";
+public class TeamupCommand extends TemplatedOptionCommand {
 
     protected final TeamModule teamModule;
 
     protected final ArgumentAcceptingOptionSpec<String> teamNameSpec;
     protected final OptionSpec<OfflinePlayer> playersSpec;
 
-    public TeamupCommand(TeamModule teamModule) {
+    public TeamupCommand(MessageTemplates messages, TeamModule teamModule) {
+        super(messages);
         this.teamModule = teamModule;
 
         teamNameSpec = parser
@@ -82,7 +78,7 @@ public class TeamupCommand extends OptionCommand {
         List<OfflinePlayer> players = playersSpec.values(options);
 
         if (players.size() == 0) {
-            sender.sendMessage(SUPPLY_ONE_PLAYER);
+            sender.sendMessage(messages.getRaw("supply one player"));
             return true;
         }
 
@@ -94,12 +90,12 @@ public class TeamupCommand extends OptionCommand {
             team = teamModule.getScoreboard().getTeam(teamName);
 
             if (team == null) {
-                sender.sendMessage(String.format(TEAM_DOESNT_EXIST, teamName));
+                sender.sendMessage(messages.evalTemplate("doesnt exist", ImmutableMap.of("name", teamName)));
                 return true;
             }
 
             if (team.getPlayers().size() > 0) {
-                sender.sendMessage(TEAM_NOT_EMPTY);
+                sender.sendMessage(messages.getRaw("not empty"));
                 return true;
             }
         } else {
@@ -107,7 +103,7 @@ public class TeamupCommand extends OptionCommand {
             Optional<Team> teamOptional = teamModule.findFirstEmptyTeam();
 
             if (!teamOptional.isPresent()) {
-                sender.sendMessage(NO_UHC_TEAMS);
+                sender.sendMessage(messages.getRaw("no uhc teams"));
                 return true;
             }
 
@@ -116,7 +112,15 @@ public class TeamupCommand extends OptionCommand {
 
         String members = Joiner.on(", ").join(Iterables.transform(players, FunctionalUtil.PLAYER_NAME_FETCHER));
 
-        String teamNotification = String.format(TEAMUP_NOTIFICATION, team.getPrefix(), team.getDisplayName(), members);
+        Map<String, String> context = ImmutableMap.<String, String>builder()
+                .put("prefix", team.getPrefix())
+                .put("name", team.getName())
+                .put("display name", team.getDisplayName())
+                .put("players", members)
+                .put("count", String.valueOf(players.size()))
+                .build();
+
+        String teamNotification = messages.evalTemplate("teamup notification", context);
 
         for (OfflinePlayer player : players) {
             team.addPlayer(player);
@@ -126,7 +130,7 @@ public class TeamupCommand extends OptionCommand {
             }
         }
 
-        sender.sendMessage(String.format(TEAMED_UP, players.size(), team.getPrefix(), team.getDisplayName(), members));
+        sender.sendMessage(messages.evalTemplate("completed", context));
         return true;
     }
 }

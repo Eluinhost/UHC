@@ -27,26 +27,26 @@
 
 package gg.uhc.uhc.modules.team;
 
-import gg.uhc.flagcommands.commands.OptionCommand;
+import com.google.common.collect.ImmutableMap;
 import gg.uhc.flagcommands.converters.OfflinePlayerConverter;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
 import gg.uhc.flagcommands.tab.OnlinePlayerTabComplete;
-import org.bukkit.ChatColor;
+import gg.uhc.uhc.commands.TemplatedOptionCommand;
+import gg.uhc.uhc.messages.MessageTemplates;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-public class TeamRemoveCommand extends OptionCommand {
-
-    protected static final String COMPLETE = ChatColor.AQUA + "Removed %d players from their teams";
+public class TeamRemoveCommand extends TemplatedOptionCommand {
 
     protected final Scoreboard scoreboard;
     protected final OptionSpec<OfflinePlayer> playersSpec;
 
-    public TeamRemoveCommand(TeamModule module) {
+    public TeamRemoveCommand(MessageTemplates messages, TeamModule module) {
+        super(messages);
         this.scoreboard = module.scoreboard;
 
         playersSpec = parser
@@ -71,7 +71,7 @@ public class TeamRemoveCommand extends OptionCommand {
             team.removePlayer(player);
         }
 
-        sender.sendMessage(String.format(COMPLETE, count));
+        sender.sendMessage(messages.evalTemplate("removed", ImmutableMap.of("count", count)));
         return true;
     }
 }

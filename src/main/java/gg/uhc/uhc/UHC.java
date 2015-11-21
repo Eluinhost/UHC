@@ -169,13 +169,19 @@ public class UHC extends JavaPlugin {
 
         TeamModule teamModule = new TeamModule();
         if (registry.register(teamModule, "TeamManager")) {
-            getCommand("teams").setExecutor(new ListTeamsCommand(teamModule));
-            getCommand("team").setExecutor(new TeamCommands(teamModule));
-            getCommand("noteam").setExecutor(new NoTeamCommand(teamModule));
+            getCommand("teams").setExecutor(new ListTeamsCommand(forCommand("teams"), teamModule));
+            getCommand("noteam").setExecutor(new NoTeamCommand(forCommand("noteam"), teamModule));
             getCommand("pmt").setExecutor(new TeamPMCommand(forCommand("pmt"), teamModule));
-            getCommand("randomteams").setExecutor(new RandomTeamsCommand(teamModule));
-            getCommand("clearteams").setExecutor(new ClearTeamsCommand(teamModule));
+            getCommand("randomteams").setExecutor(new RandomTeamsCommand(forCommand("randomteams"), teamModule));
+            getCommand("clearteams").setExecutor(new ClearTeamsCommand(forCommand("clearteams"), teamModule));
             getCommand("tc").setExecutor(new TeamCoordinatesCommand(forCommand("tc"), teamModule));
+
+            SubcommandCommand team = new SubcommandCommand();
+            team.registerSubcommand("teamup", new TeamupCommand(forCommand("team.teamup"), teamModule));
+            team.registerSubcommand("add", new TeamAddCommand(forCommand("team.add"), teamModule));
+            team.registerSubcommand("remove", new TeamRemoveCommand(forCommand("team.remove"), teamModule));
+            getCommand("team").setExecutor(team);
+
 
             RequestManager requestManager = new RequestManager(this, teamModule, 20 * 120);
             SubcommandCommand teamrequest = new SubcommandCommand();
