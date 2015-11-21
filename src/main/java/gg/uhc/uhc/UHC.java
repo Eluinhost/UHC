@@ -207,7 +207,7 @@ public class UHC extends JavaPlugin {
         getCommand("cleareffects").setExecutor(new PlayerAffectingCommand(forCommand("cleareffects"), new PlayerPotionsResetter(this, cacheTicks)));
         getCommand("reset").setExecutor(new PlayerAffectingCommand(forCommand("reset"), new FullPlayerResetter(this, cacheTicks)));
 
-        getCommand("tpp").setExecutor(new TeleportCommand());
+        getCommand("tpp").setExecutor(new TeleportCommand(forCommand("tpp")));
         getCommand("h").setExecutor(new HealthCommand(forCommand("h")));
 
         SubcommandCommand wlist = new SubcommandCommand();

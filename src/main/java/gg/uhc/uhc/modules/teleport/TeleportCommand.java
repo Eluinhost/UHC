@@ -28,8 +28,8 @@
 package gg.uhc.uhc.modules.teleport;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import gg.uhc.flagcommands.commands.OptionCommand;
 import gg.uhc.flagcommands.converters.IntegerConverter;
 import gg.uhc.flagcommands.converters.OnlinePlayerConverter;
 import gg.uhc.flagcommands.converters.WorldConverter;
@@ -40,9 +40,10 @@ import gg.uhc.flagcommands.tab.FixedValuesTabComplete;
 import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
 import gg.uhc.flagcommands.tab.OnlinePlayerTabComplete;
 import gg.uhc.flagcommands.tab.WorldTabComplete;
+import gg.uhc.uhc.commands.TemplatedOptionCommand;
+import gg.uhc.uhc.messages.MessageTemplates;
 import gg.uhc.uhc.util.LocationUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -52,14 +53,16 @@ import org.bukkit.entity.Player;
 import java.util.Collection;
 import java.util.List;
 
-public class TeleportCommand extends OptionCommand {
+public class TeleportCommand extends TemplatedOptionCommand {
 
     protected final OptionSpec<Player> toTeleportSpec;
     protected final ArgumentAcceptingOptionSpec<Integer> coordsSpec;
     protected final ArgumentAcceptingOptionSpec<World> worldSpec;
     protected final ArgumentAcceptingOptionSpec<Player> playerSpec;
 
-    public TeleportCommand() {
+    public TeleportCommand(MessageTemplates messages) {
+        super(messages);
+
         this.toTeleportSpec = parser
                 .nonOptions("List of online players to teleport, provide no players to teleport all online")
                 .withValuesConvertedBy(new OnlinePlayerConverter());
@@ -98,7 +101,7 @@ public class TeleportCommand extends OptionCommand {
         boolean isCoords = options.has(coordsSpec);
 
         if ((isPlayer && isCoords) || (!isPlayer && !isCoords)) {
-            sender.sendMessage(ChatColor.RED + "You must provide a player (-p) OR coordinates (-c with optional -w) to teleport to");
+            sender.sendMessage(messages.getRaw("invalid flag"));
             return true;
         }
 
@@ -115,7 +118,7 @@ public class TeleportCommand extends OptionCommand {
                 if (sender instanceof Entity) {
                     world = ((Entity) sender).getWorld();
                 } else {
-                    sender.sendMessage(ChatColor.RED + "You must provide a world (-w) as you are not in a world");
+                    sender.sendMessage(messages.getRaw("provide world"));
                     return true;
                 }
             }
@@ -126,7 +129,7 @@ public class TeleportCommand extends OptionCommand {
                 int y = LocationUtil.findHighestTeleportableY(world, coords.get(0), coords.get(1));
 
                 if (y < 0) {
-                    sender.sendMessage(ChatColor.RED + "Couldn't find a suitable Y position for those coordinates, try other coordinates or specify a Y value");
+                    sender.sendMessage(messages.getRaw("no suitable Y"));
                     return true;
                 }
 
@@ -135,7 +138,7 @@ public class TeleportCommand extends OptionCommand {
             }
 
             if (coords.size() != 3) {
-                sender.sendMessage(ChatColor.RED + "Incorrect coords format use x,z OR x,y,z");
+                sender.sendMessage(messages.getRaw("invalid coordinates"));
                 return true;
             }
 
@@ -146,7 +149,7 @@ public class TeleportCommand extends OptionCommand {
             p.teleport(tpLocation);
         }
 
-        sender.sendMessage(ChatColor.AQUA + "Teleported " + toTeleport.size() + " players");
+        sender.sendMessage(messages.evalTemplate("teleported", ImmutableMap.of("count", toTeleport.size())));
         return true;
     }
 }
