@@ -182,13 +182,14 @@ public class UHC extends JavaPlugin {
             team.registerSubcommand("remove", new TeamRemoveCommand(forCommand("team.remove"), teamModule));
             getCommand("team").setExecutor(team);
 
+            MessageTemplates requestMessages = forCommand("teamrequest");
+            RequestManager requestManager = new RequestManager(this, requestMessages, teamModule, 20 * 120);
 
-            RequestManager requestManager = new RequestManager(this, teamModule, 20 * 120);
             SubcommandCommand teamrequest = new SubcommandCommand();
-            teamrequest.registerSubcommand("accept", new RequestResponseCommand(requestManager, RequestManager.AcceptState.ACCEPT));
-            teamrequest.registerSubcommand("deny", new RequestResponseCommand(requestManager, RequestManager.AcceptState.DENY));
-            teamrequest.registerSubcommand("request", new TeamRequestCommand(requestManager));
-            teamrequest.registerSubcommand("list", new RequestListCommand(requestManager));
+            teamrequest.registerSubcommand("accept", new RequestResponseCommand(requestMessages, requestManager, RequestManager.AcceptState.ACCEPT));
+            teamrequest.registerSubcommand("deny", new RequestResponseCommand(requestMessages, requestManager, RequestManager.AcceptState.DENY));
+            teamrequest.registerSubcommand("request", new TeamRequestCommand(requestMessages, requestManager));
+            teamrequest.registerSubcommand("list", new RequestListCommand(requestMessages, requestManager));
             getCommand("teamrequest").setExecutor(teamrequest);
         } else {
             CommandExecutor teamsNotLoaded = new ModuleNotLoadedDummyCommand("TeamManager");

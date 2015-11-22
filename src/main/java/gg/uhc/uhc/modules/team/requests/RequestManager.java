@@ -32,8 +32,10 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
+import gg.uhc.uhc.messages.MessageTemplates;
 import gg.uhc.uhc.modules.team.FunctionalUtil;
 import gg.uhc.uhc.modules.team.TeamModule;
 import net.md_5.bungee.api.ChatColor;
@@ -55,20 +57,10 @@ import java.util.UUID;
 public class RequestManager {
 
     public enum AcceptState {
-        ACCEPT("Team request %d from '%s' was accepted", ChatColor.GREEN + "Your team request was accepted"),
-        DENY("Team request %d from '%s' was denied", ChatColor.RED + "Your team request was denied"),
-        CANCEL("Team request %d from '%s' was cancelled.", ChatColor.RED + "Your team request timed out and was cancelled.");
-
-        protected final String broadcast;
-        protected final String notify;
-
-        AcceptState(String broadcast, String notify) {
-            this.broadcast = ChatColor.DARK_GRAY + broadcast;
-            this.notify = notify;
-        }
+        ACCEPT,
+        DENY,
+        CANCEL
     }
-
-    protected static final String ADDED_REQUEST = ChatColor.AQUA + "Added team request";
 
     public static final String ADMIN_PERMISSION = "uhc.command.teamrequestadmin";
 
@@ -79,11 +71,13 @@ public class RequestManager {
     protected final Map<Integer, BukkitRunnable> timers = Maps.newHashMap();
 
     protected final Plugin plugin;
+    protected final MessageTemplates messages;
     protected final TeamModule module;
     protected final long autoCancelTime;
 
-    public RequestManager(Plugin plugin, TeamModule module, long autoCancelTime) {
+    public RequestManager(Plugin plugin, MessageTemplates messages, TeamModule module, long autoCancelTime) {
         this.plugin = plugin;
+        this.messages = messages;
         this.module = module;
 
         Preconditions.checkArgument(autoCancelTime > 0);
@@ -116,12 +110,18 @@ public class RequestManager {
 
         TeamRequest request = optional.get();
 
-        broadcast(String.format(accepted.broadcast, request.getId(), request.getOwnerName()));
+        Map<String, Object> context = ImmutableMap.<String, Object>builder()
+                .put("name", request.getOwnerName())
+                .put("id", request.getId())
+                .put("members", Joiner.on(", ").join(request.getOthers()))
+                .build();
+
+        broadcast(messages.evalTemplate("on." + accepted.name().toLowerCase() + ".broadcast", context));
 
         Player player = Bukkit.getPlayer(request.getOwner());
 
         if (player != null) {
-            player.sendMessage(accepted.notify);
+            player.sendMessage(messages.evalTemplate("on." + accepted.name().toLowerCase() + ".notify", context));
         }
 
         if (accepted == AcceptState.ACCEPT) {
@@ -130,7 +130,7 @@ public class RequestManager {
             Optional<Team> potentialTeam = module.findFirstEmptyTeam();
 
             if (!potentialTeam.isPresent()) {
-                broadcast(ChatColor.RED + "Failed to create a new team for request " + request.getId() + " as there no more empty teams. Clear a team and resend the request");
+                broadcast(messages.getRaw("no empty teams"));
                 return true;
             }
 
@@ -168,7 +168,7 @@ public class RequestManager {
         timers.remove(id).cancel();
         byUUID.remove(request.getOwner());
 
-        return Optional.fromNullable(request);
+        return Optional.of(request);
     }
 
     /**
@@ -196,7 +196,7 @@ public class RequestManager {
         Player player = Bukkit.getPlayer(request.getOwner());
 
         if (player != null) {
-            player.sendMessage(ADDED_REQUEST);
+            player.sendMessage(messages.getRaw("added request"));
         }
 
         TextComponent others = new TextComponent(Joiner.on(", ").join(request.getOthers()));

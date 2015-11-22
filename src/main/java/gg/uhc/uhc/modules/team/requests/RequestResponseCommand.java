@@ -28,9 +28,10 @@
 package gg.uhc.uhc.modules.team.requests;
 
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.bukkit.ChatColor;
+import gg.uhc.uhc.messages.MessageTemplates;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -40,13 +41,12 @@ import java.util.List;
 
 public class RequestResponseCommand implements TabExecutor {
 
-    protected static final String USAGE = ChatColor.RED + "USAGE: accept|deny <request id>";
-    protected static final String NONE_WITH_ID = ChatColor.RED + "No request found with the ID %d";
-
+    protected final MessageTemplates messages;
     protected final RequestManager requestManager;
     protected final RequestManager.AcceptState state;
 
-    public RequestResponseCommand(RequestManager requestManager, RequestManager.AcceptState state) {
+    public RequestResponseCommand(MessageTemplates messages, RequestManager requestManager, RequestManager.AcceptState state) {
+        this.messages = messages;
         this.requestManager = requestManager;
         this.state = state;
     }
@@ -54,12 +54,12 @@ public class RequestResponseCommand implements TabExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission(RequestManager.ADMIN_PERMISSION)) {
-            sender.sendMessage(ChatColor.RED + "You do not have permission to accept or deny requests");
+            sender.sendMessage(messages.getRaw("no admin permission"));
             return true;
         }
 
         if (args.length == 0) {
-            sender.sendMessage(USAGE);
+            sender.sendMessage(messages.getRaw("accept deny usage"));
             return true;
         }
 
@@ -67,12 +67,12 @@ public class RequestResponseCommand implements TabExecutor {
         try {
             id = Integer.parseInt(args[0]);
         } catch (NumberFormatException ex) {
-            sender.sendMessage(USAGE);
+            sender.sendMessage(messages.getRaw("accept deny usage"));
             return true;
         }
 
         if (!requestManager.finalizeRequest(id, state)) {
-            sender.sendMessage(String.format(NONE_WITH_ID, id));
+            sender.sendMessage(messages.evalTemplate("request not found", ImmutableMap.of("id", id)));
         }
 
         return true;
