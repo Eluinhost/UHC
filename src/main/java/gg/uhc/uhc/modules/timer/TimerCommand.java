@@ -94,7 +94,8 @@ public class TimerCommand extends TemplatedOptionCommand {
 
             message = lastMessage;
         } else {
-            lastMessage = message = new TimeAppendedMessage(ChatColor.translateAlternateColorCodes('&', Joiner.on(" ").join(messageParts)));
+            String actualMessage = ChatColor.translateAlternateColorCodes('&', Joiner.on(" ").join(messageParts));
+            lastMessage = message = new TemplatedMessage(messages.getTemplate("format"), actualMessage);
         }
 
         if (running) {
