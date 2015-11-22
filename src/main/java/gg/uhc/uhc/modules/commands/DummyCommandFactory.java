@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.modules.ModuleNotLoadedDummyCommand
+ * Class: gg.uhc.uhc.modules.commands.DummyCommandFactory
  *
  * The MIT License (MIT)
  *
@@ -25,13 +25,21 @@
  * THE SOFTWARE.
  */
 
-package gg.uhc.uhc.modules;
+package gg.uhc.uhc.modules.commands;
 
+import com.google.common.collect.ImmutableMap;
 import gg.uhc.flagcommands.commands.StaticStringCommand;
-import org.bukkit.ChatColor;
+import gg.uhc.uhc.messages.MessageTemplates;
 
-public class ModuleNotLoadedDummyCommand extends StaticStringCommand {
-    public ModuleNotLoadedDummyCommand(String moduleName) {
-        super(ChatColor.RED + "This command is not runnable because the module `" + moduleName + "` was chosen not to load in the configuration.");
+public class DummyCommandFactory {
+
+    protected final MessageTemplates templates;
+
+    public DummyCommandFactory(MessageTemplates templates) {
+        this.templates = templates;
+    }
+
+    public StaticStringCommand forModule(String name) {
+        return new StaticStringCommand(templates.evalTemplate("module not loaded command", ImmutableMap.of("name", name)));
     }
 }
