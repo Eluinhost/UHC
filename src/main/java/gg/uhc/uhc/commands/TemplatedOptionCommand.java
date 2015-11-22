@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.modules.whitelist.WhitelistClearCommand
+ * Class: gg.uhc.uhc.commands.TemplatedOptionCommand
  *
  * The MIT License (MIT)
  *
@@ -25,35 +25,16 @@
  * THE SOFTWARE.
  */
 
-package gg.uhc.uhc.modules.whitelist;
+package gg.uhc.uhc.commands;
 
-import com.google.common.collect.ImmutableMap;
+import gg.uhc.flagcommands.commands.OptionCommand;
 import gg.uhc.uhc.messages.MessageTemplates;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 
-import java.util.Collection;
-
-public class WhitelistClearCommand implements CommandExecutor {
+public abstract class TemplatedOptionCommand extends OptionCommand {
 
     protected final MessageTemplates messages;
 
-    public WhitelistClearCommand(MessageTemplates messages) {
+    public TemplatedOptionCommand(MessageTemplates messages) {
         this.messages = messages;
-    }
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        Collection<OfflinePlayer> players = Bukkit.getWhitelistedPlayers();
-
-        for (OfflinePlayer player : players) {
-            player.setWhitelisted(false);
-        }
-
-        sender.sendMessage(messages.evalTemplate("remove", ImmutableMap.of("count", players.size())));
-        return true;
     }
 }

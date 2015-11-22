@@ -27,10 +27,10 @@
 
 package gg.uhc.uhc.modules.heads;
 
+import com.google.common.collect.ImmutableMap;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.EventHandler;
@@ -112,11 +112,11 @@ public class GoldenHeadsModule extends DisableableModule implements Listener {
         super.rerender();
 
         if (isEnabled()) {
-            icon.setLore(ChatColor.GREEN + "Heal: " + formatter.format(healAmount / 2D) + " hearts", "Golden heads are craftable");
+            icon.setLore(messages.evalTemplate("enabled lore", ImmutableMap.of("amount", formatter.format(healAmount / 2D))));
             // show heal amount on icon
             icon.setAmount(healAmount);
         } else {
-            icon.setLore("Golden heads are not craftable and heal 2 hearts");
+            icon.setLore(messages.getRaw("disabled lore"));
             icon.setAmount(0);
         }
     }

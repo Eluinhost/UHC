@@ -27,12 +27,17 @@
 
 package gg.uhc.uhc;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigResolveOptions;
 import gg.uhc.flagcommands.commands.SubcommandCommand;
-import gg.uhc.uhc.inventory.ShowIconsCommand;
-import gg.uhc.uhc.modules.ModuleNotLoadedDummyCommand;
+import gg.uhc.uhc.messages.BaseMessageTemplates;
+import gg.uhc.uhc.messages.MessageTemplates;
+import gg.uhc.uhc.messages.SubsectionMessageTemplates;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.autorespawn.AutoRespawnModule;
 import gg.uhc.uhc.modules.border.WorldBorderCommand;
+import gg.uhc.uhc.modules.commands.DummyCommandFactory;
 import gg.uhc.uhc.modules.commands.ModuleCommands;
 import gg.uhc.uhc.modules.death.*;
 import gg.uhc.uhc.modules.difficulty.DifficultyModule;
@@ -51,7 +56,7 @@ import gg.uhc.uhc.modules.pvp.GlobalPVPModule;
 import gg.uhc.uhc.modules.recipes.GlisteringMelonRecipeModule;
 import gg.uhc.uhc.modules.recipes.GoldenCarrotRecipeModule;
 import gg.uhc.uhc.modules.recipes.NotchApplesModule;
-import gg.uhc.uhc.modules.reset.*;
+import gg.uhc.uhc.modules.reset.PlayerAffectingCommand;
 import gg.uhc.uhc.modules.reset.resetters.*;
 import gg.uhc.uhc.modules.team.*;
 import gg.uhc.uhc.modules.team.requests.RequestListCommand;
@@ -64,16 +69,22 @@ import gg.uhc.uhc.modules.timer.TimerModule;
 import gg.uhc.uhc.modules.whitelist.WhitelistClearCommand;
 import gg.uhc.uhc.modules.whitelist.WhitelistOnlineCommand;
 import gg.uhc.uhc.modules.xp.NerfQuartzXPModule;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.DisplaySlot;
+
+import java.io.File;
+import java.io.IOException;
 
 public class UHC extends JavaPlugin {
 
     protected ModuleRegistry registry;
     protected DebouncedRunnable configSaver;
+
+    protected MessageTemplates baseMessages;
+    protected MessageTemplates baseCommandMessages;
 
     @Override
     public void onEnable() {
@@ -85,7 +96,21 @@ public class UHC extends JavaPlugin {
             }
         }, 40);
 
-        registry = new ModuleRegistry(this, getConfig());
+        FileConfiguration configuration = getConfig();
+
+        try {
+            baseMessages = new BaseMessageTemplates(setupMessagesConfig());
+        } catch (Exception e) {
+            e.printStackTrace();
+            getLogger().severe("Failed to load the messages configuration file, cannot start the plugin");
+            setEnabled(false);
+            return;
+        }
+
+        baseCommandMessages = new SubsectionMessageTemplates(baseMessages, "commands");
+        DummyCommandFactory dummyCommands = new DummyCommandFactory(baseCommandMessages);
+
+        registry = new ModuleRegistry(this, baseMessages, configuration);
 
         registry.register(new DifficultyModule(), "HardDifficulty");
         registry.register(new HealthRegenerationModule(), "HealthRegen");
@@ -114,8 +139,7 @@ public class UHC extends JavaPlugin {
         if (getServer().getPluginManager().getPlugin("ProtocolLib") != null) {
             TimerModule timer = new TimerModule();
 
-            boolean timerLoaded = registry.register(timer, "Timer");
-            getCommand("timer").setExecutor(timerLoaded ? new TimerCommand(timer) : new ModuleNotLoadedDummyCommand("Timer"));
+            setup(registry.register(timer, "Timer") ? new TimerCommand(forCommand("timer"), timer) : dummyCommands.forModule("Timer"), "timer");
 
             if (respawnModuleLoaded) {
                 registry.register(new HardcoreHeartsModule(respawnModule), "HardcoreHearts");
@@ -123,12 +147,13 @@ public class UHC extends JavaPlugin {
         }
 
         registry.register(new PercentHealthObjectiveModule(), "PercentHealth");
-        getCommand("showhealth").setExecutor(new PlayerListHealthCommand(
+        setup(new PlayerListHealthCommand(
+                forCommand("showhealth"),
                 Bukkit.getScoreboardManager().getMainScoreboard(),
                 DisplaySlot.PLAYER_LIST,
                 "UHCHealth",
                 "Health"
-        ));
+        ), "showhealth");
 
         PotionFuelsListener fuelsListener = new PotionFuelsListener();
         registry.registerEvents(fuelsListener);
@@ -138,89 +163,70 @@ public class UHC extends JavaPlugin {
         PlayerHeadProvider headProvider = new PlayerHeadProvider();
         GoldenHeadsModule gheadModule = new GoldenHeadsModule(headProvider);
         boolean gheadsLoaded = registry.register(gheadModule, "GoldenHeads");
-        getCommand("ghead").setExecutor(gheadsLoaded ? new GoldenHeadsHealthCommand(gheadModule) : new ModuleNotLoadedDummyCommand("GoldenHeads"));
+        setup(gheadsLoaded ? new GoldenHeadsHealthCommand(forCommand("ghead"), gheadModule) : dummyCommands.forModule("GoldenHeads"), "ghead");
         registry.register(new HeadDropsModule(headProvider), "HeadDrops");
         registry.register(new DeathStandsModule(), "DeathStands");
 
         TeamModule teamModule = new TeamModule();
         if (registry.register(teamModule, "TeamManager")) {
-            getCommand("teams").setExecutor(new ListTeamsCommand(teamModule));
-            getCommand("team").setExecutor(new TeamCommands(teamModule));
-            getCommand("noteam").setExecutor(new NoTeamCommand(teamModule));
-            getCommand("pmt").setExecutor(new TeamPMCommand(teamModule));
-            getCommand("randomteams").setExecutor(new RandomTeamsCommand(teamModule));
-            getCommand("clearteams").setExecutor(new ClearTeamsCommand(teamModule));
-            getCommand("tc").setExecutor(new TeamCoordinatesCommand(teamModule));
+            setup(new ListTeamsCommand(forCommand("teams"), teamModule), "teams");
+            setup(new NoTeamCommand(forCommand("noteam"), teamModule), "noteam");
+            setup(new TeamPMCommand(forCommand("pmt"), teamModule), "pmt");
+            setup(new RandomTeamsCommand(forCommand("randomteams"), teamModule), "randomteams");
+            setup(new ClearTeamsCommand(forCommand("clearteams"), teamModule), "clearteams");
+            setup(new TeamCoordinatesCommand(forCommand("tc"), teamModule), "tc");
 
-            RequestManager requestManager = new RequestManager(this, teamModule, 20 * 120);
+            SubcommandCommand team = new SubcommandCommand();
+            team.registerSubcommand("teamup", new TeamupCommand(forCommand("team.teamup"), teamModule));
+            team.registerSubcommand("add", new TeamAddCommand(forCommand("team.add"), teamModule));
+            team.registerSubcommand("remove", new TeamRemoveCommand(forCommand("team.remove"), teamModule));
+            setup(team , "team");
+
+            MessageTemplates requestMessages = forCommand("teamrequest");
+            RequestManager requestManager = new RequestManager(this, requestMessages, teamModule, 20 * 120);
+
             SubcommandCommand teamrequest = new SubcommandCommand();
-            teamrequest.registerSubcommand("accept", new RequestResponseCommand(requestManager, RequestManager.AcceptState.ACCEPT));
-            teamrequest.registerSubcommand("deny", new RequestResponseCommand(requestManager, RequestManager.AcceptState.DENY));
-            teamrequest.registerSubcommand("request", new TeamRequestCommand(requestManager));
-            teamrequest.registerSubcommand("list", new RequestListCommand(requestManager));
-            getCommand("teamrequest").setExecutor(teamrequest);
+            teamrequest.registerSubcommand("accept", new RequestResponseCommand(requestMessages, requestManager, RequestManager.AcceptState.ACCEPT));
+            teamrequest.registerSubcommand("deny", new RequestResponseCommand(requestMessages, requestManager, RequestManager.AcceptState.DENY));
+            teamrequest.registerSubcommand("request", new TeamRequestCommand(requestMessages, requestManager));
+            teamrequest.registerSubcommand("list", new RequestListCommand(requestMessages, requestManager));
+            setup(teamrequest, "teamrequest");
         } else {
-            CommandExecutor teamsNotLoaded = new ModuleNotLoadedDummyCommand("TeamManager");
-            getCommand("teams").setExecutor(teamsNotLoaded);
-            getCommand("team").setExecutor(teamsNotLoaded);
-            getCommand("noteam").setExecutor(teamsNotLoaded);
-            getCommand("pmt").setExecutor(teamsNotLoaded);
-            getCommand("randomteams").setExecutor(teamsNotLoaded);
-            getCommand("clearteams").setExecutor(teamsNotLoaded);
-            getCommand("tc").setExecutor(teamsNotLoaded);
-            getCommand("teamrequest").setExecutor(teamsNotLoaded);
+            setup(dummyCommands.forModule("TeamManager"), "teams", "team", "noteam", "pmt", "randomteams", "clearteams", "tc", "teamrequest");
         }
 
-        getCommand("border").setExecutor(new WorldBorderCommand());
-        getCommand("uhc").setExecutor(new ModuleCommands(registry, new ShowIconsCommand(registry.getInventory())));
+        setup(new WorldBorderCommand(forCommand("border")), "border");
+        setup(new ModuleCommands(forCommand("uhc"), registry), "uhc");
 
         long cacheTicks = 30 * 20;
-        getCommand("heal").setExecutor(new PlayerAffectingCommand(
-                new PlayerHealthResetter(this, cacheTicks),
-                ChatColor.AQUA + "You were healed back to full health",
-                ChatColor.AQUA + "Healed %d/%d players"
-        ));
+        setup(new PlayerAffectingCommand(forCommand("heal"), new PlayerHealthResetter(this, cacheTicks)), "heal");
+        setup(new PlayerAffectingCommand(forCommand("feed"), new PlayerFoodResetter(this, cacheTicks)), "feed");
+        setup(new PlayerAffectingCommand(forCommand("clearxp"), new PlayerXPResetter(this, cacheTicks)), "clearxp");
+        setup(new PlayerAffectingCommand(forCommand("ci"), new PlayerInventoryResetter(this, cacheTicks)), "ci");
+        setup(new PlayerAffectingCommand(forCommand("cleareffects"), new PlayerPotionsResetter(this, cacheTicks)), "cleareffects");
+        setup(new PlayerAffectingCommand(forCommand("reset"), new FullPlayerResetter(this, cacheTicks)), "reset");
 
-        getCommand("feed").setExecutor(new PlayerAffectingCommand(
-                new PlayerFoodResetter(this, cacheTicks),
-                ChatColor.AQUA + "You were fed back up to full health",
-                ChatColor.AQUA + "Fed %d/%d players"
-        ));
-
-        getCommand("clearxp").setExecutor(new PlayerAffectingCommand(
-                new PlayerXPResetter(this, cacheTicks),
-                ChatColor.AQUA + "Your XP was cleared",
-                ChatColor.AQUA + "Cleared XP for %d/%d players"
-        ));
-
-        getCommand("ci").setExecutor(new PlayerAffectingCommand(
-                new PlayerInventoryResetter(this, cacheTicks),
-                ChatColor.AQUA + "Your inventory was cleared",
-                ChatColor.AQUA + "Cleared inventory for %d/%d players"
-        ));
-
-        getCommand("cleareffects").setExecutor(new PlayerAffectingCommand(
-                new PlayerPotionsResetter(this, cacheTicks),
-                ChatColor.AQUA + "Your potion effects were cleared",
-                ChatColor.AQUA + "Cleared potion effects for %d/%d players"
-        ));
-
-        getCommand("reset").setExecutor(new PlayerAffectingCommand(
-                new FullPlayerResetter(this, cacheTicks),
-                ChatColor.AQUA + "You were reset",
-                ChatColor.AQUA + "Reset %d/%d players"
-        ));
-
-        getCommand("tpp").setExecutor(new TeleportCommand());
-        getCommand("h").setExecutor(new HealthCommand());
+        setup(new TeleportCommand(forCommand("tpp")), "tpp");
+        setup(new HealthCommand(forCommand("h")), "h");
 
         SubcommandCommand wlist = new SubcommandCommand();
-        wlist.registerSubcommand("clear", new WhitelistClearCommand());
-        wlist.registerSubcommand(SubcommandCommand.NO_ARG_SPECIAL, new WhitelistOnlineCommand());
-        getCommand("wlist").setExecutor(wlist);
+        MessageTemplates forWlist = forCommand("wlist");
+        wlist.registerSubcommand("clear", new WhitelistClearCommand(forWlist));
+        wlist.registerSubcommand(SubcommandCommand.NO_ARG_SPECIAL, new WhitelistOnlineCommand(forWlist));
+        setup(wlist, "wlist");
 
         // save config just to make sure at the end
         saveConfig();
+    }
+
+    protected void setup(CommandExecutor executor, String... commands) {
+        for (String command : commands) {
+            getCommand(command).setExecutor(executor);
+        }
+    }
+
+    private MessageTemplates forCommand(String command) {
+        return new SubsectionMessageTemplates(baseCommandMessages, command);
     }
 
     @Override
@@ -235,5 +241,26 @@ public class UHC extends JavaPlugin {
 
     public ModuleRegistry getRegistry() {
         return registry;
+    }
+
+    protected Config setupMessagesConfig() throws IOException {
+        // copy reference across
+        saveResource("messages.reference.conf", true);
+
+        // parse fallback config
+        File reference = new File(getDataFolder(), "messages.reference.conf");
+        Config fallback = ConfigFactory.parseFile(reference);
+
+        // parse user provided config
+        File regular = new File(getDataFolder(), "messages.conf");
+
+        Config user;
+        if (regular.exists()) {
+            user = ConfigFactory.parseFile(regular);
+        } else {
+            user = ConfigFactory.empty();
+        }
+
+        return user.withFallback(fallback).resolve(ConfigResolveOptions.noSystem());
     }
 }

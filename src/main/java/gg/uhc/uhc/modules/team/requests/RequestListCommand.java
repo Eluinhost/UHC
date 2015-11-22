@@ -28,21 +28,22 @@
 package gg.uhc.uhc.modules.team.requests;
 
 import com.google.common.base.Joiner;
-import net.md_5.bungee.api.ChatColor;
+import com.google.common.collect.ImmutableMap;
+import gg.uhc.uhc.messages.MessageTemplates;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
+import java.util.Map;
 
 public class RequestListCommand implements CommandExecutor {
 
-    protected static final String LINE_FORMAT = ChatColor.DARK_GRAY + "ID %d from '%s' to team with: " + ChatColor.DARK_PURPLE + "%s ";
-    protected static final String NO_REQUESTS = ChatColor.AQUA + "There are curently no team requests waiting";
-
+    protected final MessageTemplates messages;
     protected final RequestManager requestManager;
 
-    public RequestListCommand(RequestManager requestManager) {
+    public RequestListCommand(MessageTemplates messages, RequestManager requestManager) {
+        this.messages = messages;
         this.requestManager = requestManager;
     }
 
@@ -51,11 +52,18 @@ public class RequestListCommand implements CommandExecutor {
         List<TeamRequest> requests = requestManager.getRequests();
 
         if (requests.size() == 0) {
-            sender.sendMessage(NO_REQUESTS);
-        } else {
-            for (TeamRequest request : requests) {
-                sender.sendMessage(String.format(LINE_FORMAT, request.getId(), request.getOwnerName(), Joiner.on(", ").join(request.getOthers())));
-            }
+            sender.sendMessage(messages.getRaw("no requests"));
+            return true;
+        }
+
+        for (TeamRequest request : requests) {
+            Map<String, Object> context = ImmutableMap.<String, Object>builder()
+                    .put("id", request.getId())
+                    .put("name", request.getOwnerName())
+                    .put("members", Joiner.on(", ").join(request.getOthers()))
+                    .build();
+
+            sender.sendMessage(messages.evalTemplate("list request", context));
         }
 
         return true;

@@ -28,6 +28,7 @@
 package gg.uhc.uhc.modules.portals;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import gg.uhc.uhc.modules.DisableableModule;
@@ -56,11 +57,7 @@ public class NetherModule extends DisableableModule implements Listener {
     public void rerender() {
         super.rerender();
 
-        if (isEnabled()) {
-            icon.setLore("Travelling to the nether is enabled");
-        } else {
-            icon.setLore("Travelling to the nether is disabled");
-        }
+        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
     }
 
     @Override
@@ -81,7 +78,7 @@ public class NetherModule extends DisableableModule implements Listener {
         String playerNames = joiner.join(Iterables.transform(players, FunctionalUtil.PLAYER_NAME_FETCHER));
         String worldNames = joiner.join(worlds);
 
-        String message = ChatColor.DARK_GRAY + "The player/s [" + playerNames + "] are within the nether world/s: [" + worldNames + "].";
+        String message = messages.evalTemplate("notification", ImmutableMap.of("players", playerNames, "worlds", worldNames));
         Bukkit.getConsoleSender().sendMessage(message);
 
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -105,7 +102,7 @@ public class NetherModule extends DisableableModule implements Listener {
 
         if (event.getTo().getWorld().getEnvironment() == World.Environment.NETHER) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage(ChatColor.RED + "The nether is disabled");
+            event.getPlayer().sendMessage(messages.getRaw("disabled message"));
         }
     }
 

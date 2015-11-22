@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.modules.team.TeamCommands
+ * Class: gg.uhc.uhc.messages.MessageTemplates
  *
  * The MIT License (MIT)
  *
@@ -25,16 +25,23 @@
  * THE SOFTWARE.
  */
 
-package gg.uhc.uhc.modules.team;
+package gg.uhc.uhc.messages;
 
+import com.github.mustachejava.Mustache;
+import com.typesafe.config.Config;
 
-import gg.uhc.flagcommands.commands.SubcommandCommand;
+public interface MessageTemplates {
+    Config getConfig();
 
-public class TeamCommands extends SubcommandCommand {
+    String getRaw(String key);
 
-    public TeamCommands(TeamModule teamModule) {
-        registerSubcommand("teamup", new TeamupCommand(teamModule));
-        registerSubcommand("add", new TeamAddCommand(teamModule));
-        registerSubcommand("remove", new TeamRemoveCommand(teamModule));
-    }
+    Mustache getTemplate(String key);
+
+    String evalTemplate(String key, Object... context);
+
+    String evalGlobalTemplate(String key, Object... context);
+
+    Mustache getGlobalTemplate(String key);
+
+    String getGlobalRaw(String key);
 }

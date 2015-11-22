@@ -29,22 +29,18 @@ package gg.uhc.uhc.modules.timer;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
-import gg.uhc.flagcommands.commands.OptionCommand;
 import gg.uhc.flagcommands.joptsimple.ArgumentAcceptingOptionSpec;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import gg.uhc.flagcommands.tab.FixedValuesTabComplete;
+import gg.uhc.uhc.commands.TemplatedOptionCommand;
+import gg.uhc.uhc.messages.MessageTemplates;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-public class TimerCommand extends OptionCommand {
-
-    protected static final String TIMER_NOT_RUNNING = ChatColor.RED + "There is no timer running currently";
-    protected static final String TIMER_CANCELLED = ChatColor.AQUA + "Timer cancelled";
-    protected static final String LAST_MESSAGE_NOT_AVAILABLE = ChatColor.RED + "You must provide a message as there was no previous timer set";
-    protected static final String TIMER_STARTED = ChatColor.AQUA + "Timer started";
+public class TimerCommand extends TemplatedOptionCommand {
 
     protected final TimerModule timer;
 
@@ -54,7 +50,8 @@ public class TimerCommand extends OptionCommand {
 
     protected TimerMessage lastMessage = null;
 
-    public TimerCommand(TimerModule timer) {
+    public TimerCommand(MessageTemplates messages, TimerModule timer) {
+        super(messages);
         this.timer = timer;
 
         this.cancelSpec = parser
@@ -76,12 +73,12 @@ public class TimerCommand extends OptionCommand {
 
         if (options.has(cancelSpec)) {
             if (!running) {
-                sender.sendMessage(TIMER_NOT_RUNNING);
+                sender.sendMessage(messages.getRaw("none running"));
                 return true;
             }
 
             timer.cancel();
-            sender.sendMessage(TIMER_CANCELLED);
+            sender.sendMessage(messages.getRaw("cancelled"));
             return true;
         }
 
@@ -91,13 +88,14 @@ public class TimerCommand extends OptionCommand {
         TimerMessage message;
         if (messageParts.size() == 0) {
             if (lastMessage == null) {
-                sender.sendMessage(LAST_MESSAGE_NOT_AVAILABLE);
+                sender.sendMessage(messages.getRaw("none previous"));
                 return true;
             }
 
             message = lastMessage;
         } else {
-            lastMessage = message = new TimeAppendedMessage(ChatColor.translateAlternateColorCodes('&', Joiner.on(" ").join(messageParts)));
+            String actualMessage = ChatColor.translateAlternateColorCodes('&', Joiner.on(" ").join(messageParts));
+            lastMessage = message = new TemplatedMessage(messages.getTemplate("format"), actualMessage);
         }
 
         if (running) {
@@ -105,7 +103,7 @@ public class TimerCommand extends OptionCommand {
         }
 
         timer.startTimer(message, time);
-        sender.sendMessage(TIMER_STARTED);
+        sender.sendMessage(messages.getRaw("started"));
         return true;
     }
 }

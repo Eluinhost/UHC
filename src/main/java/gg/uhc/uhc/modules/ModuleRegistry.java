@@ -32,6 +32,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import gg.uhc.uhc.inventory.IconInventory;
+import gg.uhc.uhc.messages.MessageTemplates;
+import gg.uhc.uhc.messages.SubsectionMessageTemplates;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Listener;
@@ -57,15 +59,17 @@ public class ModuleRegistry {
 
     protected final Plugin plugin;
     protected final PluginManager pluginManager;
+    protected final MessageTemplates strings;
     protected final ConfigurationSection config;
 
     protected final Map<String, Module> modules = Maps.newHashMap();
     protected final IconInventory addonInventory;
 
-    public ModuleRegistry(Plugin plugin, ConfigurationSection config) {
+    public ModuleRegistry(Plugin plugin, MessageTemplates strings, ConfigurationSection config) {
         this.plugin = plugin;
         this.pluginManager = plugin.getServer().getPluginManager();
         this.config = config;
+        this.strings = strings;
 
         this.addonInventory = new IconInventory(ADDON_INVENTORY_TITLE);
         registerEvents(addonInventory);
@@ -101,13 +105,14 @@ public class ModuleRegistry {
         // make sure it's a new key
         Preconditions.checkArgument(!modules.containsKey(id), "Module `" + id + "` is already registered");
 
-        // initialize the plugin for config saving
+        String sectionId = "modules." + id;
+
+        // initialize the plugin for config saving and strings
         module.setPlugin(plugin);
+        module.setMessageTemplates(new SubsectionMessageTemplates(strings, sectionId));
 
         // set the module ID
         module.setId(id);
-
-        String sectionId = "modules." + id;
 
         if (!config.contains(sectionId)) {
             config.createSection(sectionId);

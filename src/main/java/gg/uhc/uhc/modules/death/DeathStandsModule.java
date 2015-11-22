@@ -72,8 +72,8 @@ public class DeathStandsModule extends DisableableModule implements Listener {
     @Override
     public void rerender() {
         super.rerender();
-
-        icon.setLore(isEnabled() ? "Armour is placed on an armour stand on death" : "Items are dropped normally");
+        
+        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
     }
 
     protected boolean isProtectedArmourStand(Entity entity) {
@@ -82,6 +82,7 @@ public class DeathStandsModule extends DisableableModule implements Listener {
         return customName != null && customName.startsWith(STAND_PREFIX);
     }
 
+    @SuppressWarnings("Duplicates")
     protected Map<EquipmentSlot, ItemStack> getItems(ArmorStand stand) {
         Map<EquipmentSlot, ItemStack> slots = Maps.newHashMapWithExpectedSize(5);
 
@@ -94,6 +95,7 @@ public class DeathStandsModule extends DisableableModule implements Listener {
         return slots;
     }
 
+    @SuppressWarnings("Duplicates")
     protected Map<EquipmentSlot, ItemStack> getItems(PlayerInventory inventory) {
         Map<EquipmentSlot, ItemStack> slots = Maps.newHashMapWithExpectedSize(5);
 

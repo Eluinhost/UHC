@@ -29,7 +29,7 @@ package gg.uhc.uhc.modules.border;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
-import gg.uhc.flagcommands.commands.OptionCommand;
+import com.google.common.collect.ImmutableMap;
 import gg.uhc.flagcommands.converters.DoubleConverter;
 import gg.uhc.flagcommands.converters.LongConverter;
 import gg.uhc.flagcommands.converters.WorldConverter;
@@ -40,7 +40,8 @@ import gg.uhc.flagcommands.predicates.DoublePredicates;
 import gg.uhc.flagcommands.predicates.LongPredicates;
 import gg.uhc.flagcommands.tab.FixedValuesTabComplete;
 import gg.uhc.flagcommands.tab.WorldTabComplete;
-import net.md_5.bungee.api.ChatColor;
+import gg.uhc.uhc.commands.TemplatedOptionCommand;
+import gg.uhc.uhc.messages.MessageTemplates;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
 import org.bukkit.command.BlockCommandSender;
@@ -49,10 +50,7 @@ import org.bukkit.entity.Entity;
 
 import java.util.List;
 
-public class WorldBorderCommand extends OptionCommand {
-
-    protected static final String SET_MESSAGE = ChatColor.AQUA + "World border in %s set to radius %.2f centred at %.2f:%.2f";
-    protected static final String SHRINKING_MESSAGE = ChatColor.AQUA + "World border will shrink to %.2f in %d seconds";
+public class WorldBorderCommand extends TemplatedOptionCommand {
 
     protected final ArgumentAcceptingOptionSpec<Double> sizeSpec;
     protected final ArgumentAcceptingOptionSpec<World> worldSpec;
@@ -60,7 +58,9 @@ public class WorldBorderCommand extends OptionCommand {
     protected final OptionSpec<Void> resetSpec;
     protected final ArgumentAcceptingOptionSpec<Long> timeSpec;
 
-    public WorldBorderCommand() {
+    public WorldBorderCommand(MessageTemplates messages) {
+        super(messages);
+
         resetSpec = parser
                 .acceptsAll(ImmutableList.of("reset"), "Clears the border back to default settings");
 
@@ -117,7 +117,7 @@ public class WorldBorderCommand extends OptionCommand {
             if (w.isPresent()) {
                 world = w.get();
             } else {
-                sender.sendMessage(ChatColor.RED + "You must provide a world paramter when running from this location");
+                sender.sendMessage(messages.getRaw("provide world"));
                 return true;
             }
         }
@@ -125,7 +125,7 @@ public class WorldBorderCommand extends OptionCommand {
         // check for reset first
         if (options.has(resetSpec)) {
             world.getWorldBorder().reset();
-            sender.sendMessage(ChatColor.AQUA + "World border for `" + world.getName() + "` reset.");
+            sender.sendMessage(messages.evalTemplate("reset", ImmutableMap.of("world", world.getName())));
             return true;
         }
 
@@ -133,12 +133,12 @@ public class WorldBorderCommand extends OptionCommand {
         List<Double> radii = sizeSpec.values(options);
 
         if (coords.size() != 2) {
-            sender.sendMessage(ChatColor.RED + "Invalid coordinates supplied, 2 coordinates must be supplied (x:z)");
+            sender.sendMessage(messages.getRaw("invalid coords"));
             return true;
         }
 
         if (radii.size() == 0) {
-            sender.sendMessage(ChatColor.RED + "Must provide a radius to create the border at");
+            sender.sendMessage(messages.getRaw("provide radius"));
             return true;
         }
 
@@ -150,7 +150,7 @@ public class WorldBorderCommand extends OptionCommand {
             targetRadius = Optional.absent();
         } else {
             if (!options.has(timeSpec)) {
-                sender.sendMessage(ChatColor.RED + "You must provide a time parameter when using a shrinking border");
+                sender.sendMessage(messages.getRaw("provide time"));
                 return true;
             }
 
@@ -165,11 +165,11 @@ public class WorldBorderCommand extends OptionCommand {
 
         // set initial size
         border.setSize(radius);
-        sender.sendMessage(String.format(SET_MESSAGE, world.getName(), radius, coords.get(0), coords.get(1)));
+        sender.sendMessage(messages.evalTemplate("set regular", ImmutableMap.of("world", world.getName(), "radius", radius, "x", coords.get(0), "z", coords.get(1))));
 
         if (targetRadius.isPresent()) {
             border.setSize(radii.get(1), time);
-            sender.sendMessage(String.format(SHRINKING_MESSAGE, radii.get(1), time));
+            sender.sendMessage(messages.evalTemplate("set shrinking", ImmutableMap.of("radius", radii.get(1), "seconds", time)));
         }
 
         return true;

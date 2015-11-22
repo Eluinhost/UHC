@@ -49,11 +49,7 @@ public class WitchesModule extends DisableableModule implements Listener {
     public void rerender() {
         super.rerender();
 
-        if (isEnabled()) {
-            icon.setLore("Witches can spawn");
-        } else {
-            icon.setLore("Witches cannot spawn");
-        }
+        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
     }
 
     @EventHandler(ignoreCancelled = true)

@@ -47,6 +47,13 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>com.typesafe</groupId>
+            <artifactId>config</artifactId>
+            <version>1.2.1</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
             <version>1.8-R0.1-SNAPSHOT</version>
@@ -99,6 +106,7 @@
                 <includes>
                     <include>plugin.yml</include>
                     <include>config.yml</include>
+                    <include>messages.reference.conf</include>
                 </includes>
             </resource>
         </resources>
@@ -132,6 +140,10 @@
                     </artifactSet>
                     <minimizeJar>true</minimizeJar>
                     <relocations>
+                        <relocation>
+                            <pattern>com.typesafe.config</pattern>
+                            <shadedPattern>${project.groupId}.${project.artifactId}.config</shadedPattern>
+                        </relocation>
                         <relocation>
                             <pattern>com.github.mustachejava</pattern>
                             <shadedPattern>${project.groupId}.${project.artifactId}.mustache</shadedPattern>

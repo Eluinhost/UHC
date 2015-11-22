@@ -28,29 +28,29 @@
 package gg.uhc.uhc.modules.team;
 
 import com.google.common.collect.ImmutableList;
-import gg.uhc.flagcommands.commands.OptionCommand;
+import com.google.common.collect.ImmutableMap;
 import gg.uhc.flagcommands.converters.TeamConverter;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
 import gg.uhc.flagcommands.tab.TeamNameTabComplete;
-import org.bukkit.ChatColor;
+import gg.uhc.uhc.commands.TemplatedOptionCommand;
+import gg.uhc.uhc.messages.MessageTemplates;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scoreboard.Team;
 
 import java.util.Collection;
 
-public class ClearTeamsCommand extends OptionCommand {
-
-    protected static final String COMPLETE = ChatColor.AQUA + "Cleared %d teams of %d players total";
+public class ClearTeamsCommand extends TemplatedOptionCommand {
 
     protected final TeamModule module;
 
     protected final OptionSpec<Team> teamSpec;
     protected final OptionSpec<Void> allSpec;
 
-    public ClearTeamsCommand(TeamModule module) {
+    public ClearTeamsCommand(MessageTemplates messages, TeamModule module) {
+        super(messages);
         this.module = module;
 
         allSpec = parser
@@ -78,7 +78,7 @@ public class ClearTeamsCommand extends OptionCommand {
             }
         }
 
-        sender.sendMessage(String.format(COMPLETE, teams.size(), count));
+        sender.sendMessage(messages.evalTemplate("cleared", ImmutableMap.of("teams", teams.size(), "players", count)));
         return true;
     }
 }

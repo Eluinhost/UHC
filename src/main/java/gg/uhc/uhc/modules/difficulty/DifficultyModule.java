@@ -68,11 +68,7 @@ public class DifficultyModule extends DisableableModule implements Listener {
     protected void rerender() {
         super.rerender();
 
-        if (isEnabled()) {
-            icon.setLore("All worlds are HARD difficulty");
-        } else {
-            icon.setLore("World difficulties are not handled by the plugin");
-        }
+        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
     }
 
     @Override

@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.modules.timer.TimeAppendedMessage
+ * Class: gg.uhc.uhc.modules.timer.TemplatedMessage
  *
  * The MIT License (MIT)
  *
@@ -27,16 +27,25 @@
 
 package gg.uhc.uhc.modules.timer;
 
-public class TimeAppendedMessage implements TimerMessage {
+import com.github.mustachejava.Mustache;
+import com.google.common.collect.ImmutableMap;
 
+import java.io.StringWriter;
+
+public class TemplatedMessage implements TimerMessage {
+
+    protected final Mustache template;
     protected final String message;
 
-    public TimeAppendedMessage(String message) {
+    public TemplatedMessage(Mustache template, String message) {
+        this.template = template;
         this.message = message;
     }
 
     @Override
     public String getMessage(long secondsRemaining) {
-        return message + " - " + TimeUtil.secondsToString(secondsRemaining);
+        StringWriter writer = new StringWriter();
+        template.execute(writer, ImmutableMap.of("message", message, "timer", TimeUtil.secondsToString(secondsRemaining)));
+        return writer.getBuffer().toString();
     }
 }

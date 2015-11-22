@@ -104,3 +104,7 @@ inventory will be saved to this option so changes are saved across saves/reloads
 - [/tpp](docs/commands/tpp.md)
 - [/h](docs/commands/h.md)
 - [/wlist](docs/commands/wlist.md)
+
+## Message modification
+
+A lot of messages sent by the plugin can be modified. Check out the [documentation on message modification](docs/messagemodification.md)

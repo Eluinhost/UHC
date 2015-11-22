@@ -27,6 +27,7 @@
 
 package gg.uhc.uhc.modules.health;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSortedMap;
 import gg.uhc.uhc.modules.DisableableModule;
 import org.bukkit.ChatColor;
@@ -97,7 +98,7 @@ public class ChatHealthPrependModule extends DisableableModule implements Listen
     public void rerender() {
         super.rerender();
 
-        icon.setLore(isEnabled() ? "Health is shown before chat messages as " + (useNumbers ? "percentage numbers" : "bars") : "Chat messages are not modified");
+        icon.setLore(isEnabled() ? messages.evalTemplate("enabled lore", ImmutableMap.of("type", useNumbers ? "percentage numbers" : "bars")) : messages.getRaw("disabled lore"));
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

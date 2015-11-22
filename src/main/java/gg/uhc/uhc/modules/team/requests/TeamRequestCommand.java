@@ -35,17 +35,19 @@ import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import gg.uhc.flagcommands.predicates.StringPredicates;
 import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
 import gg.uhc.flagcommands.tab.OnlinePlayerTabComplete;
-import net.md_5.bungee.api.ChatColor;
+import gg.uhc.uhc.messages.MessageTemplates;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class TeamRequestCommand extends OptionCommand {
 
+    protected final MessageTemplates messages;
     protected final RequestManager requests;
 
     protected OptionSpec<String> playerNameSpec;
 
-    public TeamRequestCommand(RequestManager requests) {
+    public TeamRequestCommand(MessageTemplates messages, RequestManager requests) {
+        this.messages = messages;
         this.requests = requests;
 
         playerNameSpec = parser.nonOptions("Player names to create a team with")
@@ -56,7 +58,7 @@ public class TeamRequestCommand extends OptionCommand {
     @Override
     protected boolean runCommand(CommandSender sender, OptionSet options) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "You may only use this command as a player. Use the teamup command to create teams for other people");
+            sender.sendMessage(messages.getRaw("as player"));
             return true;
         }
 

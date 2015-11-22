@@ -54,7 +54,6 @@ public class HardcoreHeartsModule extends Module implements Listener {
         this.icon.setDurability((short) 4);
         this.icon.setWeight(ModuleRegistry.CATEGORY_HEALTH);
         this.icon.setDisplayName(ICON_NAME);
-        this.icon.setLore("Showing hardcore hearts on login");
     }
 
     @Override
@@ -67,6 +66,8 @@ public class HardcoreHeartsModule extends Module implements Listener {
         }
 
         ProtocolLibrary.getProtocolManager().addPacketListener(new HardcoreHeartsListener());
+
+        this.icon.setLore(messages.getRaw("lore"));
     }
 
     @EventHandler(priority = EventPriority.HIGH)

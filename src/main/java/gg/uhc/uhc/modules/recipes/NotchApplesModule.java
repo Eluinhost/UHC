@@ -56,11 +56,7 @@ public class NotchApplesModule extends DisableableModule implements Listener {
     protected void rerender() {
         super.rerender();
 
-        if (isEnabled()) {
-            icon.setLore("Notch apples are craftable");
-        } else {
-            icon.setLore("Notch apples are uncraftable");
-        }
+        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
     }
 
     @EventHandler

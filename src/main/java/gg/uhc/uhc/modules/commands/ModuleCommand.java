@@ -30,12 +30,14 @@ package gg.uhc.uhc.modules.commands;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import gg.uhc.flagcommands.commands.OptionCommand;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
+import gg.uhc.uhc.commands.TemplatedOptionCommand;
+import gg.uhc.uhc.messages.MessageTemplates;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.Module;
 import gg.uhc.uhc.modules.ModuleRegistry;
@@ -45,7 +47,7 @@ import org.bukkit.command.CommandSender;
 import java.util.List;
 import java.util.Map;
 
-public class ModuleCommand extends OptionCommand {
+public class ModuleCommand extends TemplatedOptionCommand {
 
     public enum Type {
         ENABLE,
@@ -53,14 +55,13 @@ public class ModuleCommand extends OptionCommand {
         TOGGLE
     }
 
-    protected final String PROCESSED = ChatColor.AQUA + "Processed %d/%d modules, new states: %s";
-    protected final String PROVIDE_MODULES = ChatColor.AQUA + "You must provide at least 1 module name, available modules: " + ChatColor.DARK_PURPLE + "[%s]";
-
     protected final ModuleRegistry registry;
     protected final Type type;
     protected final OptionSpec<Map.Entry<String, Module>> moduleSpec;
 
-    public ModuleCommand(ModuleRegistry registry, Type type) {
+    public ModuleCommand(MessageTemplates messages, ModuleRegistry registry, Type type) {
+        super(messages);
+
         this.registry = registry;
         this.type = type;
 
@@ -73,7 +74,7 @@ public class ModuleCommand extends OptionCommand {
         List<Map.Entry<String, Module>> entries = moduleSpec.values(options);
 
         if (entries.size() == 0) {
-            sender.sendMessage(String.format(PROVIDE_MODULES, Joiner.on(", ").join(Iterables.transform(registry.getModules(), FETCH_KEY_AS_STRING))));
+            sender.sendMessage(messages.evalTemplate("provide modules", ImmutableMap.of("modules", Joiner.on(", ").join(Iterables.transform(registry.getModules(), FETCH_KEY_AS_STRING)))));
             return true;
         }
 
@@ -121,7 +122,7 @@ public class ModuleCommand extends OptionCommand {
             newStates.add(stateColour + id);
         }
 
-        sender.sendMessage(String.format(PROCESSED, count, entries.size(), Joiner.on(", ").join(newStates)));
+        sender.sendMessage(messages.evalTemplate("processed", ImmutableMap.of("completed", count, "total", entries.size(), "states", Joiner.on(", ").join(newStates))));
         return true;
     }
 

@@ -29,8 +29,8 @@ package gg.uhc.uhc.modules.commands;
 
 import gg.uhc.flagcommands.commands.SubcommandCommand;
 import gg.uhc.uhc.inventory.ShowIconsCommand;
+import gg.uhc.uhc.messages.MessageTemplates;
 import gg.uhc.uhc.modules.ModuleRegistry;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -38,28 +38,26 @@ public class ModuleCommands extends SubcommandCommand {
 
     protected final ModuleRegistry registry;
     protected final ModuleEntryConverter moduleEntryConverter;
-    protected final ShowIconsCommand iconsCommand;
+    protected final MessageTemplates messages;
 
-    public ModuleCommands(ModuleRegistry registry, ShowIconsCommand iconsCommand) {
+    public ModuleCommands(MessageTemplates messages, ModuleRegistry registry) {
+        this.messages = messages;
         this.registry = registry;
-        this.iconsCommand = iconsCommand;
         this.moduleEntryConverter = new ModuleEntryConverter(registry);
 
-        registerSubcommand("toggle", new ModuleCommand(registry, ModuleCommand.Type.TOGGLE));
-        registerSubcommand("enable", new ModuleCommand(registry, ModuleCommand.Type.ENABLE));
-        registerSubcommand("disable", new ModuleCommand(registry, ModuleCommand.Type.DISABLE));
-        registerSubcommand("show", iconsCommand);
+        registerSubcommand("toggle", new ModuleCommand(messages, registry, ModuleCommand.Type.TOGGLE));
+        registerSubcommand("enable", new ModuleCommand(messages, registry, ModuleCommand.Type.ENABLE));
+        registerSubcommand("disable", new ModuleCommand(messages, registry, ModuleCommand.Type.DISABLE));
+
+        ShowIconsCommand icons = new ShowIconsCommand(messages, registry.getInventory());
+        registerSubcommand("show", icons);
+        registerSubcommand(NO_ARG_SPECIAL, icons);
     }
 
-    // override logic to make inventory open on no-arg instead of saying usage
-    // also adds an extra permission check for any subcommands
+    // add a extra permission check for any subcommands other than show or no-arg
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(args.length == 0) {
-            return iconsCommand.onCommand(sender, command, label, args);
-        }
-
-        if (!sender.hasPermission("uhc.command.uhc.admin")) {
-            sender.sendMessage(ChatColor.RED + "You do not have permission to modify modules. Run the command without any arguments to open the config viewer");
+        if(args.length != 0 && !"show".equals(args[0].toLowerCase()) && !sender.hasPermission("uhc.command.uhc.admin")) {
+            sender.sendMessage(messages.getRaw("no modify permission"));
             return true;
         }
 

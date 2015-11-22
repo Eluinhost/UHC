@@ -28,6 +28,7 @@
 package gg.uhc.uhc.modules.health;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import gg.uhc.uhc.modules.DisableableModule;
@@ -98,15 +99,15 @@ public class PercentHealthObjectiveModule extends DisableableModule {
 
         if (isEnabled()) {
             List<String> lore = Lists.newArrayList();
-            lore.add("Percent health objectives are being updated:");
+            lore.add(messages.getRaw("enabled lore.header"));
 
             for (Objective objective : objectives.keySet()) {
-                lore.add("   " + objective.getName());
+                lore.add(messages.evalTemplate("enabled lore.item", ImmutableMap.of("objective", objective.getName())));
             }
 
             icon.setLore(lore.toArray(new String[lore.size()]));
         } else {
-            icon.setLore("Health percent objectives are not being updated");
+            icon.setLore(messages.getRaw("disabled lore"));
         }
     }
 

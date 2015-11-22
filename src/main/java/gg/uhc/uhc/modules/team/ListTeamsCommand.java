@@ -31,15 +31,17 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import gg.uhc.flagcommands.commands.OptionCommand;
 import gg.uhc.flagcommands.converters.IntegerConverter;
 import gg.uhc.flagcommands.joptsimple.ArgumentAcceptingOptionSpec;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import gg.uhc.flagcommands.predicates.IntegerPredicates;
 import gg.uhc.flagcommands.tab.OptionsTabComplete;
+import gg.uhc.uhc.commands.TemplatedOptionCommand;
+import gg.uhc.uhc.messages.MessageTemplates;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -48,12 +50,11 @@ import org.bukkit.scoreboard.Team;
 import org.bukkit.util.StringUtil;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-public class ListTeamsCommand extends OptionCommand {
+public class ListTeamsCommand extends TemplatedOptionCommand {
 
-    protected static final String HEADER_SINGLE_PAGE = ChatColor.AQUA + "Showing %d results %s";
-    protected static final String HEADER_MULTIPLE_PAGE = HEADER_SINGLE_PAGE + " p%d/%d %d total. Use `-p` to view other pages";
     protected static final String NO_MEMBERS = ChatColor.DARK_GRAY + "No members";
     protected static final String FORMAT = "%s" + ChatColor.LIGHT_PURPLE + " - (%s): " + ChatColor.DARK_PURPLE + "%s";
     protected static final int COUNT_PER_PAGE = 16;
@@ -64,7 +65,8 @@ public class ListTeamsCommand extends OptionCommand {
     protected final OptionSpec<Void> emptyOnlySpec;
     protected final ArgumentAcceptingOptionSpec<Integer> pageSpec;
 
-    public ListTeamsCommand(TeamModule teamModule) {
+    public ListTeamsCommand(MessageTemplates messages, TeamModule teamModule) {
+        super(messages);
         this.teamModule = teamModule;
 
         showAllSpec = parser
@@ -136,11 +138,16 @@ public class ListTeamsCommand extends OptionCommand {
 
         List<Team> pageItems = partitioned.get(page - 1);
 
-        if (partitioned.size() == 1) {
-            sender.sendMessage(String.format(HEADER_SINGLE_PAGE, pageItems.size(), type));
-        } else {
-            sender.sendMessage(String.format(HEADER_MULTIPLE_PAGE, pageItems.size(), type, page, partitioned.size(), teams.size()));
-        }
+        Map<String, Object> context = ImmutableMap.<String, Object>builder()
+                .put("page", page)
+                .put("pages", partitioned.size())
+                .put("type", type)
+                .put("count", pageItems.size())
+                .put("teams", teams.size())
+                .put("multiple", partitioned.size() > 1)
+                .build();
+
+        sender.sendMessage(messages.evalTemplate("header", context));
 
         Joiner joiner = Joiner.on(", ");
         for (Team team : pageItems) {

@@ -63,11 +63,7 @@ public class GlisteringMelonRecipeModule extends DisableableModule implements Li
     protected void rerender() {
         super.rerender();
 
-        if (isEnabled()) {
-            icon.setLore("Requires a golden block to craft");
-        } else {
-            icon.setLore("Requires 8 golden nuggets to craft");
-        }
+        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
     }
 
     @EventHandler

@@ -29,6 +29,7 @@ package gg.uhc.uhc.modules;
 
 import com.google.common.base.Preconditions;
 import gg.uhc.uhc.inventory.IconStack;
+import gg.uhc.uhc.messages.MessageTemplates;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -38,11 +39,16 @@ public abstract class Module {
 
     protected final IconStack icon = new IconStack(Material.BARRIER, 1);
     protected ConfigurationSection config;
+    protected MessageTemplates messages;
     protected Plugin plugin;
     protected String id;
 
     protected void setPlugin(Plugin plugin) {
         this.plugin = plugin;
+    }
+
+    public void setMessageTemplates(MessageTemplates messages) {
+        this.messages = messages;
     }
 
     protected void setConfig(ConfigurationSection section) {

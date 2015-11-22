@@ -27,6 +27,7 @@
 
 package gg.uhc.uhc.modules.health;
 
+import com.google.common.collect.ImmutableMap;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Material;
@@ -56,10 +57,10 @@ public class GhastTearDropsModule extends DisableableModule implements Listener 
 
         if (isEnabled()) {
             icon.setType(Material.GHAST_TEAR);
-            icon.setLore("Ghasts drop ghast tears");
+            icon.setLore(messages.evalTemplate("lore", ImmutableMap.of("item", "ghast tears")));
         } else {
             icon.setType(Material.GOLD_INGOT);
-            icon.setLore("Ghasts drop gold ingots");
+            icon.setLore(messages.evalTemplate("lore", ImmutableMap.of("item", "gold ingots")));
         }
     }
 
