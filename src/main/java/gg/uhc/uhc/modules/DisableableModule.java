@@ -27,6 +27,7 @@
 
 package gg.uhc.uhc.modules;
 
+import com.google.common.collect.ImmutableMap;
 import gg.uhc.uhc.ItemStackNBTStringFetcher;
 import gg.uhc.uhc.inventory.ClickHandler;
 import gg.uhc.uhc.inventory.IconInventory;
@@ -42,9 +43,10 @@ import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 
+import java.util.Map;
+
 public abstract class DisableableModule extends Module implements ClickHandler {
 
-    protected static final String CONSOLE_FORMAT = "[UHC] Module %s is now %s";
     protected static final String CONFIRMATION_TITLE = ChatColor.DARK_PURPLE + "Toggle: ";
 
     protected static final ClickHandler CLOSE_INVENTORY = new ClickHandler() {
@@ -170,9 +172,14 @@ public abstract class DisableableModule extends Module implements ClickHandler {
     public void announceState() {
         String enableStatus = isEnabled() ? "enabled" : "disabled";
 
-        Bukkit.getConsoleSender().sendMessage(String.format(CONSOLE_FORMAT, iconName, enableStatus));
+        Map<String, Object> context = ImmutableMap.<String, Object>builder()
+                .put("name", iconName)
+                .put("status", enableStatus)
+                .build();
 
-        TextComponent base = new TextComponent("[UHC] ");
+        Bukkit.getConsoleSender().sendMessage(messages.evalGlobalTemplate("modules.changed.console notice", context));
+
+        TextComponent base = new TextComponent(messages.evalGlobalTemplate("modules.changed.broadcast.prefix", context));
         base.setColor(ChatColor.AQUA);
 
         TextComponent itemNBT = new TextComponent(ItemStackNBTStringFetcher.readFromItemStack(getIconStack()));
@@ -183,7 +190,7 @@ public abstract class DisableableModule extends Module implements ClickHandler {
         module.setColor(isEnabled() ? ChatColor.GREEN : ChatColor.RED);
 
         base.addExtra(module);
-        base.addExtra(" is " + enableStatus);
+        base.addExtra(messages.evalGlobalTemplate("modules.changed.broadcast.status", context));
 
         Bukkit.spigot().broadcast(base);
     }

@@ -38,4 +38,10 @@ public interface MessageTemplates {
     Mustache getTemplate(String key);
 
     String evalTemplate(String key, Object... context);
+
+    String evalGlobalTemplate(String key, Object... context);
+
+    Mustache getGlobalTemplate(String key);
+
+    String getGlobalRaw(String key);
 }

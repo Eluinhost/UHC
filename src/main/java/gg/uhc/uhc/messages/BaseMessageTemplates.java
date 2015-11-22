@@ -81,4 +81,19 @@ public class BaseMessageTemplates implements MessageTemplates {
 
         return writer.getBuffer().toString();
     }
+
+    @Override
+    public String evalGlobalTemplate(String key, Object... context) {
+        return evalTemplate(key, context);
+    }
+
+    @Override
+    public Mustache getGlobalTemplate(String key) {
+        return getTemplate(key);
+    }
+
+    @Override
+    public String getGlobalRaw(String key) {
+        return getRaw(key);
+    }
 }

@@ -63,4 +63,27 @@ public class SubsectionMessageTemplates implements MessageTemplates {
     public String evalTemplate(String key, Object... context) {
         return parent.evalTemplate(subPath + key, context);
     }
+
+    @Override
+    public String evalGlobalTemplate(String key, Object... context) {
+        return getRoot().evalTemplate(key, context);
+    }
+
+    @Override
+    public Mustache getGlobalTemplate(String key) {
+        return getRoot().getTemplate(key);
+    }
+
+    @Override
+    public String getGlobalRaw(String key) {
+        return getRoot().getRaw(key);
+    }
+
+    protected BaseMessageTemplates getRoot() {
+        if (parent instanceof BaseMessageTemplates) {
+            return (BaseMessageTemplates) parent;
+        }
+
+        return ((SubsectionMessageTemplates) parent).getRoot();
+    }
 }
