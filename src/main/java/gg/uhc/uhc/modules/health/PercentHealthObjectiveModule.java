@@ -148,26 +148,36 @@ public class PercentHealthObjectiveModule extends DisableableModule {
             config.set(UPDATE_PERIOD_KEY, 20);
         }
 
-        List<Map<String, Object>> objectivesSpecs = (List<Map<String, Object>>) config.getList("objectives");
+        List objectivesSpecs = config.getList("objectives");
 
         objectives = Maps.newHashMap();
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
 
-        for (Map<String, Object> objectiveSpec : objectivesSpecs) {
-            if (!objectiveSpec.containsKey(OBJECTIVE_NAME_KEY)) {
+        for (Object objectiveSpecObject : objectivesSpecs) {
+            ConfigurationSection objectiveSpec;
+
+            if (objectiveSpecObject instanceof Map) {
+                MemoryConfiguration mc = new MemoryConfiguration();
+                mc.addDefaults((Map) objectiveSpecObject);
+                objectiveSpec = mc;
+            } else {
+                objectiveSpec = (ConfigurationSection) objectiveSpecObject;
+            }
+
+            if (!objectiveSpec.contains(OBJECTIVE_NAME_KEY)) {
                 throw new InvalidConfigurationException("Missing required parameter `" + OBJECTIVE_NAME_KEY + "` for a percent health objective");
             }
 
-            if (!objectiveSpec.containsKey(OBJECTIVE_DISPLAY_NAME_KEY)) {
+            if (!objectiveSpec.contains(OBJECTIVE_DISPLAY_NAME_KEY)) {
                 throw new InvalidConfigurationException("Missing required parameter `" + OBJECTIVE_DISPLAY_NAME_KEY + "` for a percent health objective");
             }
 
-            String objectiveName = (String) objectiveSpec.get(OBJECTIVE_NAME_KEY);
+            String objectiveName = objectiveSpec.getString(OBJECTIVE_NAME_KEY);
 
             // translate colours with an extra &h for a heart icon
-            String displayName = ChatColor.translateAlternateColorCodes('&', (String) objectiveSpec.get(OBJECTIVE_DISPLAY_NAME_KEY)).replace("&h", "♥");
+            String displayName = ChatColor.translateAlternateColorCodes('&', objectiveSpec.getString(OBJECTIVE_DISPLAY_NAME_KEY)).replace("&h", "♥");
 
-            Integer scaling = objectiveSpec.containsKey(OBJECTIVE_SCALING_KEY) ? (Integer) objectiveSpec.get(OBJECTIVE_SCALING_KEY) : 5;
+            Integer scaling = objectiveSpec.contains(OBJECTIVE_SCALING_KEY) ? objectiveSpec.getInt(OBJECTIVE_SCALING_KEY) : 5;
 
             Objective objective = scoreboard.getObjective(objectiveName);
 
