@@ -72,7 +72,7 @@ public class PlayerAffectingCommand extends TemplatedOptionCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 1 && "*".equals(args[0])) {
-            sender.sendMessage(messages.evalTemplate("dont use start"));
+            sender.sendMessage(messages.getRaw("dont use star"));
             return true;
         }
 
