@@ -45,6 +45,7 @@ List of modules provided by the plugin:
 - [DeathMessages](docs/modules/DeathMessages.md)
 - [DeathLightning](docs/modules/DeathLightning.md)
 - [Nether](docs/modules/Nether.md)
+- [TheEnd](docs/modules/TheEnd.md)
 - [DeathBans](docs/modules/DeathBans.md)
 - [AutoRespawn](docs/modules/AutoRespawn.md)
 - [Timer](docs/modules/Timer.md)

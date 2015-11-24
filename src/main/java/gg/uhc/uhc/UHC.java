@@ -50,6 +50,7 @@ import gg.uhc.uhc.modules.heads.PlayerHeadProvider;
 import gg.uhc.uhc.modules.health.*;
 import gg.uhc.uhc.modules.horses.HorseArmourModule;
 import gg.uhc.uhc.modules.horses.HorsesModule;
+import gg.uhc.uhc.modules.portals.EndModule;
 import gg.uhc.uhc.modules.portals.NetherModule;
 import gg.uhc.uhc.modules.potions.*;
 import gg.uhc.uhc.modules.pvp.GlobalPVPModule;
@@ -124,6 +125,7 @@ public class UHC extends JavaPlugin {
         registry.register(new EnderpearlsModule(), "EnderpearlDamage");
         registry.register(new WitchesModule(), "WitchSpawns");
         registry.register(new NetherModule(), "Nether");
+        registry.register(new EndModule(), "TheEnd");
         registry.register(new DeathBansModule(), "DeathBans");
         registry.register(new HorsesModule(), "Horses");
         registry.register(new HorseArmourModule(), "HorseArmour");
