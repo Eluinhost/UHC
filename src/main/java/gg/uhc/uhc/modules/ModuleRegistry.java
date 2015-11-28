@@ -29,7 +29,9 @@ package gg.uhc.uhc.modules;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import gg.uhc.uhc.inventory.IconInventory;
 import gg.uhc.uhc.messages.MessageTemplates;
@@ -93,6 +95,10 @@ public class ModuleRegistry {
 
     public Optional<Module> get(String id) {
         return Optional.fromNullable(modules.get(id.toLowerCase()));
+    }
+
+    public <T extends Module> Optional<T> get(Class<T> klass) {
+        return (Optional<T>) Iterables.tryFind(modules.values(), Predicates.instanceOf(klass));
     }
 
     /**
