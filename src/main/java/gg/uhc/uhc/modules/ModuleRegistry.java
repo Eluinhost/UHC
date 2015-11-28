@@ -32,11 +32,14 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import gg.uhc.uhc.inventory.IconInventory;
+import gg.uhc.uhc.inventory.IconStack;
 import gg.uhc.uhc.messages.MessageTemplates;
 import gg.uhc.uhc.messages.SubsectionMessageTemplates;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -76,7 +79,22 @@ public class ModuleRegistry {
         this.strings = strings;
 
         this.addonInventory = new IconInventory(ADDON_INVENTORY_TITLE);
+        setupSpacers();
         registerEvents(addonInventory);
+    }
+
+    protected void setupSpacers() {
+        if (!config.contains("spacers")) {
+            config.set("spacers", Lists.newArrayList());
+        }
+
+        for (int i : config.getIntegerList("spacers")) {
+            IconStack spacer = new IconStack(Material.STAINED_GLASS_PANE);
+            spacer.setDurability((short) 8);
+            spacer.setDisplayName(" ");
+            spacer.setWeight(i);
+            addonInventory.registerNewIcon(spacer);
+        }
     }
 
     public IconInventory getInventory() {

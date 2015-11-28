@@ -105,6 +105,18 @@ weights:
 
 The modules are sorted by their weights inside the `/uhc` inventory. Modifying these numbers will modify the orders.
 
+You can also add 'spacers' (fake empty space) into the inventory by modifying the spacers option:
+
+```yaml
+spacers: []
+    V
+spacers: 
+- 10
+- 30
+```
+
+Each number is a weight at which to place a spacer icon. NOTE the inventory can only handle up to 54 icons total (6*9)
+
 ## Commands
 
 [Information on commands with flags](docs/commands/Commands.md)
