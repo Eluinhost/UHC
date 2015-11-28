@@ -42,6 +42,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -85,8 +87,8 @@ public class ModuleRegistry {
         pluginManager.registerEvents(listener, plugin);
     }
 
-    public Set<Map.Entry<String, Module>> getModules() {
-        return ImmutableSet.copyOf(modules.entrySet());
+    public Collection<Module> getModules() {
+        return Collections.unmodifiableCollection(modules.values());
     }
 
     public Set<String> getIds() {

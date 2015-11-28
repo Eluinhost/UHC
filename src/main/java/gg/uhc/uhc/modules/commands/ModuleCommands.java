@@ -27,6 +27,7 @@
 
 package gg.uhc.uhc.modules.commands;
 
+import com.google.common.collect.ImmutableSet;
 import gg.uhc.flagcommands.commands.SubcommandCommand;
 import gg.uhc.uhc.inventory.ShowIconsCommand;
 import gg.uhc.uhc.messages.MessageTemplates;
@@ -34,11 +35,15 @@ import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
+import java.util.Set;
+
 public class ModuleCommands extends SubcommandCommand {
 
     protected final ModuleRegistry registry;
     protected final ModuleEntryConverter moduleEntryConverter;
     protected final MessageTemplates messages;
+
+    protected final Set<String> noPerm = ImmutableSet.of("show", "status");
 
     public ModuleCommands(MessageTemplates messages, ModuleRegistry registry) {
         this.messages = messages;
@@ -48,6 +53,7 @@ public class ModuleCommands extends SubcommandCommand {
         registerSubcommand("toggle", new ModuleCommand(messages, registry, ModuleCommand.Type.TOGGLE));
         registerSubcommand("enable", new ModuleCommand(messages, registry, ModuleCommand.Type.ENABLE));
         registerSubcommand("disable", new ModuleCommand(messages, registry, ModuleCommand.Type.DISABLE));
+        registerSubcommand("status", new ModuleStatusCommand(registry));
 
         ShowIconsCommand icons = new ShowIconsCommand(messages, registry.getInventory());
         registerSubcommand("show", icons);
@@ -56,7 +62,8 @@ public class ModuleCommands extends SubcommandCommand {
 
     // add a extra permission check for any subcommands other than show or no-arg
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(args.length != 0 && !"show".equals(args[0].toLowerCase()) && !sender.hasPermission("uhc.command.uhc.admin")) {
+        // allow noarg + noPerm commands to bypass perm check
+        if (args.length != 0 && !noPerm.contains(args[0].toLowerCase()) && !sender.hasPermission("uhc.command.uhc.admin")) {
             sender.sendMessage(messages.getRaw("no modify permission"));
             return true;
         }

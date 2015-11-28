@@ -126,10 +126,10 @@ public class ModuleCommand extends TemplatedOptionCommand {
         return true;
     }
 
-    protected static final Function<Map.Entry, String> FETCH_KEY_AS_STRING = new Function<Map.Entry, String>() {
+    protected static final Function<Module, String> FETCH_KEY_AS_STRING = new Function<Module, String>() {
         @Override
-        public String apply(Map.Entry input) {
-            return input == null ? "" : input.getKey().toString();
+        public String apply(Module input) {
+            return input.getId();
         }
     };
 }
