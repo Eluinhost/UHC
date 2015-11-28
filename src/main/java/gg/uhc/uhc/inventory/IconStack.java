@@ -84,7 +84,7 @@ public class IconStack extends ItemStack implements Comparable<IconStack> {
         }
     }
 
-    protected int getWeight() {
+    public int getWeight() {
         return weight;
     }
 

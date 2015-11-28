@@ -91,6 +91,20 @@ enabled: true
 This is the initial state to set the module to after loading. Any changes via the [uhc command](docs/commands/uhc.md) or via the conifg
 inventory will be saved to this option so changes are saved across saves/reloads.
 
+There is also a list of weights:
+
+```yaml
+weights:
+  harddifficulty: 0
+  healthregen: 40
+  ghasttears: 20
+  goldencarrotrecipe: 30
+  ...
+  ...
+```
+
+The modules are sorted by their weights inside the `/uhc` inventory. Modifying these numbers will modify the orders.
+
 ## Commands
 
 [Information on commands with flags](docs/commands/Commands.md)

@@ -220,6 +220,25 @@ public class ModuleRegistry {
             registerEvents((Listener) module);
         }
 
+        // check weights exists
+        if (!config.contains("weights")) {
+            config.createSection("weights");
+        }
+
+        int currentWeight = module.getIconStack().getWeight();
+
+        if (!config.contains("weights." + id)) {
+            // save the default value if it doesn't exist
+            config.set("weights." + id, currentWeight);
+        } else {
+            // set the saved weight on the icon stack
+            int saved = config.getInt("weights." + id);
+
+            if (saved != currentWeight) {
+                module.getIconStack().setWeight(saved);
+            }
+        }
+
         // register the module's icon stack with the addon inventory
         addonInventory.registerNewIcon(module.getIconStack());
         return true;
