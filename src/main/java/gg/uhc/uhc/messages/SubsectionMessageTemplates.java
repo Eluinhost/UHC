@@ -30,6 +30,8 @@ package gg.uhc.uhc.messages;
 import com.github.mustachejava.Mustache;
 import com.typesafe.config.Config;
 
+import java.util.List;
+
 public class SubsectionMessageTemplates implements MessageTemplates {
 
     protected final MessageTemplates parent;
@@ -55,8 +57,18 @@ public class SubsectionMessageTemplates implements MessageTemplates {
     }
 
     @Override
+    public List<String> getRawStrings(String path) {
+        return parent.getRawStrings(subPath + path);
+    }
+
+    @Override
     public Mustache getTemplate(String key) {
         return parent.getTemplate(subPath + key);
+    }
+
+    @Override
+    public List<Mustache> getTemplates(String path) {
+        return parent.getTemplates(subPath + path);
     }
 
     @Override
@@ -65,25 +77,11 @@ public class SubsectionMessageTemplates implements MessageTemplates {
     }
 
     @Override
-    public String evalGlobalTemplate(String key, Object... context) {
-        return getRoot().evalTemplate(key, context);
+    public List<String> evalTemplates(String path, Object... context) {
+        return parent.evalTemplates(subPath + path, context);
     }
 
-    @Override
-    public Mustache getGlobalTemplate(String key) {
-        return getRoot().getTemplate(key);
-    }
-
-    @Override
-    public String getGlobalRaw(String key) {
-        return getRoot().getRaw(key);
-    }
-
-    protected BaseMessageTemplates getRoot() {
-        if (parent instanceof BaseMessageTemplates) {
-            return (BaseMessageTemplates) parent;
-        }
-
-        return ((SubsectionMessageTemplates) parent).getRoot();
+    public MessageTemplates getRoot() {
+        return parent.getRoot();
     }
 }

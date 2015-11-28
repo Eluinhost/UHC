@@ -30,23 +30,26 @@ package gg.uhc.uhc.messages;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
-import com.google.common.collect.Maps;
+import com.google.common.base.Function;
+import com.google.common.collect.*;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigValue;
+import com.typesafe.config.ConfigValueType;
 
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.Map;
+import java.util.List;
 
 public class BaseMessageTemplates implements MessageTemplates {
 
     protected final Config config;
     protected final MustacheFactory templating;
-    protected final Map<String, Mustache> templates;
+    protected final ListMultimap<String, Mustache> templates;
 
     public BaseMessageTemplates(Config config) {
         this.config = config;
         this.templating = new DefaultMustacheFactory();
-        this.templates = Maps.newHashMap();
+        this.templates = ArrayListMultimap.create();
     }
 
     @Override
@@ -60,16 +63,44 @@ public class BaseMessageTemplates implements MessageTemplates {
     }
 
     @Override
-    public Mustache getTemplate(String key) {
-        Mustache template = templates.get(key);
+    public List<String> getRawStrings(String path) {
+        ConfigValue value = config.getValue(path);
 
-        // compile the tempalte from the config value and store it in our map
-        if (template == null) {
-            template = templating.compile(new StringReader(config.getString(key)), key);
-            templates.put(key, template);
+        if (value.valueType() == ConfigValueType.LIST) {
+            return config.getStringList(path);
         }
 
-        return template;
+        return Lists.newArrayList(config.getString(path));
+    }
+
+    @Override
+    public Mustache getTemplate(String key) {
+        // compile the tempalte from the config value and store it in our map
+        if (!templates.containsKey(key)) {
+            templates.put(key, templating.compile(new StringReader(getRaw(key)), key));
+        }
+
+        return Iterables.getFirst(templates.get(key), null);
+    }
+
+    @Override
+    public List<Mustache> getTemplates(final String path) {
+        // compile the template from the config value and store it in our map
+        if (!templates.containsKey(path)) {
+            List<Mustache> temps = Lists.transform(getRawStrings(path), new Function<String, Mustache>() {
+
+                protected int index = 0;
+
+                @Override
+                public Mustache apply(String input) {
+                    return templating.compile(new StringReader(input), path + ".[" + (index++) + "]");
+                }
+            });
+
+            templates.putAll(path, temps);
+        }
+
+        return templates.get(path);
     }
 
     @Override
@@ -83,17 +114,22 @@ public class BaseMessageTemplates implements MessageTemplates {
     }
 
     @Override
-    public String evalGlobalTemplate(String key, Object... context) {
-        return evalTemplate(key, context);
+    public List<String> evalTemplates(String path, final Object... context) {
+        List<Mustache> temps = getTemplates(path);
+
+        return Lists.transform(temps, new Function<Mustache, String>() {
+            @Override
+            public String apply(Mustache input) {
+                StringWriter writer = new StringWriter();
+                input.execute(writer, context);
+
+                return writer.getBuffer().toString();
+            }
+        });
     }
 
     @Override
-    public Mustache getGlobalTemplate(String key) {
-        return getTemplate(key);
-    }
-
-    @Override
-    public String getGlobalRaw(String key) {
-        return getRaw(key);
+    public MessageTemplates getRoot() {
+        return this;
     }
 }

@@ -30,18 +30,22 @@ package gg.uhc.uhc.messages;
 import com.github.mustachejava.Mustache;
 import com.typesafe.config.Config;
 
+import java.util.List;
+
 public interface MessageTemplates {
     Config getConfig();
 
     String getRaw(String key);
 
+    List<String> getRawStrings(String path);
+
     Mustache getTemplate(String key);
+
+    List<Mustache> getTemplates(String path);
 
     String evalTemplate(String key, Object... context);
 
-    String evalGlobalTemplate(String key, Object... context);
+    List<String> evalTemplates(String path, Object... context);
 
-    Mustache getGlobalTemplate(String key);
-
-    String getGlobalRaw(String key);
+    MessageTemplates getRoot();
 }

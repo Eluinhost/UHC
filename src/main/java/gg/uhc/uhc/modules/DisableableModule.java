@@ -177,9 +177,9 @@ public abstract class DisableableModule extends Module implements ClickHandler {
                 .put("status", enableStatus)
                 .build();
 
-        Bukkit.getConsoleSender().sendMessage(messages.evalGlobalTemplate("modules.changed.console notice", context));
+        Bukkit.getConsoleSender().sendMessage(messages.getRoot().evalTemplate("modules.changed.console notice", context));
 
-        TextComponent base = new TextComponent(messages.evalGlobalTemplate("modules.changed.broadcast.prefix", context));
+        TextComponent base = new TextComponent(messages.getRoot().evalTemplate("modules.changed.broadcast.prefix", context));
         base.setColor(ChatColor.AQUA);
 
         TextComponent itemNBT = new TextComponent(ItemStackNBTStringFetcher.readFromItemStack(getIconStack()));
@@ -190,7 +190,7 @@ public abstract class DisableableModule extends Module implements ClickHandler {
         module.setColor(isEnabled() ? ChatColor.GREEN : ChatColor.RED);
 
         base.addExtra(module);
-        base.addExtra(messages.evalGlobalTemplate("modules.changed.broadcast.status", context));
+        base.addExtra(messages.getRoot().evalTemplate("modules.changed.broadcast.status", context));
 
         Bukkit.spigot().broadcast(base);
     }
