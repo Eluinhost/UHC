@@ -43,6 +43,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.List;
 
 public class ModifiedDeathMessagesModule extends DisableableModule implements Listener {
 
@@ -85,15 +86,8 @@ public class ModifiedDeathMessagesModule extends DisableableModule implements Li
     }
 
     @Override
-    public void rerender() {
-        super.rerender();
-
-        if (isEnabled()) {
-            icon.setLore(messages.getRaw("enabled lore.description"), messages.evalTemplate("enabled lore.format", ImmutableMap.of("formatDescription", formatExplanation)));
-        }
-        else {
-            icon.setLore(messages.getRaw("disabled lore"));
-        }
+    protected List<String> getEnabledLore() {
+        return messages.evalTemplates(ENABLED_LORE_PATH, ImmutableMap.of("formatDescription", formatExplanation));
     }
 
     @EventHandler(priority = EventPriority.LOW)

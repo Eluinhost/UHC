@@ -39,6 +39,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.NavigableMap;
 
 public class ChatHealthPrependModule extends DisableableModule implements Listener {
@@ -97,10 +98,8 @@ public class ChatHealthPrependModule extends DisableableModule implements Listen
     }
 
     @Override
-    public void rerender() {
-        super.rerender();
-
-        icon.setLore(isEnabled() ? messages.evalTemplate("enabled lore", ImmutableMap.of("type", useNumbers ? "percentage numbers" : "bars")) : messages.getRaw("disabled lore"));
+    protected List<String> getEnabledLore() {
+        return messages.evalTemplates(ENABLED_LORE_PATH, ImmutableMap.of("type", useNumbers ? "percentage numbers" : "bars"));
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

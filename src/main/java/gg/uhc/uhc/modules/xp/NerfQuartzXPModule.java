@@ -37,6 +37,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
+import java.util.List;
 import java.util.Random;
 
 public class NerfQuartzXPModule extends DisableableModule implements Listener {
@@ -78,13 +79,13 @@ public class NerfQuartzXPModule extends DisableableModule implements Listener {
     }
 
     @Override
-    public void rerender() {
-        super.rerender();
+    protected List<String> getEnabledLore() {
+        return messages.evalTemplates("lore", ImmutableMap.of("lower", lower, "higher", higher));
+    }
 
-        int l = isEnabled() ? lower : 2;
-        int h = isEnabled() ? higher : 5;
-
-        icon.setLore(messages.evalTemplate("lore", ImmutableMap.of("lower", l, "higher", h)));
+    @Override
+    protected List<String> getDisabledLore() {
+        return messages.evalTemplates("lore", ImmutableMap.of("lower", 2, "higher", 5));
     }
 
     @EventHandler(ignoreCancelled = true)

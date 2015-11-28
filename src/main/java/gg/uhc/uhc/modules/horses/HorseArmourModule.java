@@ -65,13 +65,6 @@ public class HorseArmourModule extends DisableableModule implements Listener {
     }
 
     @Override
-    public void rerender() {
-        super.rerender();
-
-        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
-    }
-
-    @Override
     public void onDisable() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.isInsideVehicle()) {

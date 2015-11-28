@@ -37,6 +37,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
+
 public class GhastTearDropsModule extends DisableableModule implements Listener {
 
     protected static final String ICON_NAME = "Ghast Tears";
@@ -54,16 +56,25 @@ public class GhastTearDropsModule extends DisableableModule implements Listener 
     }
 
     @Override
-    protected void rerender() {
-        super.rerender();
+    protected void renderEnabled() {
+        super.renderEnabled();
+        icon.setType(Material.GHAST_TEAR);
+    }
 
-        if (isEnabled()) {
-            icon.setType(Material.GHAST_TEAR);
-            icon.setLore(messages.evalTemplate("lore", ImmutableMap.of("item", "ghast tears")));
-        } else {
-            icon.setType(Material.GOLD_INGOT);
-            icon.setLore(messages.evalTemplate("lore", ImmutableMap.of("item", "gold ingots")));
-        }
+    @Override
+    protected void renderDisabled() {
+        super.renderDisabled();
+        icon.setType(Material.GOLD_INGOT);
+    }
+
+    @Override
+    protected List<String> getEnabledLore() {
+        return messages.evalTemplates("lore", ImmutableMap.of("item", "ghast tears"));
+    }
+
+    @Override
+    protected List<String> getDisabledLore() {
+        return messages.evalTemplates("lore", ImmutableMap.of("item", "gold ingots"));
     }
 
     @EventHandler

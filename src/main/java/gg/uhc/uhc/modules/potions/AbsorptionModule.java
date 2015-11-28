@@ -53,13 +53,6 @@ public class AbsorptionModule extends DisableableModule implements Listener {
         return false;
     }
 
-    @Override
-    protected void rerender() {
-        super.rerender();
-
-        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
-    }
-
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void on(PlayerItemConsumeEvent event) {
         if (isEnabled()) return;

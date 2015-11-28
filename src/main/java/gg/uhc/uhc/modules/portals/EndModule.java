@@ -59,13 +59,6 @@ public class EndModule extends DisableableModule implements Listener {
     }
 
     @Override
-    public void rerender() {
-        super.rerender();
-
-        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
-    }
-
-    @Override
     public void onDisable() {
         Set<OfflinePlayer> players = Sets.newHashSet();
         Set<String> worlds = Sets.newHashSet();

@@ -52,13 +52,6 @@ public class HorsesModule extends DisableableModule implements Listener {
         this.icon.setWeight(ModuleRegistry.CATEGORY_MISC);
     }
 
-    @Override
-    public void rerender() {
-        super.rerender();
-
-        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
-    }
-
     protected void kickOffHorse(Player player) {
         Entity vehicle = player.getVehicle();
         if (vehicle == null) return;

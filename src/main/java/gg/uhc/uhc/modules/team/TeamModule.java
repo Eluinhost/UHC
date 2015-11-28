@@ -110,7 +110,7 @@ public class TeamModule extends Module {
         }
 
         setupTeams(Predicates.not(isFiltered));
-        this.icon.setLore(messages.evalTemplate("lore", ImmutableMap.of("count", teams.size())));
+        this.icon.setLore(messages.evalTemplates("lore", ImmutableMap.of("count", teams.size())));
     }
 
     protected void setupTeams(Predicate<Prefix> allowedPrefixes) {

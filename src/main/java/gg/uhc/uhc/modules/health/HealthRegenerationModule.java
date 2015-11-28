@@ -72,16 +72,15 @@ public class HealthRegenerationModule extends DisableableModule implements Liste
     }
 
     @Override
-    protected void rerender() {
-        super.rerender();
+    protected void renderEnabled() {
+        super.renderEnabled();
+        icon.setDurability(ENABLED_DATA);
+    }
 
-        if (isEnabled()) {
-            icon.setDurability(ENABLED_DATA);
-            icon.setLore(messages.getRaw("enabled lore"));
-        } else {
-            icon.setDurability(DISABLED_DATA);
-            icon.setLore(messages.getRaw("disabled lore"));
-        }
+    @Override
+    protected void renderDisabled() {
+        super.renderDisabled();
+        icon.setDurability(DISABLED_DATA);
     }
 
     @Override

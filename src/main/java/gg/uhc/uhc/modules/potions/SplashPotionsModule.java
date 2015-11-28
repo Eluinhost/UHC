@@ -54,13 +54,6 @@ public class SplashPotionsModule extends DisableableModule {
     }
 
     @Override
-    public void rerender() {
-        super.rerender();
-
-        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
-    }
-
-    @Override
     public void onEnable() {
         listener.removeMaterial(Material.SULPHUR);
     }

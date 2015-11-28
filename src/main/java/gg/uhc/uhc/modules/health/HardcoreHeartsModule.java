@@ -69,7 +69,7 @@ public class HardcoreHeartsModule extends Module implements Listener {
 
         ProtocolLibrary.getProtocolManager().addPacketListener(new HardcoreHeartsListener());
 
-        this.icon.setLore(messages.getRaw("lore"));
+        this.icon.setLore(messages.getRawStrings("lore"));
     }
 
     @EventHandler(priority = EventPriority.HIGH)

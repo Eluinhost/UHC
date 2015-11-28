@@ -54,13 +54,6 @@ public class Tier2PotionsModule extends DisableableModule {
     }
 
     @Override
-    public void rerender() {
-        super.rerender();
-
-        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
-    }
-
-    @Override
     protected boolean isEnabledByDefault() {
         return false;
     }

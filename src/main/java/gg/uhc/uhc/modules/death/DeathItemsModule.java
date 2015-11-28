@@ -103,21 +103,16 @@ public class DeathItemsModule extends DisableableModule implements Listener {
     }
 
     @Override
-    public void rerender() {
-        super.rerender();
+    protected List<String> getEnabledLore() {
+        List<String> lore = Lists.newArrayList();
 
-        if (isEnabled()) {
-            List<String> lore = Lists.newArrayListWithCapacity(1 + stacks.size());
-            lore.add(messages.getRaw("enabled lore.header"));
+        lore.addAll(messages.getRawStrings(ENABLED_LORE_PATH + ".header"));
 
-            for (ItemStack stack : stacks) {
-                lore.add(messages.evalTemplate("enabled lore.stack", new StackContext(stack)));
-            }
-
-            icon.setLore(lore.toArray(new String[lore.size()]));
-        } else {
-            icon.setLore(messages.getRaw("disabled lore"));
+        for (ItemStack stack : stacks) {
+            lore.addAll(messages.evalTemplates(ENABLED_LORE_PATH + ".stack", new StackContext(stack)));
         }
+
+        return lore;
     }
 
     @EventHandler(priority = EventPriority.LOW)

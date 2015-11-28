@@ -45,6 +45,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.text.NumberFormat;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Random;
 
 public class HeadDropsModule extends DisableableModule implements Listener {
@@ -103,11 +104,8 @@ public class HeadDropsModule extends DisableableModule implements Listener {
         rerender();
     }
 
-    @Override
-    protected void rerender() {
-        super.rerender();
-
-        icon.setLore(isEnabled() ? messages.evalTemplate("enabled lore", ImmutableMap.of("rate", formatter.format(dropRate * 100))) : messages.getRaw("disabled lore"));
+    protected List<String> getEnabledLore() {
+        return messages.evalTemplates(ENABLED_LORE_PATH, ImmutableMap.of("rate", formatter.format(dropRate * 100)));
     }
 
     @EventHandler(priority = EventPriority.LOW)

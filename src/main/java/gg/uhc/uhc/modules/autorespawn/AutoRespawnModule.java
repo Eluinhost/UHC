@@ -46,13 +46,6 @@ public class AutoRespawnModule extends DisableableModule implements Listener {
         this.iconName = ICON_NAME;
     }
 
-    @Override
-    public void rerender() {
-        super.rerender();
-
-        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
-    }
-
     @EventHandler
     public void on(PlayerDeathEvent event) {
         if (!isEnabled()) return;

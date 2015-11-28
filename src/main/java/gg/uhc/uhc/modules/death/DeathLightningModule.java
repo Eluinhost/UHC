@@ -47,13 +47,6 @@ public class DeathLightningModule extends DisableableModule implements Listener 
         this.icon.setWeight(ModuleRegistry.CATEGORY_DEATH);
     }
 
-    @Override
-    public void rerender() {
-        super.rerender();
-
-        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
-    }
-
     @EventHandler
     public void on(PlayerDeathEvent event) {
         if (!isEnabled()) return;

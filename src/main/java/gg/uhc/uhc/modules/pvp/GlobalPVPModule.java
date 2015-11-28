@@ -61,13 +61,6 @@ public class GlobalPVPModule extends DisableableModule implements Listener {
     }
 
     @Override
-    public void rerender() {
-        super.rerender();
-
-        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
-    }
-
-    @Override
     public void onEnable() {
         for (World world : Bukkit.getWorlds()) {
             if (worlds.worldMatches(world)) {

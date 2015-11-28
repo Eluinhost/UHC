@@ -44,6 +44,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.text.NumberFormat;
+import java.util.List;
 
 public class GoldenHeadsModule extends DisableableModule implements Listener {
 
@@ -110,17 +111,20 @@ public class GoldenHeadsModule extends DisableableModule implements Listener {
     }
 
     @Override
-    public void rerender() {
-        super.rerender();
+    protected void renderEnabled() {
+        super.renderEnabled();
+        icon.setAmount(healAmount);
+    }
 
-        if (isEnabled()) {
-            icon.setLore(messages.evalTemplate("enabled lore", ImmutableMap.of("amount", formatter.format(healAmount / 2D))));
-            // show heal amount on icon
-            icon.setAmount(healAmount);
-        } else {
-            icon.setLore(messages.getRaw("disabled lore"));
-            icon.setAmount(0);
-        }
+    @Override
+    protected void renderDisabled() {
+        super.renderDisabled();
+        icon.setAmount(0);
+    }
+
+    @Override
+    protected List<String> getEnabledLore() {
+        return messages.evalTemplates(ENABLED_LORE_PATH, ImmutableMap.of("amount", formatter.format(healAmount / 2D)));
     }
 
     @EventHandler

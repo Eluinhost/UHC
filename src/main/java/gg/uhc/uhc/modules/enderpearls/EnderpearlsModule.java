@@ -53,13 +53,6 @@ public class EnderpearlsModule extends DisableableModule implements Listener {
         return false;
     }
 
-    @Override
-    protected void rerender() {
-        super.rerender();
-
-        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
-    }
-
     @EventHandler(ignoreCancelled = true)
     public void on(EntityDamageByEntityEvent event) {
         if (isEnabled()) return;

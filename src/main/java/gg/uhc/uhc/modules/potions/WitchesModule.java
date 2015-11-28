@@ -47,13 +47,6 @@ public class WitchesModule extends DisableableModule implements Listener {
         this.icon.setWeight(ModuleRegistry.CATEGORY_MISC);
     }
 
-    @Override
-    public void rerender() {
-        super.rerender();
-
-        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
-    }
-
     @EventHandler(ignoreCancelled = true)
     public void on(CreatureSpawnEvent event) {
         if (isEnabled()) return;

@@ -43,10 +43,13 @@ import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Map;
 
 public abstract class DisableableModule extends Module implements ClickHandler {
 
+    protected static final String ENABLED_LORE_PATH = "enabled lore";
+    protected static final String DISABLED_LORE_PATH = "disabled lore";
     protected static final String CONFIRMATION_TITLE = ChatColor.DARK_PURPLE + "Toggle: ";
 
     protected static final ClickHandler CLOSE_INVENTORY = new ClickHandler() {
@@ -119,16 +122,31 @@ public abstract class DisableableModule extends Module implements ClickHandler {
         Bukkit.getServer().getPluginManager().registerEvents(confirmation, plugin);
     }
 
-    protected void rerender() {
-        IconStack icon = getIconStack();
+    protected final void rerender() {
+        if (isEnabled())
+            renderEnabled();
+        else
+            renderDisabled();
+    }
 
-        if (isEnabled()) {
-            icon.setDisplayName(ChatColor.GREEN + iconName);
-            icon.setAmount(1);
-        } else {
-            icon.setDisplayName(ChatColor.RED + iconName);
-            icon.setAmount(0);
-        }
+    protected void renderEnabled() {
+        icon.setDisplayName(ChatColor.GREEN + iconName);
+        icon.setAmount(1);
+        icon.setLore(getEnabledLore());
+    }
+
+    protected List<String> getEnabledLore() {
+        return messages.getRawStrings(ENABLED_LORE_PATH);
+    }
+
+    protected void renderDisabled() {
+        icon.setDisplayName(ChatColor.RED + iconName);
+        icon.setAmount(0);
+        icon.setLore(getDisabledLore());
+    }
+
+    protected List<String> getDisabledLore() {
+        return messages.getRawStrings(DISABLED_LORE_PATH);
     }
 
     protected void onEnable() {}

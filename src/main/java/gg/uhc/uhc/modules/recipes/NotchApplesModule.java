@@ -54,13 +54,6 @@ public class NotchApplesModule extends DisableableModule implements Listener {
         return false;
     }
 
-    @Override
-    protected void rerender() {
-        super.rerender();
-
-        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
-    }
-
     @EventHandler
     public void on(PrepareItemCraftEvent event) {
         if (isEnabled()) return;

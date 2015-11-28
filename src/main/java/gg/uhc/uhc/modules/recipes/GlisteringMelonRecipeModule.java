@@ -61,13 +61,6 @@ public class GlisteringMelonRecipeModule extends DisableableModule implements Li
         return true;
     }
 
-    @Override
-    protected void rerender() {
-        super.rerender();
-
-        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
-    }
-
     @EventHandler
     public void on(PrepareItemCraftEvent event) {
         Recipe recipe = event.getRecipe();

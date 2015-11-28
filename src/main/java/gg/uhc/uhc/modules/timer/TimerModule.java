@@ -57,7 +57,7 @@ public class TimerModule extends Module {
 
     @Override
     public void initialize() {
-        this.icon.setLore(messages.getRaw("lore"));
+        this.icon.setLore(messages.getRawStrings("lore"));
     }
 
     public void startTimer(TimerMessage message, long seconds) {

@@ -67,13 +67,6 @@ public class DifficultyModule extends DisableableModule implements Listener {
     }
 
     @Override
-    protected void rerender() {
-        super.rerender();
-
-        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
-    }
-
-    @Override
     public void onEnable() {
         for (World world : Bukkit.getWorlds()) {
             if (worlds.worldMatches(world)) {

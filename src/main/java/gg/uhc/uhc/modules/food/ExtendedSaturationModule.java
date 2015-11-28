@@ -36,6 +36,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 
+import java.util.List;
+
 public class ExtendedSaturationModule extends DisableableModule implements Listener {
 
     protected static final String ICON_NAME = "Extended Saturation";
@@ -81,14 +83,8 @@ public class ExtendedSaturationModule extends DisableableModule implements Liste
     }
 
     @Override
-    protected void rerender() {
-        super.rerender();
-
-        if (isEnabled()) {
-            icon.setLore(messages.evalTemplate("enabled lore", ImmutableMap.of("multiplier", multiplier)));
-        } else {
-            icon.setLore(messages.getRaw("disabled lore"));
-        }
+    protected List<String> getEnabledLore() {
+        return messages.evalTemplates(ENABLED_LORE_PATH, ImmutableMap.of("multiplier", multiplier));
     }
 
     @EventHandler(ignoreCancelled = true)

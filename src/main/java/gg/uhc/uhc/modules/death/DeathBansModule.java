@@ -126,30 +126,24 @@ public class DeathBansModule extends DisableableModule implements Listener {
     }
 
     @Override
-    public void rerender() {
-        super.rerender();
+    protected List<String> getEnabledLore() {
+        List<String> parts = Lists.newArrayList();
+        parts.addAll(messages.evalTemplates(ENABLED_LORE_PATH + ".header", ImmutableMap.of("delay", TimeUtil.secondsToString(delay))));
 
-        if (isEnabled()) {
-            List<String> parts = Lists.newArrayList();
-            parts.add(messages.evalTemplate("enabled lore.header", ImmutableMap.of("delay", TimeUtil.secondsToString(delay))));
-            parts.add(messages.getRaw("enabled lore.actions.header"));
-
-            for (BanType type : types) {
-                switch (type) {
-                    case MOVE_WORLD:
-                        parts.add(messages.evalTemplate("enabled lore.actions.move world", ImmutableMap.of("world", worldName))); break;
-                    case BAN:
-                        parts.add(messages.evalTemplate("enabled lore.actions.ban", ImmutableMap.of("duration", TimeUtil.secondsToString(duration)))); break;
-                    case MOVE_SERVER:
-                        parts.add(messages.evalTemplate("enabled lore.actions.server", ImmutableMap.of("server", serverName))); break;
-                    case KICK:
-                        parts.add(messages.getRaw("enabled lore.actions.kick")); break;
-                }
+        for (BanType type : types) {
+            switch (type) {
+                case MOVE_WORLD:
+                    parts.addAll(messages.evalTemplates(ENABLED_LORE_PATH + ".actions.move world", ImmutableMap.of("world", worldName))); break;
+                case BAN:
+                    parts.addAll(messages.evalTemplates(ENABLED_LORE_PATH + ".actions.ban", ImmutableMap.of("duration", TimeUtil.secondsToString(duration)))); break;
+                case MOVE_SERVER:
+                    parts.addAll(messages.evalTemplates(ENABLED_LORE_PATH + ".actions.server", ImmutableMap.of("server", serverName))); break;
+                case KICK:
+                    parts.addAll(messages.getRawStrings(ENABLED_LORE_PATH + ".actions.kick")); break;
             }
-            icon.setLore(parts.toArray(new String[parts.size()]));
-        } else {
-            icon.setLore(messages.getRaw("disabled lore"));
         }
+
+        return parts;
     }
 
     @EventHandler

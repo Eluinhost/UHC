@@ -96,21 +96,15 @@ public class PercentHealthObjectiveModule extends DisableableModule {
     }
 
     @Override
-    public void rerender() {
-        super.rerender();
+    protected List<String> getEnabledLore() {
+        List<String> lore = Lists.newArrayList();
+        lore.addAll(messages.getRawStrings("enabled lore.header"));
 
-        if (isEnabled()) {
-            List<String> lore = Lists.newArrayList();
-            lore.add(messages.getRaw("enabled lore.header"));
-
-            for (Objective objective : objectives.keySet()) {
-                lore.add(messages.evalTemplate("enabled lore.item", ImmutableMap.of("objective", objective.getName())));
-            }
-
-            icon.setLore(lore.toArray(new String[lore.size()]));
-        } else {
-            icon.setLore(messages.getRaw("disabled lore"));
+        for (Objective objective : objectives.keySet()) {
+            lore.addAll(messages.evalTemplates("enabled lore.item", ImmutableMap.of("objective", objective.getName())));
         }
+
+        return lore;
     }
 
     @Override

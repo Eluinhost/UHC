@@ -71,13 +71,6 @@ public class DeathStandsModule extends DisableableModule implements Listener {
         this.icon.setWeight(ModuleRegistry.CATEGORY_DEATH);
     }
 
-    @Override
-    public void rerender() {
-        super.rerender();
-        
-        icon.setLore(messages.getRaw(isEnabled() ? "enabled lore" : "disabled lore"));
-    }
-
     protected boolean isProtectedArmourStand(Entity entity) {
         String customName = entity.getCustomName();
 
