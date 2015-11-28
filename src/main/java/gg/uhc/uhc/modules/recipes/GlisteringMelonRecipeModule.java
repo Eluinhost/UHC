@@ -43,6 +43,8 @@ public class GlisteringMelonRecipeModule extends DisableableModule implements Li
     protected static final String ICON_NAME = "Glistering Melon Recipe";
 
     public GlisteringMelonRecipeModule() {
+        setId("GlisteringMelonRecipe");
+
         this.iconName = ICON_NAME;
         this.icon.setType(Material.SPECKLED_MELON);
         this.icon.setWeight(ModuleRegistry.CATEGORY_RECIPIES);

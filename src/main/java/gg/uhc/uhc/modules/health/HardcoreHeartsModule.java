@@ -49,6 +49,8 @@ public class HardcoreHeartsModule extends Module implements Listener {
     protected final AutoRespawnModule respawnModule;
 
     public HardcoreHeartsModule(AutoRespawnModule respawnModule) {
+        setId("HardcoreHearts");
+
         this.respawnModule = respawnModule;
         this.icon.setType(Material.DOUBLE_PLANT);
         this.icon.setDurability((short) 4);

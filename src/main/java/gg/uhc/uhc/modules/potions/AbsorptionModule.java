@@ -41,6 +41,8 @@ public class AbsorptionModule extends DisableableModule implements Listener {
     protected static final String ICON_NAME = "Absorption";
 
     public AbsorptionModule() {
+        setId("Absorption");
+
         this.iconName = ICON_NAME;
         this.icon.setType(Material.POTION);
         this.icon.setWeight(ModuleRegistry.CATEGORY_POTIONS);

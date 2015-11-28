@@ -40,6 +40,8 @@ public class WitchesModule extends DisableableModule implements Listener {
     protected static final String ICON_NAME = "Witch spawns";
 
     public WitchesModule() {
+        setId("WitchSpawns");
+
         this.iconName = ICON_NAME;
         this.icon.setType(Material.FLOWER_POT_ITEM);
         this.icon.setWeight(ModuleRegistry.CATEGORY_MISC);

@@ -41,6 +41,8 @@ public class NotchApplesModule extends DisableableModule implements Listener {
     protected static final String ICON_NAME = "Notch apples";
 
     public NotchApplesModule() {
+        setId("NotchApples");
+
         this.iconName = ICON_NAME;
         this.icon.setType(Material.GOLDEN_APPLE);
         this.icon.setDurability((short) 1);

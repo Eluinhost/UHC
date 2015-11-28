@@ -42,6 +42,8 @@ public class GhastTearDropsModule extends DisableableModule implements Listener 
     protected static final String ICON_NAME = "Ghast Tears";
 
     public GhastTearDropsModule() {
+        setId("GhastTears");
+
         this.iconName = ICON_NAME;
         this.icon.setWeight(ModuleRegistry.CATEGORY_POTIONS);
     }

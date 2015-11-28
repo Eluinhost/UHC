@@ -46,6 +46,8 @@ public class TimerModule extends Module {
     protected long targetTick;
 
     public TimerModule() {
+        setId("Timer");
+
         messenger = new ActionBarMessenger(ProtocolLibrary.getProtocolManager());
 
         this.icon.setDisplayName(ChatColor.GREEN + "Actionbar Timer");

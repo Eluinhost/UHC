@@ -40,6 +40,8 @@ public class Tier2PotionsModule extends DisableableModule {
     protected final PotionFuelsListener listener;
 
     public Tier2PotionsModule(PotionFuelsListener listener) {
+        setId("Tier2Potions");
+
         this.listener = listener;
 
         Potion potion = new Potion(PotionType.INSTANT_HEAL);

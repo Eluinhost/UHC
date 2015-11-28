@@ -47,6 +47,8 @@ public class DifficultyModule extends DisableableModule implements Listener {
     protected WorldMatcher worlds;
 
     public DifficultyModule() {
+        setId("HardDifficulty");
+
         this.iconName = ICON_NAME;
         this.icon.setType(Material.ARROW);
         this.icon.setWeight(ModuleRegistry.CATEGORY_WORLD);

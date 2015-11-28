@@ -113,42 +113,42 @@ public class UHC extends JavaPlugin {
 
         registry = new ModuleRegistry(this, baseMessages, configuration);
 
-        registry.register(new DifficultyModule(), "HardDifficulty");
-        registry.register(new HealthRegenerationModule(), "HealthRegen");
-        registry.register(new GhastTearDropsModule(), "GhastTears");
-        registry.register(new GoldenCarrotRecipeModule(), "GoldenCarrotRecipe");
-        registry.register(new GlisteringMelonRecipeModule(), "GlisteringMelonRecipe");
-        registry.register(new NotchApplesModule(), "NotchApples");
-        registry.register(new AbsorptionModule(), "Absorption");
-        registry.register(new ExtendedSaturationModule(), "ExtendedSaturation");
-        registry.register(new GlobalPVPModule(), "PVP");
-        registry.register(new EnderpearlsModule(), "EnderpearlDamage");
-        registry.register(new WitchesModule(), "WitchSpawns");
-        registry.register(new NetherModule(), "Nether");
-        registry.register(new EndModule(), "TheEnd");
-        registry.register(new DeathBansModule(), "DeathBans");
-        registry.register(new HorsesModule(), "Horses");
-        registry.register(new HorseArmourModule(), "HorseArmour");
-        registry.register(new DeathLightningModule(), "DeathLightning");
-        registry.register(new ModifiedDeathMessagesModule(), "DeathMessages");
-        registry.register(new DeathItemsModule(), "DeathItems");
-        registry.register(new ChatHealthPrependModule(), "ChatHealth");
-        registry.register(new NerfQuartzXPModule(), "NerfQuartzXP");
+        registry.register(new DifficultyModule());
+        registry.register(new HealthRegenerationModule());
+        registry.register(new GhastTearDropsModule());
+        registry.register(new GoldenCarrotRecipeModule());
+        registry.register(new GlisteringMelonRecipeModule());
+        registry.register(new NotchApplesModule());
+        registry.register(new AbsorptionModule());
+        registry.register(new ExtendedSaturationModule());
+        registry.register(new GlobalPVPModule());
+        registry.register(new EnderpearlsModule());
+        registry.register(new WitchesModule());
+        registry.register(new NetherModule());
+        registry.register(new EndModule());
+        registry.register(new DeathBansModule());
+        registry.register(new HorsesModule());
+        registry.register(new HorseArmourModule());
+        registry.register(new DeathLightningModule());
+        registry.register(new ModifiedDeathMessagesModule());
+        registry.register(new DeathItemsModule());
+        registry.register(new ChatHealthPrependModule());
+        registry.register(new NerfQuartzXPModule());
 
         AutoRespawnModule respawnModule = new AutoRespawnModule();
-        boolean respawnModuleLoaded = registry.register(respawnModule, "AutoRespawn");
+        boolean respawnModuleLoaded = registry.register(respawnModule);
 
         if (getServer().getPluginManager().getPlugin("ProtocolLib") != null) {
             TimerModule timer = new TimerModule();
 
-            setup(registry.register(timer, "Timer") ? new TimerCommand(forCommand("timer"), timer) : dummyCommands.forModule("Timer"), "timer");
+            setup(registry.register(timer) ? new TimerCommand(forCommand("timer"), timer) : dummyCommands.forModule(timer), "timer");
 
             if (respawnModuleLoaded) {
-                registry.register(new HardcoreHeartsModule(respawnModule), "HardcoreHearts");
+                registry.register(new HardcoreHeartsModule(respawnModule));
             }
         }
 
-        registry.register(new PercentHealthObjectiveModule(), "PercentHealth");
+        registry.register(new PercentHealthObjectiveModule());
         setup(new PlayerListHealthCommand(
                 forCommand("showhealth"),
                 Bukkit.getScoreboardManager().getMainScoreboard(),
@@ -159,18 +159,18 @@ public class UHC extends JavaPlugin {
 
         PotionFuelsListener fuelsListener = new PotionFuelsListener();
         registry.registerEvents(fuelsListener);
-        registry.register(new Tier2PotionsModule(fuelsListener), "Tier2Potions");
-        registry.register(new SplashPotionsModule(fuelsListener), "SplashPotions");
+        registry.register(new Tier2PotionsModule(fuelsListener));
+        registry.register(new SplashPotionsModule(fuelsListener));
 
         PlayerHeadProvider headProvider = new PlayerHeadProvider();
         GoldenHeadsModule gheadModule = new GoldenHeadsModule(headProvider);
-        boolean gheadsLoaded = registry.register(gheadModule, "GoldenHeads");
-        setup(gheadsLoaded ? new GoldenHeadsHealthCommand(forCommand("ghead"), gheadModule) : dummyCommands.forModule("GoldenHeads"), "ghead");
-        registry.register(new HeadDropsModule(headProvider), "HeadDrops");
-        registry.register(new DeathStandsModule(), "DeathStands");
+        boolean gheadsLoaded = registry.register(gheadModule);
+        setup(gheadsLoaded ? new GoldenHeadsHealthCommand(forCommand("ghead"), gheadModule) : dummyCommands.forModule(gheadModule), "ghead");
+        registry.register(new HeadDropsModule(headProvider));
+        registry.register(new DeathStandsModule());
 
         TeamModule teamModule = new TeamModule();
-        if (registry.register(teamModule, "TeamManager")) {
+        if (registry.register(teamModule)) {
             setup(new ListTeamsCommand(forCommand("teams"), teamModule), "teams");
             setup(new NoTeamCommand(forCommand("noteam"), teamModule), "noteam");
             setup(new TeamPMCommand(forCommand("pmt"), teamModule), "pmt");
@@ -194,7 +194,7 @@ public class UHC extends JavaPlugin {
             teamrequest.registerSubcommand("list", new RequestListCommand(requestMessages, requestManager));
             setup(teamrequest, "teamrequest");
         } else {
-            setup(dummyCommands.forModule("TeamManager"), "teams", "team", "noteam", "pmt", "randomteams", "clearteams", "tc", "teamrequest");
+            setup(dummyCommands.forModule(teamModule), "teams", "team", "noteam", "pmt", "randomteams", "clearteams", "tc", "teamrequest");
         }
 
         setup(new WorldBorderCommand(forCommand("border")), "border");

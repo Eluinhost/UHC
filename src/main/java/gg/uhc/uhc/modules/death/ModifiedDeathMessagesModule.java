@@ -54,6 +54,8 @@ public class ModifiedDeathMessagesModule extends DisableableModule implements Li
     protected Mustache template;
 
     public ModifiedDeathMessagesModule() {
+        setId("DeathMessages");
+
         this.iconName = ICON_NAME;
         this.icon.setType(Material.BANNER);
         this.icon.setWeight(ModuleRegistry.CATEGORY_DEATH);

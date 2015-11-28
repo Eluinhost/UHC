@@ -43,6 +43,8 @@ public class HorsesModule extends DisableableModule implements Listener {
     protected static final String ICON_NAME = "Horse Riding";
 
     public HorsesModule() {
+        setId("Horses");
+
         this.iconName = ICON_NAME;
 
         this.icon.setType(Material.MONSTER_EGG);

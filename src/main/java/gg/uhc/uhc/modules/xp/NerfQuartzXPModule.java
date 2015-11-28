@@ -50,6 +50,8 @@ public class NerfQuartzXPModule extends DisableableModule implements Listener {
     protected int higher;
 
     public NerfQuartzXPModule() {
+        setId("NerfQuartzXP");
+
         this.iconName = ICON_NAME;
         this.icon.setType(Material.QUARTZ);
         this.icon.setWeight(ModuleRegistry.CATEGORY_MISC);

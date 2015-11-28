@@ -41,6 +41,8 @@ public class EnderpearlsModule extends DisableableModule implements Listener {
     protected static final String ICON_NAME = "Enderpearl Damage";
 
     public EnderpearlsModule() {
+        setId("EnderpearlDamage");
+
         this.iconName = ICON_NAME;
         this.icon.setType(Material.ENDER_PEARL);
         this.icon.setWeight(ModuleRegistry.CATEGORY_MISC);

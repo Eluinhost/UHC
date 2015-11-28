@@ -57,6 +57,8 @@ public class TeamModule extends Module {
     protected Map<String, Team> teams;
 
     public TeamModule() {
+        setId("TeamManager");
+
         scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
 
         this.icon.setType(Material.WOOL);

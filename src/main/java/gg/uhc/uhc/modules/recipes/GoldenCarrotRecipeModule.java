@@ -43,6 +43,8 @@ public class GoldenCarrotRecipeModule extends DisableableModule implements Liste
     protected static final String ICON_NAME = "Golden Carrot Recipe";
 
     public GoldenCarrotRecipeModule() {
+        setId("GoldenCarrotRecipe");
+
         this.iconName = ICON_NAME;
         this.icon.setType(Material.GOLDEN_CARROT);
         this.icon.setWeight(ModuleRegistry.CATEGORY_RECIPIES);

@@ -52,6 +52,8 @@ public class HealthRegenerationModule extends DisableableModule implements Liste
     protected WorldMatcher worlds;
 
     public HealthRegenerationModule() {
+        setId("HealthRegen");
+
         this.iconName = ICON_NAME;
         this.icon.setType(Material.POTION);
         this.icon.setWeight(ModuleRegistry.CATEGORY_HEALTH);

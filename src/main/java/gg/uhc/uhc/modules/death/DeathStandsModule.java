@@ -63,6 +63,8 @@ public class DeathStandsModule extends DisableableModule implements Listener {
     protected static final String STAND_PREFIX = ChatColor.RED + "RIP: " + ChatColor.RESET;
 
     public DeathStandsModule() {
+        setId("DeathStands");
+
         this.iconName = ICON_NAME;
 
         this.icon.setType(Material.ARMOR_STAND);

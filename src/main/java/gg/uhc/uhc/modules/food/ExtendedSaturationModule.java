@@ -43,8 +43,9 @@ public class ExtendedSaturationModule extends DisableableModule implements Liste
     protected double multiplier;
 
     public ExtendedSaturationModule() {
-        this.iconName = ICON_NAME;
+        setId("ExtendedSaturation");
 
+        this.iconName = ICON_NAME;
         this.icon.setType(Material.COOKED_BEEF);
         this.icon.setWeight(ModuleRegistry.CATEGORY_MISC);
     }

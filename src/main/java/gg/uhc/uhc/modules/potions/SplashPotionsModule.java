@@ -40,6 +40,8 @@ public class SplashPotionsModule extends DisableableModule {
     protected final PotionFuelsListener listener;
 
     public SplashPotionsModule(PotionFuelsListener listener) {
+        setId("SplashPotions");
+
         this.listener = listener;
 
         Potion potion = new Potion(PotionType.POISON);

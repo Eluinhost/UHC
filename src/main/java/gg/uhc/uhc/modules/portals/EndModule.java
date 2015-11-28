@@ -51,6 +51,8 @@ public class EndModule extends DisableableModule implements Listener {
     protected static final String ICON_NAME = "The End";
 
     public EndModule() {
+        setId("TheEnd");
+
         this.iconName = ICON_NAME;
         this.icon.setType(Material.ENDER_PORTAL_FRAME);
         this.icon.setWeight(ModuleRegistry.CATEGORY_WORLD);

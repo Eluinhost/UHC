@@ -66,6 +66,8 @@ public class PercentHealthObjectiveModule extends DisableableModule {
     protected int updatePeriod;
 
     public PercentHealthObjectiveModule() {
+        setId("PercentHealth");
+
         this.iconName = ICON_NAME;
         this.icon.setType(Material.DAYLIGHT_DETECTOR);
         this.icon.setWeight(ModuleRegistry.CATEGORY_HEALTH);

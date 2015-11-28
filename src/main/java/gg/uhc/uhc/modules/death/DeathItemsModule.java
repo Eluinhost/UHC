@@ -50,6 +50,8 @@ public class DeathItemsModule extends DisableableModule implements Listener {
     protected List<ItemStack> stacks = Lists.newArrayList();
 
     public DeathItemsModule() {
+        setId("DeathItems");
+
         this.iconName = ICON_NAME;
         this.icon.setType(Material.BUCKET);
         this.icon.setWeight(ModuleRegistry.CATEGORY_DEATH);

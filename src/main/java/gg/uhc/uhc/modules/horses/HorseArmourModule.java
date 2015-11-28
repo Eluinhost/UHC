@@ -56,6 +56,8 @@ public class HorseArmourModule extends DisableableModule implements Listener {
     protected static final Set<Material> DISABLED = ImmutableSet.of(Material.IRON_BARDING, Material.GOLD_BARDING, Material.DIAMOND_BARDING);
 
     public HorseArmourModule() {
+        setId("HorseArmour");
+
         this.iconName = ICON_NAME;
 
         this.icon.setType(Material.DIAMOND_BARDING);

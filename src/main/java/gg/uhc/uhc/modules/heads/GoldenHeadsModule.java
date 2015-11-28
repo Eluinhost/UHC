@@ -61,6 +61,8 @@ public class GoldenHeadsModule extends DisableableModule implements Listener {
     protected int healAmount;
 
     public GoldenHeadsModule(PlayerHeadProvider provider) {
+        setId("GoldenHeads");
+
         this.playerHeadProvider = provider;
 
         this.iconName = ICON_NAME;

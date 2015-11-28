@@ -48,6 +48,8 @@ public class NetherModule extends DisableableModule implements Listener {
     protected static final String ICON_NAME = "Nether";
 
     public NetherModule() {
+        setId("Nether");
+
         this.iconName = ICON_NAME;
         this.icon.setType(Material.NETHER_STALK);
         this.icon.setWeight(ModuleRegistry.CATEGORY_WORLD);

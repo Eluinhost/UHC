@@ -46,6 +46,8 @@ public class GlobalPVPModule extends DisableableModule implements Listener {
     protected WorldMatcher worlds;
 
     public GlobalPVPModule() {
+        setId("PVP");
+
         this.iconName = ICON_NAME;
         this.icon.setType(Material.IRON_SWORD);
         this.icon.setWeight(ModuleRegistry.CATEGORY_WORLD);

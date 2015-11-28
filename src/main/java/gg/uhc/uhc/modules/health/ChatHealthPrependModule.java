@@ -78,6 +78,8 @@ public class ChatHealthPrependModule extends DisableableModule implements Listen
     protected boolean useNumbers;
 
     public ChatHealthPrependModule() {
+        setId("ChatHealth");
+
         this.iconName = ICON_NAME;
 
         this.icon.setType(Material.NAME_TAG);

@@ -39,6 +39,8 @@ public class AutoRespawnModule extends DisableableModule implements Listener {
     protected static final String ICON_NAME = "Autorespawn on Death";
 
     public AutoRespawnModule() {
+        setId("AutoRespawn");
+
         this.icon.setType(Material.REDSTONE);
         this.icon.setWeight(ModuleRegistry.CATEGORY_DEATH);
         this.iconName = ICON_NAME;

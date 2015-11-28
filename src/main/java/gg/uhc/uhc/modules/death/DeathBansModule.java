@@ -65,6 +65,8 @@ public class DeathBansModule extends DisableableModule implements Listener {
     protected String serverName;
 
     public DeathBansModule() {
+        setId("DeathBans");
+
         this.iconName = ICON_NAME;
         this.icon.setType(Material.BARRIER);
         this.icon.setWeight(ModuleRegistry.CATEGORY_DEATH);

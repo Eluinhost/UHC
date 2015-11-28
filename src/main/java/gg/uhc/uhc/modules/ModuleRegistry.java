@@ -95,9 +95,62 @@ public class ModuleRegistry {
         return Optional.fromNullable(modules.get(id.toLowerCase()));
     }
 
+    /**
+     * Helper method for transition.
+     * Sets the module id and then registers it using #register(Module)
+     *
+     * @return true if module loaded
+     * @throws IllegalStateException if module's id was already set
+     * @see ModuleRegistry#register(Module)
+     *
+     * @deprecated
+     */
     public boolean register(Module module, String id) {
+        module.setId(id);
+        return register(module);
+    }
+
+    /**
+     * Registers the given module with the registry.
+     *
+     * <p>
+     *     A module must have an id set that is:
+     *     <ul>
+     *         <li>at most 22 characters</li>
+     *         <li>alphanumeric + _</li>
+     *         <li>not already registered (case insensitive)</li>
+     *     </ul>
+     * </p>
+     *
+     * <p>
+     *     The module will be given a:
+     *     <ul>
+     *         <li>Plugin</li>
+     *         <li>message templates</li>
+     *         <li>configuration section</li>
+     *     </ul>
+     *     These will only be added if they have not already been set
+     * </p>
+     *
+     * <p>If the configuration says not to load the module this method will then return false and nothing else will be done</p>
+     *
+     * <p>
+     *     If the module does load:
+     *     <ul>
+     *         <li>Module#initialize() is called for initialization of the module, If any exceptions are thrown during initialization the module will not be loaded</li>
+     *         <li>If the module implements Listener it is registered for events</li>
+     *         <li>the module's icon is registered in the config inventory</li>
+     *         <li>it is stored in the registry</li>
+     *     </ul>
+     * </p>
+     * @param module the module to register
+     * @return true if the module is loaded and stored
+     */
+    public boolean register(Module module) {
+        String id = module.getId();
+        Preconditions.checkNotNull(id, "Module does not have an id set");
         Preconditions.checkArgument(VALID_MODULE_NAME_REGEX.matcher(id).matches(), "Module id may only contain alphanumberic characters and _, found `" + id + "`");
-        Preconditions.checkArgument(id.length() <= 22, "Module names can only be 12 characters at most");
+        Preconditions.checkArgument(module.getId().length() <= 22, "Module names can only be 22 characters at most");
 
         // use all lower case in the map
         id = id.toLowerCase();
@@ -107,21 +160,30 @@ public class ModuleRegistry {
 
         String sectionId = "modules." + id;
 
-        // initialize the plugin for config saving and strings
-        module.setPlugin(plugin);
-        module.setMessageTemplates(new SubsectionMessageTemplates(strings, sectionId));
+        // check add inject plugin
+        if (module.getPlugin() == null) {
+            module.setPlugin(plugin);
+        }
 
-        // set the module ID
-        module.setId(id);
+        // check and inject templates
+        if (module.getMessageTemaplates() == null) {
+            module.setMessageTemplates(new SubsectionMessageTemplates(strings, sectionId));
+        }
 
         if (!config.contains(sectionId)) {
             config.createSection(sectionId);
         }
 
-        ConfigurationSection section = config.getConfigurationSection(sectionId);
+        // check and inject configuration
+        ConfigurationSection section;
+        if (module.getConfig() == null) {
+            section = config.getConfigurationSection(sectionId);
 
-        // add the configuration
-        module.setConfig(section);
+            // add the configuration
+            module.setConfig(section);
+        } else {
+            section = module.getConfig();
+        }
 
         // set load parameter if it doesn't exist
         if (!section.contains("load")) {
