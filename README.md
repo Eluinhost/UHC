@@ -59,6 +59,7 @@ List of modules provided by the plugin:
 - [DeathItems](docs/modules/DeathItems.md)
 - [TeamManager](docs/modules/TeamManager.md)
 - [Horses](docs/modules/Horses.md)
+- [HorseHealing](docs/modules/HorseHealing.md)
 - [HorseArmour](docs/modules/HorseArmour.md)
 - [ChatHealth](docs/modules/ChatHealth.md)
 - [NerfQuartzXP](docs/modules/NerfQuartzXP.md)

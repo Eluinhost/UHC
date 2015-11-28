@@ -50,6 +50,7 @@ import gg.uhc.uhc.modules.heads.HeadDropsModule;
 import gg.uhc.uhc.modules.heads.PlayerHeadProvider;
 import gg.uhc.uhc.modules.health.*;
 import gg.uhc.uhc.modules.horses.HorseArmourModule;
+import gg.uhc.uhc.modules.horses.HorseHealingModule;
 import gg.uhc.uhc.modules.horses.HorsesModule;
 import gg.uhc.uhc.modules.portals.EndModule;
 import gg.uhc.uhc.modules.portals.NetherModule;
@@ -233,6 +234,7 @@ public class UHC extends JavaPlugin {
         registry.register(new EndModule());
         registry.register(new DeathBansModule());
         registry.register(new HorsesModule());
+        registry.register(new HorseHealingModule());
         registry.register(new HorseArmourModule());
         registry.register(new DeathLightningModule());
         registry.register(new ModifiedDeathMessagesModule());
