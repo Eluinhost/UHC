@@ -43,29 +43,80 @@ public abstract class Module {
     protected Plugin plugin;
     protected String id;
 
-    protected void setPlugin(Plugin plugin) {
+    /**
+     * @param plugin the plugin instance to use for timers e.t.c.
+     */
+    public void setPlugin(Plugin plugin) {
         this.plugin = plugin;
     }
 
+    /**
+     * @return the plugin instance used by this module. May be null if not set yet
+     */
+    public Plugin getPlugin() {
+        return plugin;
+    }
+
+    /**
+     * @param messages templating section to pull messages from
+     */
     public void setMessageTemplates(MessageTemplates messages) {
         this.messages = messages;
     }
 
-    protected void setConfig(ConfigurationSection section) {
+    /**
+     * @return templating section, null if not set yet.
+     */
+    public MessageTemplates getMessageTemaplates() {
+        return messages;
+    }
+
+    /**
+     * @param section the config section to pull values from
+     */
+    public void setConfig(ConfigurationSection section) {
         this.config = section;
     }
 
-    public void initialize() throws InvalidConfigurationException { }
-
-    protected void saveConfig() {
-        plugin.saveConfig();
+    /**
+     * @return config section to pull config from, null if not set yet
+     */
+    public ConfigurationSection getConfig() {
+        return config;
     }
 
-    protected void setId(String id) {
+    /**
+     * @param id set the id of this module
+     * @throws IllegalStateException if id has already been set
+     */
+    public void setId(String id) {
         Preconditions.checkState(this.id == null, "ID has already been set, cannot be set again");
         this.id = id;
     }
 
+    /**
+     * @return the id of this module, may be null if not set yet
+     */
+    public String getId() {
+        return this.id;
+    }
+
+    /**
+     * Should be called after constuctor and setters have been called
+     * @throws InvalidConfigurationException
+     */
+    public abstract void initialize() throws InvalidConfigurationException;
+
+    /**
+     * Simple wrapper around plugin.saveConfig();
+     */
+    protected void saveConfig() {
+        plugin.saveConfig();
+    }
+
+    /**
+     * @return this modules IconStack
+     */
     public final IconStack getIconStack() {
         return icon;
     }
