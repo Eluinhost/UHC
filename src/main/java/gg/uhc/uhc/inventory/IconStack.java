@@ -114,6 +114,10 @@ public class IconStack extends ItemStack implements Comparable<IconStack> {
         setItemMeta(meta);
     }
 
+    public void setLore(List<String> lore) {
+        setLore(lore.toArray(new String[lore.size()]));
+    }
+
     @Override
     public int compareTo(IconStack other) {
         return Ordering.natural().compare(weight, other.weight);
