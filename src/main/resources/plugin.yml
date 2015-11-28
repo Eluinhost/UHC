@@ -49,6 +49,8 @@ commands:
     permission: uhc.command.health
   wlist:
     permission: uhc.command.wlist
+  permaday:
+    permission: uhc.command.permaday
 permissions:
   uhc.command.showhealth:
     default: op
@@ -97,4 +99,6 @@ permissions:
   uhc.command.health:
     default: true
   uhc.command.wlist:
+    default: op
+  uhc.command.permaday:
     default: op

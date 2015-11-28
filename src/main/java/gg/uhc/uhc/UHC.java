@@ -42,6 +42,7 @@ import gg.uhc.uhc.modules.commands.DummyCommandFactory;
 import gg.uhc.uhc.modules.commands.ModuleCommands;
 import gg.uhc.uhc.modules.death.*;
 import gg.uhc.uhc.modules.difficulty.DifficultyModule;
+import gg.uhc.uhc.modules.difficulty.PermadayCommand;
 import gg.uhc.uhc.modules.enderpearls.EnderpearlsModule;
 import gg.uhc.uhc.modules.food.ExtendedSaturationModule;
 import gg.uhc.uhc.modules.heads.GoldenHeadsHealthCommand;
@@ -142,6 +143,7 @@ public class UHC extends JavaPlugin {
 
         setupCommand(new WorldBorderCommand(commandMessages("border")), "border");
         setupCommand(new ModuleCommands(commandMessages("uhc"), registry), "uhc");
+        setupCommand(new PermadayCommand(commandMessages("permaday")), "permaday");
 
         long cacheTicks = 30 * 20;
         setupCommand(new PlayerAffectingCommand(commandMessages("heal"), new PlayerHealthResetter(this, cacheTicks)), "heal");

@@ -132,6 +132,7 @@ Each number is a weight at which to place a spacer icon. NOTE the inventory can 
 - [/tpp](docs/commands/tpp.md)
 - [/h](docs/commands/h.md)
 - [/wlist](docs/commands/wlist.md)
+- [/permaday](docs/commands/permaday.md)
 
 ## Message modification
 
