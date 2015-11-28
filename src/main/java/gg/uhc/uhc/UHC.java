@@ -27,6 +27,7 @@
 
 package gg.uhc.uhc;
 
+import com.google.common.base.Optional;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigResolveOptions;
@@ -83,7 +84,7 @@ public class UHC extends JavaPlugin {
 
     protected ModuleRegistry registry;
     protected DebouncedRunnable configSaver;
-
+    protected DummyCommandFactory dummyCommands;
     protected MessageTemplates baseMessages;
     protected MessageTemplates baseCommandMessages;
 
@@ -109,10 +110,114 @@ public class UHC extends JavaPlugin {
         }
 
         baseCommandMessages = new SubsectionMessageTemplates(baseMessages, "commands");
-        DummyCommandFactory dummyCommands = new DummyCommandFactory(baseCommandMessages);
+        dummyCommands = new DummyCommandFactory(baseCommandMessages);
 
         registry = new ModuleRegistry(this, baseMessages, configuration);
 
+        setupBasicModules();
+        setupProtocolLibModules();
+
+        setupCommand(new PlayerListHealthCommand(
+                commandMessages("showhealth"),
+                Bukkit.getScoreboardManager().getMainScoreboard(),
+                DisplaySlot.PLAYER_LIST,
+                "UHCHealth",
+                "Health"
+        ), "showhealth");
+
+        PotionFuelsListener fuelsListener = new PotionFuelsListener();
+        registry.registerEvents(fuelsListener);
+        registry.register(new Tier2PotionsModule(fuelsListener));
+        registry.register(new SplashPotionsModule(fuelsListener));
+
+        PlayerHeadProvider headProvider = new PlayerHeadProvider();
+        GoldenHeadsModule gheadModule = new GoldenHeadsModule(headProvider);
+        boolean gheadsLoaded = registry.register(gheadModule);
+        setupCommand(gheadsLoaded ? new GoldenHeadsHealthCommand(commandMessages("ghead"), gheadModule) : dummyCommands.forModule(gheadModule), "ghead");
+        registry.register(new HeadDropsModule(headProvider));
+        registry.register(new DeathStandsModule());
+
+        setupTeamCommands();
+
+        setupCommand(new WorldBorderCommand(commandMessages("border")), "border");
+        setupCommand(new ModuleCommands(commandMessages("uhc"), registry), "uhc");
+
+        long cacheTicks = 30 * 20;
+        setupCommand(new PlayerAffectingCommand(commandMessages("heal"), new PlayerHealthResetter(this, cacheTicks)), "heal");
+        setupCommand(new PlayerAffectingCommand(commandMessages("feed"), new PlayerFoodResetter(this, cacheTicks)), "feed");
+        setupCommand(new PlayerAffectingCommand(commandMessages("clearxp"), new PlayerXPResetter(this, cacheTicks)), "clearxp");
+        setupCommand(new PlayerAffectingCommand(commandMessages("ci"), new PlayerInventoryResetter(this, cacheTicks)), "ci");
+        setupCommand(new PlayerAffectingCommand(commandMessages("cleareffects"), new PlayerPotionsResetter(this, cacheTicks)), "cleareffects");
+        setupCommand(new PlayerAffectingCommand(commandMessages("reset"), new FullPlayerResetter(this, cacheTicks)), "reset");
+
+        setupCommand(new TeleportCommand(commandMessages("tpp")), "tpp");
+        setupCommand(new HealthCommand(commandMessages("h")), "h");
+
+        SubcommandCommand wlist = new SubcommandCommand();
+        MessageTemplates forWlist = commandMessages("wlist");
+        wlist.registerSubcommand("clear", new WhitelistClearCommand(forWlist));
+        wlist.registerSubcommand(SubcommandCommand.NO_ARG_SPECIAL, new WhitelistOnlineCommand(forWlist));
+        setupCommand(wlist, "wlist");
+
+        // save config just to make sure at the end
+        saveConfig();
+    }
+
+    protected void setupTeamCommands() {
+        Optional<TeamModule> teamModuleOptional = registry.get(TeamModule.class);
+
+        if (!teamModuleOptional.isPresent()) {
+            getLogger().info("Skipping registering team commands as the team module is not loaded");
+            setupCommand(dummyCommands.forModule("TeamModule"), "teams", "team", "noteam", "pmt", "randomteams", "clearteams", "tc", "teamrequest");
+        }
+
+        TeamModule teamModule = teamModuleOptional.get();
+
+        setupCommand(new ListTeamsCommand(commandMessages("teams"), teamModule), "teams");
+        setupCommand(new NoTeamCommand(commandMessages("noteam"), teamModule), "noteam");
+        setupCommand(new TeamPMCommand(commandMessages("pmt"), teamModule), "pmt");
+        setupCommand(new RandomTeamsCommand(commandMessages("randomteams"), teamModule), "randomteams");
+        setupCommand(new ClearTeamsCommand(commandMessages("clearteams"), teamModule), "clearteams");
+        setupCommand(new TeamCoordinatesCommand(commandMessages("tc"), teamModule), "tc");
+
+        SubcommandCommand team = new SubcommandCommand();
+        team.registerSubcommand("teamup", new TeamupCommand(commandMessages("team.teamup"), teamModule));
+        team.registerSubcommand("add", new TeamAddCommand(commandMessages("team.add"), teamModule));
+        team.registerSubcommand("remove", new TeamRemoveCommand(commandMessages("team.remove"), teamModule));
+        setupCommand(team , "team");
+
+        MessageTemplates requestMessages = commandMessages("teamrequest");
+        RequestManager requestManager = new RequestManager(this, requestMessages, teamModule, 20 * 120);
+
+        SubcommandCommand teamrequest = new SubcommandCommand();
+        teamrequest.registerSubcommand("accept", new RequestResponseCommand(requestMessages, requestManager, RequestManager.AcceptState.ACCEPT));
+        teamrequest.registerSubcommand("deny", new RequestResponseCommand(requestMessages, requestManager, RequestManager.AcceptState.DENY));
+        teamrequest.registerSubcommand("request", new TeamRequestCommand(requestMessages, requestManager));
+        teamrequest.registerSubcommand("list", new RequestListCommand(requestMessages, requestManager));
+        setupCommand(teamrequest, "teamrequest");
+    }
+
+    protected void setupProtocolLibModules() {
+        if (getServer().getPluginManager().getPlugin("ProtocolLib") == null) {
+            getLogger().info("Skipping timer and hardcore hearts modules because protocollib is not installed");
+            return;
+        }
+
+        TimerModule timer = new TimerModule();
+
+        setupCommand(registry.register(timer) ? new TimerCommand(commandMessages("timer"), timer) : dummyCommands.forModule(timer), "timer");
+
+        Optional<AutoRespawnModule> respawn = registry.get(AutoRespawnModule.class);
+
+        if (!respawn.isPresent()) {
+            getLogger().info("Skipping hardcore hearts module because auto respawn is not enabled");
+            return;
+        }
+
+        registry.register(new HardcoreHeartsModule(respawn.get()));
+    }
+
+    protected void setupBasicModules() {
         registry.register(new DifficultyModule());
         registry.register(new HealthRegenerationModule());
         registry.register(new GhastTearDropsModule());
@@ -134,100 +239,18 @@ public class UHC extends JavaPlugin {
         registry.register(new DeathItemsModule());
         registry.register(new ChatHealthPrependModule());
         registry.register(new NerfQuartzXPModule());
-
-        AutoRespawnModule respawnModule = new AutoRespawnModule();
-        boolean respawnModuleLoaded = registry.register(respawnModule);
-
-        if (getServer().getPluginManager().getPlugin("ProtocolLib") != null) {
-            TimerModule timer = new TimerModule();
-
-            setup(registry.register(timer) ? new TimerCommand(forCommand("timer"), timer) : dummyCommands.forModule(timer), "timer");
-
-            if (respawnModuleLoaded) {
-                registry.register(new HardcoreHeartsModule(respawnModule));
-            }
-        }
-
+        registry.register(new AutoRespawnModule());
         registry.register(new PercentHealthObjectiveModule());
-        setup(new PlayerListHealthCommand(
-                forCommand("showhealth"),
-                Bukkit.getScoreboardManager().getMainScoreboard(),
-                DisplaySlot.PLAYER_LIST,
-                "UHCHealth",
-                "Health"
-        ), "showhealth");
-
-        PotionFuelsListener fuelsListener = new PotionFuelsListener();
-        registry.registerEvents(fuelsListener);
-        registry.register(new Tier2PotionsModule(fuelsListener));
-        registry.register(new SplashPotionsModule(fuelsListener));
-
-        PlayerHeadProvider headProvider = new PlayerHeadProvider();
-        GoldenHeadsModule gheadModule = new GoldenHeadsModule(headProvider);
-        boolean gheadsLoaded = registry.register(gheadModule);
-        setup(gheadsLoaded ? new GoldenHeadsHealthCommand(forCommand("ghead"), gheadModule) : dummyCommands.forModule(gheadModule), "ghead");
-        registry.register(new HeadDropsModule(headProvider));
-        registry.register(new DeathStandsModule());
-
-        TeamModule teamModule = new TeamModule();
-        if (registry.register(teamModule)) {
-            setup(new ListTeamsCommand(forCommand("teams"), teamModule), "teams");
-            setup(new NoTeamCommand(forCommand("noteam"), teamModule), "noteam");
-            setup(new TeamPMCommand(forCommand("pmt"), teamModule), "pmt");
-            setup(new RandomTeamsCommand(forCommand("randomteams"), teamModule), "randomteams");
-            setup(new ClearTeamsCommand(forCommand("clearteams"), teamModule), "clearteams");
-            setup(new TeamCoordinatesCommand(forCommand("tc"), teamModule), "tc");
-
-            SubcommandCommand team = new SubcommandCommand();
-            team.registerSubcommand("teamup", new TeamupCommand(forCommand("team.teamup"), teamModule));
-            team.registerSubcommand("add", new TeamAddCommand(forCommand("team.add"), teamModule));
-            team.registerSubcommand("remove", new TeamRemoveCommand(forCommand("team.remove"), teamModule));
-            setup(team , "team");
-
-            MessageTemplates requestMessages = forCommand("teamrequest");
-            RequestManager requestManager = new RequestManager(this, requestMessages, teamModule, 20 * 120);
-
-            SubcommandCommand teamrequest = new SubcommandCommand();
-            teamrequest.registerSubcommand("accept", new RequestResponseCommand(requestMessages, requestManager, RequestManager.AcceptState.ACCEPT));
-            teamrequest.registerSubcommand("deny", new RequestResponseCommand(requestMessages, requestManager, RequestManager.AcceptState.DENY));
-            teamrequest.registerSubcommand("request", new TeamRequestCommand(requestMessages, requestManager));
-            teamrequest.registerSubcommand("list", new RequestListCommand(requestMessages, requestManager));
-            setup(teamrequest, "teamrequest");
-        } else {
-            setup(dummyCommands.forModule(teamModule), "teams", "team", "noteam", "pmt", "randomteams", "clearteams", "tc", "teamrequest");
-        }
-
-        setup(new WorldBorderCommand(forCommand("border")), "border");
-        setup(new ModuleCommands(forCommand("uhc"), registry), "uhc");
-
-        long cacheTicks = 30 * 20;
-        setup(new PlayerAffectingCommand(forCommand("heal"), new PlayerHealthResetter(this, cacheTicks)), "heal");
-        setup(new PlayerAffectingCommand(forCommand("feed"), new PlayerFoodResetter(this, cacheTicks)), "feed");
-        setup(new PlayerAffectingCommand(forCommand("clearxp"), new PlayerXPResetter(this, cacheTicks)), "clearxp");
-        setup(new PlayerAffectingCommand(forCommand("ci"), new PlayerInventoryResetter(this, cacheTicks)), "ci");
-        setup(new PlayerAffectingCommand(forCommand("cleareffects"), new PlayerPotionsResetter(this, cacheTicks)), "cleareffects");
-        setup(new PlayerAffectingCommand(forCommand("reset"), new FullPlayerResetter(this, cacheTicks)), "reset");
-
-        setup(new TeleportCommand(forCommand("tpp")), "tpp");
-        setup(new HealthCommand(forCommand("h")), "h");
-
-        SubcommandCommand wlist = new SubcommandCommand();
-        MessageTemplates forWlist = forCommand("wlist");
-        wlist.registerSubcommand("clear", new WhitelistClearCommand(forWlist));
-        wlist.registerSubcommand(SubcommandCommand.NO_ARG_SPECIAL, new WhitelistOnlineCommand(forWlist));
-        setup(wlist, "wlist");
-
-        // save config just to make sure at the end
-        saveConfig();
+        registry.register(new TeamModule());
     }
 
-    protected void setup(CommandExecutor executor, String... commands) {
+    protected void setupCommand(CommandExecutor executor, String... commands) {
         for (String command : commands) {
             getCommand(command).setExecutor(executor);
         }
     }
 
-    private MessageTemplates forCommand(String command) {
+    private MessageTemplates commandMessages(String command) {
         return new SubsectionMessageTemplates(baseCommandMessages, command);
     }
 
