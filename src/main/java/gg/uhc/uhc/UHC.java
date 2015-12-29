@@ -189,7 +189,7 @@ public class UHC extends JavaPlugin {
         team.registerSubcommand("remove", new TeamRemoveCommand(commandMessages("team.remove"), teamModule));
         setupCommand(team , "team");
 
-        MessageTemplates requestMessages = commandMessages("teamrequest");
+        MessageTemplates requestMessages = commandMessages("team.teamrequest");
         RequestManager requestManager = new RequestManager(this, requestMessages, teamModule, 20 * 120);
 
         SubcommandCommand teamrequest = new SubcommandCommand();
