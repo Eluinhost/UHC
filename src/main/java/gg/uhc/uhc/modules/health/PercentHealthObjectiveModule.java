@@ -39,8 +39,14 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Objective;
@@ -50,7 +56,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class PercentHealthObjectiveModule extends DisableableModule {
+public class PercentHealthObjectiveModule extends DisableableModule implements Listener {
 
     protected static final String ICON_NAME = "Health Percent Objective";
 
@@ -73,17 +79,22 @@ public class PercentHealthObjectiveModule extends DisableableModule {
         this.icon.setWeight(ModuleRegistry.CATEGORY_HEALTH);
     }
 
-    public void updatePlayers() {
-        Double current;
-        Double old;
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            current = player.getHealth();
-            old = trackedHealth.put(player.getUniqueId(), current);
+    public void updatePlayer(Player player) {
+        updatePlayer(player, player.getHealth());
+    }
 
-            if (!current.equals(old)) {
-                for (Map.Entry<Objective, Integer> objective : objectives.entrySet()) {
-                    objective.getKey().getScore(player.getName()).setScore((int) Math.ceil(current * objective.getValue()));
-                }
+    public void updatePlayers() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            updatePlayer(player);
+        }
+    }
+
+    protected void updatePlayer(Player player, Double newHealth) {
+        Double oldHealth = trackedHealth.put(player.getUniqueId(), newHealth);
+
+        if (!newHealth.equals(oldHealth)) {
+            for (Map.Entry<Objective, Integer> objective : objectives.entrySet()) {
+                objective.getKey().getScore(player.getName()).setScore((int) Math.ceil(newHealth * objective.getValue()));
             }
         }
     }
@@ -209,6 +220,34 @@ public class PercentHealthObjectiveModule extends DisableableModule {
     @EventHandler
     public void on(PlayerQuitEvent event) {
         trackedHealth.remove(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void on(EntityDamageEvent event) {
+        Entity entity = event.getEntity();
+        if (!(entity instanceof Player)) {
+            return;
+        }
+
+        Player player = (Player) entity;
+
+        // If the event was cancelled, another plugin may have edited the health
+        // Update instantly with the current health
+        if (event.isCancelled()) {
+            updatePlayer(player);
+            return;
+        }
+
+        // Calculate new health based on final damage instead of waiting for one tick
+        double oldHealth = player.getHealth();
+        double finalDamage = event.getFinalDamage();
+        double newHealth = oldHealth - finalDamage;
+        updatePlayer(player, newHealth);
+    }
+
+    @EventHandler
+    public void on(PlayerJoinEvent event) {
+        updatePlayer(event.getPlayer());
     }
 
     class HealthUpdateRunnable extends BukkitRunnable {
