@@ -4,7 +4,8 @@ PercentHealth
 The icon for this module is a daylight sensor.
 
 When enabled this module will update all of the configured objectives with player's health
-in percentages.
+in percentages. Objectives are updated when a player takes damage, and periodically
+for all online players.
 
 When disabled the modules stops updating the objectives.
 
@@ -20,7 +21,7 @@ objectives:
   scaling: 5
 ```
 
-`update period` - how often to update player's health (in ticks)  
+`update period` - how often to forcibly update all online player's health (in ticks)
 `objectives` - a list of objectives to create/track  
 	`objective name` - the name of the objetive to create/update  
 	`objective display name` - the display name to give the objective, can use colour codes like `&c`. Using `&h` will be replaced with a heart.  
