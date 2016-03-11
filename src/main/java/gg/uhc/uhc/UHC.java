@@ -133,7 +133,7 @@ public class UHC extends JavaPlugin {
         registry.register(new SplashPotionsModule(fuelsListener));
 
         PlayerHeadProvider headProvider = new PlayerHeadProvider();
-        GoldenHeadsModule gheadModule = new GoldenHeadsModule(headProvider);
+        GoldenHeadsModule gheadModule = new GoldenHeadsModule();
         boolean gheadsLoaded = registry.register(gheadModule);
         setupCommand(gheadsLoaded ? new GoldenHeadsHealthCommand(commandMessages("ghead"), gheadModule) : dummyCommands.forModule(gheadModule), "ghead");
         registry.register(new HeadDropsModule(headProvider));
