@@ -31,6 +31,7 @@ import com.google.common.collect.ImmutableMap;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.EventHandler;
@@ -39,6 +40,7 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -48,7 +50,9 @@ import java.util.List;
 
 public class GoldenHeadsModule extends DisableableModule implements Listener {
 
+    public static final String HEAD_NAME = ChatColor.GOLD + "Golden Head";
     protected static final String ICON_NAME = "Golden Heads";
+    protected static final String LORE_PATH = "lore";
     protected static final NumberFormat formatter = NumberFormat.getNumberInstance();
     protected static final int TICKS_PER_HALF_HEART = 25;
 
@@ -57,15 +61,10 @@ public class GoldenHeadsModule extends DisableableModule implements Listener {
         formatter.setMaximumFractionDigits(1);
     }
 
-    protected final PlayerHeadProvider playerHeadProvider;
-
     protected int healAmount;
 
-    public GoldenHeadsModule(PlayerHeadProvider provider) {
+    public GoldenHeadsModule() {
         setId("GoldenHeads");
-
-        this.playerHeadProvider = provider;
-        provider.setModule(this);
 
         this.iconName = ICON_NAME;
         this.icon.setType(Material.SKULL_ITEM);
@@ -141,17 +140,44 @@ public class GoldenHeadsModule extends DisableableModule implements Listener {
         }
 
         SkullMeta meta = (SkullMeta) centre.getItemMeta();
-        event.getInventory().setResult(playerHeadProvider.getGoldenHeadItem(meta.hasOwner() ? meta.getOwner() : "Manually Crafted"));
+        ItemStack goldenHeadItem = getGoldenHeadItem(meta.hasOwner() ? meta.getOwner() : "Manually Crafted");
+        event.getInventory().setResult(goldenHeadItem);
     }
 
     @EventHandler
     public void on(PlayerItemConsumeEvent event) {
-        if(isEnabled() && playerHeadProvider.isGoldenHead(event.getItem())) {
+        if(isEnabled() && isGoldenHead(event.getItem())) {
             event.getPlayer().addPotionEffect(new PotionEffect(
                     PotionEffectType.REGENERATION,
                     TICKS_PER_HALF_HEART * healAmount,
                     1
             ));
         }
+    }
+
+    public boolean isGoldenHead(ItemStack itemStack) {
+        if(itemStack.getType() != Material.GOLDEN_APPLE) return false;
+
+        ItemMeta im = itemStack.getItemMeta();
+
+        return im.hasDisplayName() && im.getDisplayName().equals(HEAD_NAME);
+    }
+
+    public ItemStack getGoldenHeadItem(String playerName) {
+        ItemStack itemStack = new ItemStack(Material.GOLDEN_APPLE, 1);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.setDisplayName(HEAD_NAME);
+
+        // add lore
+        ImmutableMap<String, String> context = ImmutableMap.of(
+                "player", playerName,
+                "amount", Integer.toString(getHealAmount())
+        );
+        List<String> lore = getMessageTemaplates().evalTemplates(LORE_PATH, context);
+        meta.setLore(lore);
+        itemStack.setItemMeta(meta);
+
+        return itemStack;
     }
 }
