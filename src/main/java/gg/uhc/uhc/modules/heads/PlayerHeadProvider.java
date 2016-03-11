@@ -27,7 +27,10 @@
 
 package gg.uhc.uhc.modules.heads;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import gg.uhc.uhc.messages.MessageTemplates;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
@@ -38,10 +41,19 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import java.util.List;
+
 public class PlayerHeadProvider {
 
     public static final String HEAD_NAME = ChatColor.GOLD + "Golden Head";
-    protected static final short PLAYER_HEAD_DATA = 3;
+    public static final short PLAYER_HEAD_DATA = 3;
+    protected static final String LORE_PATH = "lore";
+    protected GoldenHeadsModule module;
+
+    public void setModule(GoldenHeadsModule module) {
+        Preconditions.checkState(this.module == null, "Provider is already registered with module");
+        this.module = module;
+    }
 
     public ItemStack getPlayerHeadItem(String name) {
         ItemStack stack = new ItemStack(Material.SKULL_ITEM, 1);
@@ -64,12 +76,12 @@ public class PlayerHeadProvider {
         meta.setDisplayName(HEAD_NAME);
 
         // add lore
-        meta.setLore(ImmutableList.of(
-                "Some say consuming the head of a",
-                "fallen foe strengthens the blood",
-                ChatColor.AQUA + "Made from the head of: " + playerName
-        ));
-
+        ImmutableMap<String, String> context = ImmutableMap.of(
+                "player", playerName,
+                "amount", Integer.toString(module.getHealAmount())
+        );
+        List<String> lore = module.getMessageTemaplates().evalTemplates(LORE_PATH, context);
+        meta.setLore(lore);
         itemStack.setItemMeta(meta);
 
         return itemStack;

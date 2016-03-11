@@ -65,17 +65,18 @@ public class GoldenHeadsModule extends DisableableModule implements Listener {
         setId("GoldenHeads");
 
         this.playerHeadProvider = provider;
+        provider.setModule(this);
 
         this.iconName = ICON_NAME;
         this.icon.setType(Material.SKULL_ITEM);
-        this.icon.setDurability((short) 3);
+        this.icon.setDurability(PlayerHeadProvider.PLAYER_HEAD_DATA);
         this.icon.setWeight(ModuleRegistry.CATEGORY_APPLES);
 
         // register the new recipe
         ShapedRecipe modified = new ShapedRecipe(new ItemStack(Material.GOLDEN_APPLE, 1))
                 .shape("AAA", "ABA", "AAA")
                 .setIngredient('A', Material.GOLD_INGOT)
-                .setIngredient('B', Material.SKULL_ITEM, 3);
+                .setIngredient('B', Material.SKULL_ITEM, PlayerHeadProvider.PLAYER_HEAD_DATA);
 
         Bukkit.addRecipe(modified);
     }
@@ -106,7 +107,6 @@ public class GoldenHeadsModule extends DisableableModule implements Listener {
             throw new InvalidConfigurationException("Invalid value at " + config.getCurrentPath() + ".heal amount (" + config.get("heal amount"));
 
         healAmount = config.getInt("heal amount");
-
         super.initialize();
     }
 

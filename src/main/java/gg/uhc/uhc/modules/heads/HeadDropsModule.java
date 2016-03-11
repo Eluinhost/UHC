@@ -69,7 +69,7 @@ public class HeadDropsModule extends DisableableModule implements Listener {
         this.playerHeadProvider = playerHeadProvider;
         this.iconName = ICON_NAME;
         this.icon.setType(Material.SKULL_ITEM);
-        this.icon.setDurability((short) 3);
+        this.icon.setDurability(PlayerHeadProvider.PLAYER_HEAD_DATA);
         this.icon.setWeight(ModuleRegistry.CATEGORY_APPLES);
     }
 
