@@ -172,6 +172,7 @@ public class UHC extends JavaPlugin {
         if (!teamModuleOptional.isPresent()) {
             getLogger().info("Skipping registering team commands as the team module is not loaded");
             setupCommand(dummyCommands.forModule("TeamModule"), "teams", "team", "noteam", "pmt", "randomteams", "clearteams", "tc", "teamrequest");
+            return;
         }
 
         TeamModule teamModule = teamModuleOptional.get();
