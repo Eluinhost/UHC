@@ -28,6 +28,7 @@
 package gg.uhc.uhc.modules.health;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -90,6 +91,7 @@ public class PercentHealthObjectiveModule extends DisableableModule implements L
     }
 
     protected void updatePlayer(Player player, Double newHealth) {
+        Preconditions.checkArgument(newHealth >= 0, "Health cannot be less than 0");
         Double oldHealth = trackedHealth.put(player.getUniqueId(), newHealth);
 
         if (!newHealth.equals(oldHealth)) {
@@ -241,7 +243,7 @@ public class PercentHealthObjectiveModule extends DisableableModule implements L
         // Calculate new health based on final damage instead of waiting for one tick
         double oldHealth = player.getHealth();
         double finalDamage = event.getFinalDamage();
-        double newHealth = oldHealth - finalDamage;
+        double newHealth = Math.max(oldHealth - finalDamage, 0);
         updatePlayer(player, newHealth);
     }
 
