@@ -87,6 +87,7 @@ public class NetherModule extends DisableableModule implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void on(EntityPortalEvent event) {
         if (isEnabled()) return;
+        if (event.getTo() == null) return;
 
         if (event.getTo().getWorld().getEnvironment() == World.Environment.NETHER)
             event.setCancelled(true);
@@ -95,6 +96,7 @@ public class NetherModule extends DisableableModule implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void on(PlayerPortalEvent event) {
         if (isEnabled()) return;
+        if (event.getTo() == null) return;
 
         if (event.getTo().getWorld().getEnvironment() == World.Environment.NETHER) {
             event.setCancelled(true);
