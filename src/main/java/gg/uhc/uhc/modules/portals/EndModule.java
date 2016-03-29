@@ -40,6 +40,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
@@ -86,7 +87,7 @@ public class EndModule extends DisableableModule implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void on(EntityPortalEvent event) {
         if (isEnabled()) return;
 
@@ -94,7 +95,7 @@ public class EndModule extends DisableableModule implements Listener {
             event.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void on(PlayerPortalEvent event) {
         if (isEnabled()) return;
 
