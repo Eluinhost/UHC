@@ -75,6 +75,7 @@ import gg.uhc.uhc.modules.whitelist.WhitelistOnlineCommand;
 import gg.uhc.uhc.modules.xp.NerfQuartzXPModule;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -190,8 +191,14 @@ public class UHC extends JavaPlugin {
         team.registerSubcommand("remove", new TeamRemoveCommand(commandMessages("team.remove"), teamModule));
         setupCommand(team , "team");
 
+        ConfigurationSection teamModuleConfig = teamModule.getConfig();
+        if (!teamModuleConfig.isSet(RequestManager.AUTO_WHITELIST_KEY)) {
+            teamModuleConfig.set(RequestManager.AUTO_WHITELIST_KEY, true);
+        }
+        boolean autoWhitelistAcceptedTeams = teamModuleConfig.getBoolean(RequestManager.AUTO_WHITELIST_KEY);
+
         MessageTemplates requestMessages = commandMessages("team.teamrequest");
-        RequestManager requestManager = new RequestManager(this, requestMessages, teamModule, 20 * 120);
+        RequestManager requestManager = new RequestManager(this, requestMessages, teamModule, 20 * 120, autoWhitelistAcceptedTeams);
 
         SubcommandCommand teamrequest = new SubcommandCommand();
         teamrequest.registerSubcommand("accept", new RequestResponseCommand(requestMessages, requestManager, RequestManager.AcceptState.ACCEPT));
