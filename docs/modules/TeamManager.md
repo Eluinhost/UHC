@@ -38,3 +38,10 @@ E.g.
 `=GRAY+ITALIC` will stop `GRAY, ITALIC` but not `GRAY, ITALIC, UNDERLINE`
 
 `WHITE+STRIKETHOUGH` will stop `WHITE, STRIKETHROUGH` and `WHITE, STRIKETHOUGH, ITALIC` but not `WHITE, ITALIC` or `BLACK, STRIKETHROUGH`
+
+```yaml
+auto whitelist accepted teams: true
+```
+
+When a [team request command](../commands/teams/teamrequest.md) is accepted by an operator and auto whitelist is
+enabled, all requested team players are automatically whitelisted.

@@ -63,6 +63,7 @@ public class RequestManager {
     }
 
     public static final String ADMIN_PERMISSION = "uhc.command.teamrequestadmin";
+    public static final String AUTO_WHITELIST_KEY = "auto whitelist accepted teams";
 
     protected final Map<UUID, TeamRequest> byUUID = Maps.newHashMap();
     protected final Map<Integer, TeamRequest> byId = Maps.newHashMap();
@@ -74,11 +75,14 @@ public class RequestManager {
     protected final MessageTemplates messages;
     protected final TeamModule module;
     protected final long autoCancelTime;
+    protected final boolean autoWhitelistAcceptedTeams;
 
-    public RequestManager(Plugin plugin, MessageTemplates messages, TeamModule module, long autoCancelTime) {
+    public RequestManager(Plugin plugin, MessageTemplates messages, TeamModule module,
+                          long autoCancelTime, boolean autoWhitelistAcceptedTeams) {
         this.plugin = plugin;
         this.messages = messages;
         this.module = module;
+        this.autoWhitelistAcceptedTeams = autoWhitelistAcceptedTeams;
 
         Preconditions.checkArgument(autoCancelTime > 0);
         this.autoCancelTime = autoCancelTime;
@@ -138,9 +142,12 @@ public class RequestManager {
 
             for (OfflinePlayer p : players) {
                 team.addPlayer(p);
+                if (autoWhitelistAcceptedTeams) p.setWhitelisted(true);
             }
 
-            team.addPlayer(Bukkit.getOfflinePlayer(request.getOwner()));
+            OfflinePlayer ownerOfflinePlayer = Bukkit.getOfflinePlayer(request.getOwner());
+            team.addPlayer(ownerOfflinePlayer);
+            if (autoWhitelistAcceptedTeams) ownerOfflinePlayer.setWhitelisted(true);
         }
 
         // otherwise do nothing
