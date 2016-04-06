@@ -164,11 +164,11 @@ public class WorldBorderCommand extends TemplatedOptionCommand {
         border.setCenter(coords.get(0), coords.get(1));
 
         // set initial size
-        border.setSize(radius);
+        border.setSize(radius * 2.0D);
         sender.sendMessage(messages.evalTemplate("set regular", ImmutableMap.of("world", world.getName(), "radius", radius, "x", coords.get(0), "z", coords.get(1))));
 
         if (targetRadius.isPresent()) {
-            border.setSize(radii.get(1), time);
+            border.setSize(radii.get(1) * 2.0D, time);
             sender.sendMessage(messages.evalTemplate("set shrinking", ImmutableMap.of("radius", radii.get(1), "seconds", time)));
         }
 
