@@ -47,6 +47,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -244,6 +245,29 @@ public class PercentHealthObjectiveModule extends DisableableModule implements L
         double oldHealth = player.getHealth();
         double finalDamage = event.getFinalDamage();
         double newHealth = Math.max(oldHealth - finalDamage, 0);
+        updatePlayer(player, newHealth);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void on(EntityRegainHealthEvent event) {
+        Entity entity = event.getEntity();
+        if (!(entity instanceof Player)) {
+            return;
+        }
+
+        // If the event was cancelled, another plugin may have edited the health
+        // Update instantly with the current health
+        Player player = (Player) entity;
+
+        if (event.isCancelled()) {
+            updatePlayer(player);
+            return;
+        }
+
+        // Calculate new health based on regen amount instead of waiting for one tick
+        double oldHealth = player.getHealth();
+        double healAmount = event.getAmount();
+        double newHealth = Math.min(oldHealth + healAmount, player.getMaxHealth());
         updatePlayer(player, newHealth);
     }
 
