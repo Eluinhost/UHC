@@ -155,7 +155,7 @@ public class UHC extends JavaPlugin {
         setupCommand(new PlayerAffectingCommand(commandMessages("reset"), new FullPlayerResetter(this, cacheTicks)), "reset");
 
         setupCommand(new TeleportCommand(commandMessages("tpp")), "tpp");
-        setupCommand(new HealthCommand(commandMessages("h")), "h");
+        setupCommand(new HealthCommand(commandMessages("h"), 200D), "h");
 
         SubcommandCommand wlist = new SubcommandCommand();
         MessageTemplates forWlist = commandMessages("wlist");
