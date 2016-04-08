@@ -133,6 +133,9 @@ public class UHC extends JavaPlugin {
         registry.register(new Tier2PotionsModule(fuelsListener));
         registry.register(new SplashPotionsModule(fuelsListener));
 
+        TimerModule timer = new TimerModule();
+        setupCommand(registry.register(timer) ? new TimerCommand(commandMessages("timer"), timer) : dummyCommands.forModule(timer), "timer");
+
         PlayerHeadProvider headProvider = new PlayerHeadProvider();
         GoldenHeadsModule gheadModule = new GoldenHeadsModule();
         boolean gheadsLoaded = registry.register(gheadModule);
@@ -165,6 +168,11 @@ public class UHC extends JavaPlugin {
 
         // save config just to make sure at the end
         saveConfig();
+    }
+
+    @Override
+    public void onDisable() {
+        Bukkit.getPluginManager().callEvent(new PluginDisableEvent());
     }
 
     protected void setupTeamCommands() {
@@ -210,13 +218,9 @@ public class UHC extends JavaPlugin {
 
     protected void setupProtocolLibModules() {
         if (getServer().getPluginManager().getPlugin("ProtocolLib") == null) {
-            getLogger().info("Skipping timer and hardcore hearts modules because protocollib is not installed");
+            getLogger().info("Skipping hardcore hearts module because protocollib is not installed");
             return;
         }
-
-        TimerModule timer = new TimerModule();
-
-        setupCommand(registry.register(timer) ? new TimerCommand(commandMessages("timer"), timer) : dummyCommands.forModule(timer), "timer");
 
         Optional<AutoRespawnModule> respawn = registry.get(AutoRespawnModule.class);
 

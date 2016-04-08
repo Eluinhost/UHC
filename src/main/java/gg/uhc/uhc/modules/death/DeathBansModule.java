@@ -35,7 +35,7 @@ import gg.uhc.flagcommands.converters.EnumConverter;
 import gg.uhc.flagcommands.joptsimple.ValueConversionException;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
-import gg.uhc.uhc.modules.timer.TimeUtil;
+import gg.uhc.uhc.util.TimeUtil;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

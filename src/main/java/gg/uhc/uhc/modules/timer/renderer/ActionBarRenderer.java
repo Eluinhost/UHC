@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.modules.timer.TemplatedMessage
+ * Class: gg.uhc.uhc.modules.timer.renderer.ActionBarRenderer
  *
  * The MIT License (MIT)
  *
@@ -25,27 +25,32 @@
  * THE SOFTWARE.
  */
 
-package gg.uhc.uhc.modules.timer;
+package gg.uhc.uhc.modules.timer.renderer;
 
-import com.github.mustachejava.Mustache;
-import com.google.common.collect.ImmutableMap;
+import gg.uhc.uhc.util.ActionBarMessenger;
+import org.bukkit.Bukkit;
 
-import java.io.StringWriter;
+public class ActionBarRenderer implements TimerRenderer {
 
-public class TemplatedMessage implements TimerMessage {
+    protected final ActionBarMessenger messenger;
 
-    protected final Mustache template;
-    protected final String message;
-
-    public TemplatedMessage(Mustache template, String message) {
-        this.template = template;
-        this.message = message;
+    public ActionBarRenderer(ActionBarMessenger messenger) {
+        this.messenger = messenger;
     }
 
     @Override
-    public String getMessage(long secondsRemaining) {
-        StringWriter writer = new StringWriter();
-        template.execute(writer, ImmutableMap.of("message", message, "timer", TimeUtil.secondsToString(secondsRemaining)));
-        return writer.getBuffer().toString();
+    public void onStart(String message) {
+        messenger.sendMessage(Bukkit.getOnlinePlayers(), message);
+    }
+
+    @Override
+    public void onUpdate(String message, double progress) {
+        // ignores the progress
+        onStart(message);
+    }
+
+    @Override
+    public void onStop() {
+        // action bar times out automatically
     }
 }

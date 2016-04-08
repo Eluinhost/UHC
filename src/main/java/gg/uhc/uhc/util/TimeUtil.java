@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.modules.timer.TimeUtil
+ * Class: gg.uhc.uhc.util.TimeUtil
  *
  * The MIT License (MIT)
  *
@@ -25,7 +25,7 @@
  * THE SOFTWARE.
  */
 
-package gg.uhc.uhc.modules.timer;
+package gg.uhc.uhc.util;
 
 import com.google.common.collect.ImmutableMap;
 

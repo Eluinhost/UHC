@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.modules.timer.TimerMessage
+ * Class: gg.uhc.uhc.modules.timer.renderer.TimerRenderer
  *
  * The MIT License (MIT)
  *
@@ -25,8 +25,10 @@
  * THE SOFTWARE.
  */
 
-package gg.uhc.uhc.modules.timer;
+package gg.uhc.uhc.modules.timer.renderer;
 
-public interface TimerMessage {
-    String getMessage(long secondsRemaining);
+public interface TimerRenderer {
+    void onStart(String message);
+    void onUpdate(String message, double progress);
+    void onStop();
 }

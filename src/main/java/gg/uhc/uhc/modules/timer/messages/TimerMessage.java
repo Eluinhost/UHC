@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.modules.timer.TimeConverter
+ * Class: gg.uhc.uhc.modules.timer.messages.TimerMessage
  *
  * The MIT License (MIT)
  *
@@ -25,31 +25,8 @@
  * THE SOFTWARE.
  */
 
-package gg.uhc.uhc.modules.timer;
+package gg.uhc.uhc.modules.timer.messages;
 
-
-import gg.uhc.flagcommands.joptsimple.ValueConversionException;
-import gg.uhc.flagcommands.joptsimple.ValueConverter;
-import gg.uhc.uhc.util.TimeUtil;
-
-public class TimeConverter implements ValueConverter<Long> {
-
-    @Override
-    public Long convert(String value) {
-        long seconds = TimeUtil.getSeconds(value);
-
-        if (seconds == 0) throw new ValueConversionException("Invalid time supplied, must supply using time format and must be > 0");
-
-        return seconds;
-    }
-
-    @Override
-    public Class<Long> valueType() {
-        return Long.class;
-    }
-
-    @Override
-    public String valuePattern() {
-        return "Time string e.g. 12m30s";
-    }
+public interface TimerMessage {
+    String getMessage(long secondsRemaining);
 }

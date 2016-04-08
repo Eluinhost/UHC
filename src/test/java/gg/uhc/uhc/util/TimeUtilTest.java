@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.modules.timer.TimeUtilTest
+ * Class: gg.uhc.uhc.util.TimeUtilTest
  *
  * The MIT License (MIT)
  *
@@ -25,8 +25,9 @@
  * THE SOFTWARE.
  */
 
-package gg.uhc.uhc.modules.timer;
+package gg.uhc.uhc.util;
 
+import gg.uhc.uhc.util.TimeUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.modules.junit4.PowerMockRunner;

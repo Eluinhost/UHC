@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.modules.timer.TimeConverter
+ * Class: gg.uhc.uhc.PluginDisableEvent
  *
  * The MIT License (MIT)
  *
@@ -25,31 +25,20 @@
  * THE SOFTWARE.
  */
 
-package gg.uhc.uhc.modules.timer;
+package gg.uhc.uhc;
 
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 
-import gg.uhc.flagcommands.joptsimple.ValueConversionException;
-import gg.uhc.flagcommands.joptsimple.ValueConverter;
-import gg.uhc.uhc.util.TimeUtil;
-
-public class TimeConverter implements ValueConverter<Long> {
+public class PluginDisableEvent extends Event {
+    private static final HandlerList handlers = new HandlerList();
 
     @Override
-    public Long convert(String value) {
-        long seconds = TimeUtil.getSeconds(value);
-
-        if (seconds == 0) throw new ValueConversionException("Invalid time supplied, must supply using time format and must be > 0");
-
-        return seconds;
+    public HandlerList getHandlers() {
+        return handlers;
     }
 
-    @Override
-    public Class<Long> valueType() {
-        return Long.class;
-    }
-
-    @Override
-    public String valuePattern() {
-        return "Time string e.g. 12m30s";
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 }

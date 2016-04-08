@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.modules.timer.TimeConverter
+ * Class: gg.uhc.uhc.modules.timer.renderer.CompositeTimerRenderer
  *
  * The MIT License (MIT)
  *
@@ -25,31 +25,34 @@
  * THE SOFTWARE.
  */
 
-package gg.uhc.uhc.modules.timer;
+package gg.uhc.uhc.modules.timer.renderer;
 
+public class CompositeTimerRenderer implements TimerRenderer {
 
-import gg.uhc.flagcommands.joptsimple.ValueConversionException;
-import gg.uhc.flagcommands.joptsimple.ValueConverter;
-import gg.uhc.uhc.util.TimeUtil;
+    protected final TimerRenderer[] renderers;
 
-public class TimeConverter implements ValueConverter<Long> {
-
-    @Override
-    public Long convert(String value) {
-        long seconds = TimeUtil.getSeconds(value);
-
-        if (seconds == 0) throw new ValueConversionException("Invalid time supplied, must supply using time format and must be > 0");
-
-        return seconds;
+    public CompositeTimerRenderer(TimerRenderer... renderers) {
+        this.renderers = renderers;
     }
 
     @Override
-    public Class<Long> valueType() {
-        return Long.class;
+    public void onStart(String message) {
+        for (TimerRenderer renderer : renderers) {
+            renderer.onStart(message);
+        }
     }
 
     @Override
-    public String valuePattern() {
-        return "Time string e.g. 12m30s";
+    public void onUpdate(String message, double progress) {
+        for (TimerRenderer renderer : renderers) {
+            renderer.onUpdate(message, progress);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        for (TimerRenderer renderer : renderers) {
+            renderer.onStop();
+        }
     }
 }

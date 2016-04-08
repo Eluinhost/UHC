@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.modules.timer.TimeConverter
+ * Class: gg.uhc.uhc.modules.timer.messages.TemplatedMessage
  *
  * The MIT License (MIT)
  *
@@ -25,31 +25,28 @@
  * THE SOFTWARE.
  */
 
-package gg.uhc.uhc.modules.timer;
+package gg.uhc.uhc.modules.timer.messages;
 
-
-import gg.uhc.flagcommands.joptsimple.ValueConversionException;
-import gg.uhc.flagcommands.joptsimple.ValueConverter;
+import com.github.mustachejava.Mustache;
+import com.google.common.collect.ImmutableMap;
 import gg.uhc.uhc.util.TimeUtil;
 
-public class TimeConverter implements ValueConverter<Long> {
+import java.io.StringWriter;
 
-    @Override
-    public Long convert(String value) {
-        long seconds = TimeUtil.getSeconds(value);
+public class TemplatedMessage implements TimerMessage {
 
-        if (seconds == 0) throw new ValueConversionException("Invalid time supplied, must supply using time format and must be > 0");
+    protected final Mustache template;
+    protected final String message;
 
-        return seconds;
+    public TemplatedMessage(Mustache template, String message) {
+        this.template = template;
+        this.message = message;
     }
 
     @Override
-    public Class<Long> valueType() {
-        return Long.class;
-    }
-
-    @Override
-    public String valuePattern() {
-        return "Time string e.g. 12m30s";
+    public String getMessage(long secondsRemaining) {
+        StringWriter writer = new StringWriter();
+        template.execute(writer, ImmutableMap.of("message", message, "timer", TimeUtil.secondsToString(secondsRemaining)));
+        return writer.getBuffer().toString();
     }
 }

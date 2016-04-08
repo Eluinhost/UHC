@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.modules.timer.ActionBarMessenger
+ * Class: gg.uhc.uhc.util.ActionBarMessenger
  *
  * The MIT License (MIT)
  *
@@ -25,7 +25,7 @@
  * THE SOFTWARE.
  */
 
-package gg.uhc.uhc.modules.timer;
+package gg.uhc.uhc.util;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;

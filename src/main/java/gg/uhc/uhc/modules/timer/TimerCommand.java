@@ -35,6 +35,8 @@ import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import gg.uhc.flagcommands.tab.FixedValuesTabComplete;
 import gg.uhc.uhc.commands.TemplatedOptionCommand;
 import gg.uhc.uhc.messages.MessageTemplates;
+import gg.uhc.uhc.modules.timer.messages.TemplatedMessage;
+import gg.uhc.uhc.modules.timer.messages.TimerMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
