@@ -17,4 +17,4 @@ Shows/Modifies the health of each player specified. If no players are specified 
 ## Permissions
 
 `uhc.command.health` - allows use of the command, default true  
-`uhc.command.health.modify` - allows usage of `-s` and `-c`, default op
+`uhc.command.health.modify` - allows usage of `-c` and `-m`, default op
