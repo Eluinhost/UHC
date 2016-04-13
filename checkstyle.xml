@@ -10,7 +10,7 @@
         <property name="eachLine" value="true"/>
     </module>
     <module name="Header">
-        <property name="headerFile" value="src/main/resources/HEADER"/>
+        <property name="headerFile" value="${basedir}/src/main/resources/HEADER"/>
         <property name="ignoreLines" value="3, 7"/>
         <property name="fileExtensions" value="java"/>
     </module>

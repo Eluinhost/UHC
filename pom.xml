@@ -132,6 +132,7 @@
                             <encoding>UTF-8</encoding>
                             <consoleOutput>true</consoleOutput>
                             <failsOnError>true</failsOnError>
+                            <propertyExpansion>basedir=${basedir}</propertyExpansion>
                         </configuration>
                         <goals>
                             <goal>check</goal>
