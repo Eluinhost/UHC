@@ -27,11 +27,12 @@
 
 package gg.uhc.uhc.modules.team.requests;
 
+import gg.uhc.uhc.messages.MessageTemplates;
+
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import gg.uhc.uhc.messages.MessageTemplates;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -41,11 +42,19 @@ import java.util.List;
 
 public class RequestResponseCommand implements TabExecutor {
 
+    protected static final Function<TeamRequest, String> GET_ID = new Function<TeamRequest, String>() {
+        @Override
+        public String apply(TeamRequest input) {
+            return String.valueOf(input.getId());
+        }
+    };
+
     protected final MessageTemplates messages;
     protected final RequestManager requestManager;
     protected final RequestManager.AcceptState state;
 
-    public RequestResponseCommand(MessageTemplates messages, RequestManager requestManager, RequestManager.AcceptState state) {
+    public RequestResponseCommand(MessageTemplates messages, RequestManager requestManager,
+                                  RequestManager.AcceptState state) {
         this.messages = messages;
         this.requestManager = requestManager;
         this.state = state;
@@ -63,7 +72,7 @@ public class RequestResponseCommand implements TabExecutor {
             return true;
         }
 
-        int id;
+        final int id;
         try {
             id = Integer.parseInt(args[0]);
         } catch (NumberFormatException ex) {
@@ -80,13 +89,10 @@ public class RequestResponseCommand implements TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        return StringUtil.copyPartialMatches(args[args.length - 1], Iterables.transform(requestManager.getRequests(), GET_ID), Lists.<String>newArrayList());
+        return StringUtil.copyPartialMatches(
+                args[args.length - 1],
+                Iterables.transform(requestManager.getRequests(), GET_ID),
+                Lists.<String>newArrayList()
+        );
     }
-
-    protected static final Function<TeamRequest, String> GET_ID = new Function<TeamRequest, String>() {
-        @Override
-        public String apply(TeamRequest input) {
-            return String.valueOf(input.getId());
-        }
-    };
 }

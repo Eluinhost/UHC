@@ -27,9 +27,10 @@
 
 package gg.uhc.uhc.modules.health;
 
+import gg.uhc.uhc.modules.DisableableModule;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSortedMap;
-import gg.uhc.uhc.modules.DisableableModule;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -53,7 +54,8 @@ public class ChatHealthPrependModule extends DisableableModule implements Listen
         FORMATTER.setMinimumFractionDigits(0);
     }
 
-    protected final NavigableMap<Double, String> BARS = ImmutableSortedMap
+    @SuppressWarnings("checkstyle:magicnumber")
+    protected static final NavigableMap<Double, String> BARS = ImmutableSortedMap
             .<Double, String>naturalOrder()
             .put(0D,                               ChatColor.DARK_RED + "❘❘❘❘❘❘❘❘❘❘")
             .put(10D,  ChatColor.DARK_GREEN + "❘" + ChatColor.DARK_RED + "❘❘❘❘❘❘❘❘❘")
@@ -68,13 +70,15 @@ public class ChatHealthPrependModule extends DisableableModule implements Listen
             .put(100D, ChatColor.DARK_GREEN + "❘❘❘❘❘❘❘❘❘❘")
             .build();
 
-    protected final NavigableMap<Double, String> PERCENTAGE_COLOURS = ImmutableSortedMap
+    @SuppressWarnings("checkstyle:magicnumber")
+    protected static final NavigableMap<Double, String> PERCENTAGE_COLOURS = ImmutableSortedMap
             .<Double, String>naturalOrder()
             .put(0D, ChatColor.GRAY.toString())
             .put(33D, ChatColor.RED.toString())
             .put(66D, ChatColor.YELLOW.toString())
             .put(100D, ChatColor.GREEN.toString())
             .build();
+    //CHECKSTYLE.ON: MagicNumber
 
     protected boolean useNumbers;
 
@@ -99,16 +103,19 @@ public class ChatHealthPrependModule extends DisableableModule implements Listen
 
     @Override
     protected List<String> getEnabledLore() {
-        return messages.evalTemplates(ENABLED_LORE_PATH, ImmutableMap.of("type", useNumbers ? "percentage numbers" : "bars"));
+        return messages.evalTemplates(
+                ENABLED_LORE_PATH,
+                ImmutableMap.of("type", useNumbers ? "percentage numbers" : "bars")
+        );
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void on(AsyncPlayerChatEvent event) {
         if (!isEnabled()) return;
 
-        double percent = event.getPlayer().getHealth() / event.getPlayer().getMaxHealth() * 100D;
+        final double percent = event.getPlayer().getHealth() / event.getPlayer().getMaxHealth() * 100D;
 
-        StringBuilder format = new StringBuilder();
+        final StringBuilder format = new StringBuilder();
 
         if (useNumbers) {
             format.append(PERCENTAGE_COLOURS.ceilingEntry(percent).getValue())

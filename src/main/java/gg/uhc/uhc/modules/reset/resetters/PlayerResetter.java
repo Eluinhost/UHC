@@ -27,8 +27,9 @@
 
 package gg.uhc.uhc.modules.reset.resetters;
 
-import com.google.common.collect.*;
 import gg.uhc.uhc.modules.reset.actions.Action;
+
+import com.google.common.collect.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -39,11 +40,11 @@ import java.util.Map;
 
 public abstract class PlayerResetter {
 
+    protected final Plugin plugin;
+
     private final Multimap<String, Action> cache = HashMultimap.create();
     private final Map<String, BukkitRunnable> removeTasks = Maps.newHashMap();
     private final long cacheTicks;
-
-    protected final Plugin plugin;
 
     public PlayerResetter(Plugin plugin, long cacheTicks) {
         this.plugin = plugin;
@@ -57,15 +58,16 @@ public abstract class PlayerResetter {
     protected abstract Action getActionForPlayer(Player player);
 
     /**
-     * Creates actions to reset each of the players
+     * Creates actions to reset each of the players.
      *
      * @param players the players to create for
      * @param key the cache key to store the actions under
+     * @return list of actions to apply for the given players
      */
     public List<Action> createActions(String key, Collection<Player> players) {
-        List<Action> actions = Lists.newArrayListWithCapacity(players.size());
+        final List<Action> actions = Lists.newArrayListWithCapacity(players.size());
 
-        for (Player player : players) {
+        for (final Player player : players) {
             actions.add(getActionForPlayer(player));
         }
 
@@ -75,7 +77,7 @@ public abstract class PlayerResetter {
     }
 
     /**
-     * @param key the cache key
+     * @param key the cache key.
      * @return List of revertable actions stored for the key
      */
     public List<Action> getLastActions(String key) {
@@ -96,7 +98,7 @@ public abstract class PlayerResetter {
         removeTasks.put(actor, task);
     }
 
-    class RemoveTask extends BukkitRunnable {
+    final class RemoveTask extends BukkitRunnable {
 
         protected final String key;
 

@@ -48,10 +48,10 @@ public class PlayerRespawnRunnable extends BukkitRunnable {
 
     @Override
     public void run() {
-        Player p = player.get();
+        final Player toRespawn = this.player.get();
 
-        if (p == null || p.getHealth() != 0) return;
+        if (toRespawn == null || toRespawn.getHealth() != 0) return;
 
-        p.spigot().respawn();
+        toRespawn.spigot().respawn();
     }
 }

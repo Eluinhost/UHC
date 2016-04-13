@@ -27,10 +27,11 @@
 
 package gg.uhc.uhc.modules.team.prefixes;
 
-import com.google.common.collect.Sets;
 import gg.uhc.flagcommands.converters.EnumConverter;
 import gg.uhc.flagcommands.joptsimple.ValueConversionException;
 import gg.uhc.flagcommands.joptsimple.ValueConverter;
+
+import com.google.common.collect.Sets;
 import org.bukkit.ChatColor;
 
 import java.util.Set;
@@ -40,21 +41,24 @@ public class PrefixColourPredicateConverter implements ValueConverter<PrefixColo
     protected final EnumConverter<ChatColor> colourConverter = EnumConverter.forEnum(ChatColor.class);
 
     @Override
-    public PrefixColourPredicate convert(String value) {
+    public PrefixColourPredicate convert(String toConvert) {
         boolean exact = false;
+        String value = toConvert;
 
         if (value.length() > 0 && value.charAt(0) == '=') {
             exact = true;
             value = value.substring(1);
         }
 
-        String[] parts = value.split("\\+");
+        final String[] parts = value.split("\\+");
 
-        if (parts.length == 0) throw new ValueConversionException("Must supply at least 1 formatting code to filter out");
+        if (parts.length == 0) {
+            throw new ValueConversionException("Must supply at least 1 formatting code to filter out");
+        }
 
-        Set<ChatColor> colours = Sets.newHashSetWithExpectedSize(parts.length);
+        final Set<ChatColor> colours = Sets.newHashSetWithExpectedSize(parts.length);
 
-        for (String part : parts) {
+        for (final String part : parts) {
             colours.add(colourConverter.convert(part));
         }
 

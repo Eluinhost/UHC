@@ -27,6 +27,10 @@
 
 package gg.uhc.uhc.modules.team.requests;
 
+import gg.uhc.uhc.messages.MessageTemplates;
+import gg.uhc.uhc.modules.team.FunctionalUtil;
+import gg.uhc.uhc.modules.team.TeamModule;
+
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -35,9 +39,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
-import gg.uhc.uhc.messages.MessageTemplates;
-import gg.uhc.uhc.modules.team.FunctionalUtil;
-import gg.uhc.uhc.modules.team.TeamModule;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -101,20 +102,20 @@ public class RequestManager {
     }
 
     /**
-     * Removes the request and processes the response
+     * Removes the request and processes the response.
      *
      * @param id the id of the request
      * @param accepted the state to set
      * @return true if id existed, false otherwise
      */
     public boolean finalizeRequest(int id, AcceptState accepted) {
-        Optional<TeamRequest> optional = removeRequest(id);
+        final Optional<TeamRequest> optional = removeRequest(id);
 
         if (!optional.isPresent()) return false;
 
-        TeamRequest request = optional.get();
+        final TeamRequest request = optional.get();
 
-        Map<String, Object> context = ImmutableMap.<String, Object>builder()
+        final Map<String, Object> context = ImmutableMap.<String, Object>builder()
                 .put("name", request.getOwnerName())
                 .put("id", request.getId())
                 .put("members", Joiner.on(", ").join(request.getOthers()))
@@ -122,32 +123,41 @@ public class RequestManager {
 
         broadcast(messages.evalTemplate("on." + accepted.name().toLowerCase() + ".broadcast", context));
 
-        Player player = Bukkit.getPlayer(request.getOwner());
+        final Player player = Bukkit.getPlayer(request.getOwner());
 
         if (player != null) {
             player.sendMessage(messages.evalTemplate("on." + accepted.name().toLowerCase() + ".notify", context));
         }
 
         if (accepted == AcceptState.ACCEPT) {
-            Iterable<OfflinePlayer> players = Iterables.filter(Iterables.transform(request.getOthers(), FunctionalUtil.OFFLINE_PLAYER_FROM_NAME), Predicates.notNull());
+            final Iterable<OfflinePlayer> players = Iterables.filter(
+                    Iterables.transform(
+                            request.getOthers(),
+                            FunctionalUtil.OFFLINE_PLAYER_FROM_NAME
+                    ),
+                    Predicates.notNull()
+            );
 
-            Optional<Team> potentialTeam = module.findFirstEmptyTeam();
+            final Optional<Team> potentialTeam = module.findFirstEmptyTeam();
 
             if (!potentialTeam.isPresent()) {
                 broadcast(messages.getRaw("no empty teams"));
                 return true;
             }
 
-            Team team = potentialTeam.get();
+            final Team team = potentialTeam.get();
 
-            for (OfflinePlayer p : players) {
+            for (final OfflinePlayer p : players) {
                 team.addPlayer(p);
                 if (autoWhitelistAcceptedTeams) p.setWhitelisted(true);
             }
 
-            OfflinePlayer ownerOfflinePlayer = Bukkit.getOfflinePlayer(request.getOwner());
+            final OfflinePlayer ownerOfflinePlayer = Bukkit.getOfflinePlayer(request.getOwner());
             team.addPlayer(ownerOfflinePlayer);
-            if (autoWhitelistAcceptedTeams) ownerOfflinePlayer.setWhitelisted(true);
+
+            if (autoWhitelistAcceptedTeams) {
+                ownerOfflinePlayer.setWhitelisted(true);
+            }
         }
 
         // otherwise do nothing
@@ -167,7 +177,7 @@ public class RequestManager {
     }
 
     protected Optional<TeamRequest> removeRequest(int id) {
-        TeamRequest request = byId.remove(id);
+        final TeamRequest request = byId.remove(id);
 
         if (request == null) return Optional.absent();
 
@@ -184,10 +194,10 @@ public class RequestManager {
      * @param request the request to add
      */
     public void addRequest(TeamRequest request) {
-        UUID owner = request.getOwner();
-        int id = request.getId();
+        final UUID owner = request.getOwner();
+        final int id = request.getId();
 
-        TeamRequest existing = byUUID.get(owner);
+        final TeamRequest existing = byUUID.get(owner);
         if (existing != null) {
             cancelRequest(existing.getId());
         }
@@ -196,28 +206,30 @@ public class RequestManager {
         byId.put(id, request);
 
         // start timer to auto-remove
-        AutoCancelTask task = new AutoCancelTask(id);
+        final AutoCancelTask task = new AutoCancelTask(id);
         task.runTaskLater(plugin, autoCancelTime);
         timers.put(id, task);
 
-        Player player = Bukkit.getPlayer(request.getOwner());
+        final Player player = Bukkit.getPlayer(request.getOwner());
 
         if (player != null) {
             player.sendMessage(messages.getRaw("added request"));
         }
 
-        TextComponent others = new TextComponent(Joiner.on(", ").join(request.getOthers()));
+        final TextComponent others = new TextComponent(Joiner.on(", ").join(request.getOthers()));
         others.setColor(ChatColor.DARK_PURPLE);
 
-        TextComponent accept = new TextComponent("Accept");
+        final TextComponent accept = new TextComponent("Accept");
         accept.setColor(ChatColor.GREEN);
         accept.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/teamrequest accept " + request.getId()));
 
-        TextComponent deny = new TextComponent("Deny");
+        final TextComponent deny = new TextComponent("Deny");
         deny.setColor(ChatColor.RED);
         deny.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/teamrequest deny " + request.getId()));
 
-        TextComponent component = new TextComponent("New request (ID: " + request.getId() + ") from " + request.getOwnerName() + " to team with: ");
+        final TextComponent component = new TextComponent(
+                "New request (ID: " + request.getId() + ") from " + request.getOwnerName() + " to team with: "
+        );
         component.setColor(ChatColor.GRAY);
         component.addExtra(others);
         component.addExtra(" ");
@@ -229,17 +241,17 @@ public class RequestManager {
     }
 
     protected void broadcast(BaseComponent... components) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (final Player player : Bukkit.getOnlinePlayers()) {
             if (player.hasPermission(ADMIN_PERMISSION)) {
                 player.spigot().sendMessage(components);
             }
         }
     }
 
-    protected void broadcast(String... messages) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
+    protected void broadcast(String... broadcastMessages) {
+        for (final Player player : Bukkit.getOnlinePlayers()) {
             if (player.hasPermission(ADMIN_PERMISSION)) {
-                player.sendMessage(messages);
+                player.sendMessage(broadcastMessages);
             }
         }
     }

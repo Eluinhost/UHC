@@ -35,11 +35,12 @@ import java.text.NumberFormat;
 
 public class DeathContext {
 
-    protected static final NumberFormat formatter = NumberFormat.getInstance();
+    protected static final double PERCENT_MULTIPLIER = 100D;
+    protected static final NumberFormat FORMATTER = NumberFormat.getInstance();
 
     static {
-        formatter.setMaximumFractionDigits(2);
-        formatter.setMinimumFractionDigits(0);
+        FORMATTER.setMaximumFractionDigits(2);
+        FORMATTER.setMinimumFractionDigits(0);
     }
 
     protected final String original;
@@ -50,9 +51,8 @@ public class DeathContext {
         this.original = event.getDeathMessage();
         this.player = new PlayerWrapper(event.getEntity());
 
-        Player killer = event.getEntity().getKiller();
-        System.out.println(killer);
-        this.killer = killer == null ? null : new PlayerWrapper(killer);
+        final Player potentialKiller = event.getEntity().getKiller();
+        this.killer = potentialKiller == null ? null : new PlayerWrapper(potentialKiller);
     }
 
     public String cause() {
@@ -84,7 +84,7 @@ public class DeathContext {
         }
 
         public String blockCoords() {
-            Vector coords = rawCoords();
+            final Vector coords = rawCoords();
             return coords.getBlockX() + "," + coords.getBlockY() + "," + coords.getBlockZ();
         }
 
@@ -97,15 +97,15 @@ public class DeathContext {
         }
 
         public String health() {
-            return formatter.format(bukkitPlayer.getHealth());
+            return FORMATTER.format(bukkitPlayer.getHealth());
         }
 
         public String maxHealth() {
-            return formatter.format(bukkitPlayer.getMaxHealth());
+            return FORMATTER.format(bukkitPlayer.getMaxHealth());
         }
 
         public String percentHealth() {
-            return formatter.format(bukkitPlayer.getHealth() / bukkitPlayer.getMaxHealth() * 100D);
+            return FORMATTER.format(bukkitPlayer.getHealth() / bukkitPlayer.getMaxHealth() * PERCENT_MULTIPLIER);
         }
     }
 }

@@ -27,7 +27,6 @@
 
 package gg.uhc.uhc.modules.team;
 
-import com.google.common.collect.ImmutableMap;
 import gg.uhc.flagcommands.converters.OfflinePlayerConverter;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
@@ -35,6 +34,8 @@ import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
 import gg.uhc.flagcommands.tab.OnlinePlayerTabComplete;
 import gg.uhc.uhc.commands.TemplatedOptionCommand;
 import gg.uhc.uhc.messages.MessageTemplates;
+
+import com.google.common.collect.ImmutableMap;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scoreboard.Scoreboard;
@@ -59,8 +60,8 @@ public class TeamRemoveCommand extends TemplatedOptionCommand {
     protected boolean runCommand(CommandSender sender, OptionSet options) {
         int count = 0;
 
-        for (OfflinePlayer player : playersSpec.values(options)) {
-            Team team = scoreboard.getPlayerTeam(player);
+        for (final OfflinePlayer player : playersSpec.values(options)) {
+            final Team team = scoreboard.getPlayerTeam(player);
 
             if (team == null) {
                 continue;

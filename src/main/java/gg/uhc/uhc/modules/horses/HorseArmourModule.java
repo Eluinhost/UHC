@@ -27,10 +27,11 @@
 
 package gg.uhc.uhc.modules.horses;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
+
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -53,7 +54,9 @@ public class HorseArmourModule extends DisableableModule implements Listener {
 
     public static final String ICON_NAME = "Horse Armour";
 
-    protected static final Set<Material> DISABLED = ImmutableSet.of(Material.IRON_BARDING, Material.GOLD_BARDING, Material.DIAMOND_BARDING);
+    protected static final Set<Material> DISABLED = ImmutableSet.of(
+            Material.IRON_BARDING, Material.GOLD_BARDING, Material.DIAMOND_BARDING
+    );
 
     public HorseArmourModule() {
         setId("HorseArmour");
@@ -66,9 +69,9 @@ public class HorseArmourModule extends DisableableModule implements Listener {
 
     @Override
     public void onDisable() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (final Player player : Bukkit.getOnlinePlayers()) {
             if (player.isInsideVehicle()) {
-                Entity vehicle = player.getVehicle();
+                final Entity vehicle = player.getVehicle();
 
                 if (vehicle.getType() == EntityType.HORSE && removeHorseArmour((Horse) vehicle)) {
                     player.sendMessage(messages.getRaw("dropped armour"));
@@ -78,7 +81,7 @@ public class HorseArmourModule extends DisableableModule implements Listener {
     }
 
     protected boolean removeHorseArmour(Horse horse) {
-        ItemStack armour = horse.getInventory().getArmor();
+        final ItemStack armour = horse.getInventory().getArmor();
 
         if (armour != null && armour.getType() != Material.AIR) {
             // remove the armour and drop it into the world
@@ -92,7 +95,9 @@ public class HorseArmourModule extends DisableableModule implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void on(EntityMountEvent event) {
-        if (isEnabled() || event.getEntityType() != EntityType.PLAYER || event.getMount().getType() != EntityType.HORSE) return;
+        if (!isEnabled()) return;
+
+        if (event.getEntityType() != EntityType.PLAYER || event.getMount().getType() != EntityType.HORSE) return;
 
         if (removeHorseArmour((Horse) event.getMount())) {
             event.getEntity().sendMessage(messages.getRaw("dropped armour"));
@@ -122,7 +127,7 @@ public class HorseArmourModule extends DisableableModule implements Listener {
         // clicked outside of the window
         if (event.getClickedInventory() == null) return;
 
-        InventoryType clicked = event.getClickedInventory().getType();
+        final InventoryType clicked = event.getClickedInventory().getType();
 
         // get any relevant stack to check the type of based on the action took
         Optional<ItemStack> relevant = Optional.absent();
@@ -145,9 +150,12 @@ public class HorseArmourModule extends DisableableModule implements Listener {
             case HOTBAR_SWAP:
                 // only worry about within a horse
                 if (clicked != InventoryType.PLAYER) {
-                    relevant = Optional.fromNullable(event.getWhoClicked().getInventory().getItem(event.getHotbarButton()));
+                    relevant = Optional.fromNullable(
+                            event.getWhoClicked().getInventory().getItem(event.getHotbarButton())
+                    );
                 }
                 break;
+            default:
         }
 
         if (relevant.isPresent() && DISABLED.contains(relevant.get().getType())) {

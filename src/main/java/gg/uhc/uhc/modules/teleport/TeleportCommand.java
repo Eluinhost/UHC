@@ -27,9 +27,6 @@
 
 package gg.uhc.uhc.modules.teleport;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import gg.uhc.flagcommands.converters.IntegerConverter;
 import gg.uhc.flagcommands.converters.OnlinePlayerConverter;
 import gg.uhc.flagcommands.converters.WorldConverter;
@@ -43,6 +40,10 @@ import gg.uhc.flagcommands.tab.WorldTabComplete;
 import gg.uhc.uhc.commands.TemplatedOptionCommand;
 import gg.uhc.uhc.messages.MessageTemplates;
 import gg.uhc.uhc.util.LocationUtil;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -54,6 +55,10 @@ import java.util.Collection;
 import java.util.List;
 
 public class TeleportCommand extends TemplatedOptionCommand {
+
+    protected static final int XY_COORDS_LENGTH = 2;
+    protected static final int XYZ_COORDS_LENGTH = 3;
+    protected static final double HALF_BLOCK_WIDTH = .5D;
 
     protected final OptionSpec<Player> toTeleportSpec;
     protected final ArgumentAcceptingOptionSpec<Integer> coordsSpec;
@@ -69,20 +74,29 @@ public class TeleportCommand extends TemplatedOptionCommand {
         nonOptionsTabComplete = new NonDuplicateTabComplete(OnlinePlayerTabComplete.INSTANCE);
 
         this.worldSpec = parser
-                .acceptsAll(ImmutableList.of("w", "world"), "The world to go along with the coordinates, defaults to the world the executor is in")
+                .acceptsAll(
+                        ImmutableList.of("w", "world"),
+                        "The world to go along with the coordinates, defaults to the world the executor is in"
+                )
                 .withRequiredArg()
                 .withValuesConvertedBy(new WorldConverter());
         completers.put(worldSpec, new NonDuplicateTabComplete(WorldTabComplete.INSTANCE));
 
         this.coordsSpec = parser
-                .acceptsAll(ImmutableList.of("c", "coords"), "The coords to teleport all specified players to - x,z or x,y,z - does not require -p")
+                .acceptsAll(
+                        ImmutableList.of("c", "coords"),
+                        "The coords to teleport all specified players to - x,z or x,y,z - does not require -p"
+                )
                 .withRequiredArg()
                 .withValuesConvertedBy(new IntegerConverter().setType("Integer coordinate"))
                 .withValuesSeparatedBy(',');
         completers.put(coordsSpec, new FixedValuesTabComplete("0,100,0"));
 
         this.playerSpec = parser
-                .acceptsAll(ImmutableList.of("p", "player"), "The name of the player to teleport players to, does not require -c")
+                .acceptsAll(
+                        ImmutableList.of("p", "player"),
+                        "The name of the player to teleport players to, does not require -c"
+                )
                 .withRequiredArg()
                 .withValuesConvertedBy(new OnlinePlayerConverter());
         completers.put(playerSpec, OnlinePlayerTabComplete.INSTANCE);
@@ -90,6 +104,7 @@ public class TeleportCommand extends TemplatedOptionCommand {
 
 
     @Override
+    @SuppressWarnings("checkstyle:nestedifdepth")
     protected boolean runCommand(CommandSender sender, OptionSet options) {
         Collection<? extends Player> toTeleport = toTeleportSpec.values(options);
 
@@ -97,55 +112,58 @@ public class TeleportCommand extends TemplatedOptionCommand {
             toTeleport = Bukkit.getOnlinePlayers();
         }
 
-        boolean isPlayer = options.has(playerSpec);
-        boolean isCoords = options.has(coordsSpec);
+        final boolean isPlayer = options.has(playerSpec);
+        final boolean isCoords = options.has(coordsSpec);
 
         if ((isPlayer && isCoords) || (!isPlayer && !isCoords)) {
             sender.sendMessage(messages.getRaw("invalid flag"));
             return true;
         }
 
-        Location tpLocation;
+        final Location tpLocation;
 
         if (isPlayer) {
             tpLocation = playerSpec.value(options).getLocation();
         } else {
-            World world;
+            final World world;
 
             if (options.has(worldSpec)) {
                 world = worldSpec.value(options);
+            } else if (sender instanceof Entity) {
+                world = ((Entity) sender).getWorld();
             } else {
-                if (sender instanceof Entity) {
-                    world = ((Entity) sender).getWorld();
-                } else {
-                    sender.sendMessage(messages.getRaw("provide world"));
-                    return true;
-                }
+                sender.sendMessage(messages.getRaw("provide world"));
+                return true;
             }
 
-            List<Integer> coords = Lists.newArrayList(coordsSpec.values(options));
+            final List<Integer> coords = Lists.newArrayList(coordsSpec.values(options));
 
-            if (coords.size() == 2) {
-                int y = LocationUtil.findHighestTeleportableY(world, coords.get(0), coords.get(1));
+            if (coords.size() == XY_COORDS_LENGTH) {
+                final int ycoord = LocationUtil.findHighestTeleportableY(world, coords.get(0), coords.get(1));
 
-                if (y < 0) {
+                if (ycoord < 0) {
                     sender.sendMessage(messages.getRaw("no suitable Y"));
                     return true;
                 }
 
                 // set the Y in the coords (+1 as the Y is the block under their feet)
-                coords.add(1, y + 1);
+                coords.add(1, ycoord + 1);
             }
 
-            if (coords.size() != 3) {
+            if (coords.size() != XYZ_COORDS_LENGTH) {
                 sender.sendMessage(messages.getRaw("invalid coordinates"));
                 return true;
             }
 
-            tpLocation = new Location(world, coords.get(0) + .5D, coords.get(1), coords.get(2) + .5D);
+            tpLocation = new Location(
+                    world,
+                    coords.get(0) + HALF_BLOCK_WIDTH,
+                    coords.get(1),
+                    coords.get(2) + HALF_BLOCK_WIDTH
+            );
         }
 
-        for (Player p : toTeleport) {
+        for (final Player p : toTeleport) {
             p.teleport(tpLocation);
         }
 

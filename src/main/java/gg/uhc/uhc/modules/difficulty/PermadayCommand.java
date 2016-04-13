@@ -27,9 +27,6 @@
 
 package gg.uhc.uhc.modules.difficulty;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import gg.uhc.flagcommands.converters.WorldConverter;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
@@ -37,6 +34,10 @@ import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
 import gg.uhc.flagcommands.tab.WorldTabComplete;
 import gg.uhc.uhc.commands.TemplatedOptionCommand;
 import gg.uhc.uhc.messages.MessageTemplates;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -45,15 +46,16 @@ import java.util.List;
 
 public class PermadayCommand extends TemplatedOptionCommand {
 
-    protected static final String TIME_FREEZE_GAMERULE = "doDaylightCycle";
+    protected static final long SUN_OVERHEAD_TIME = 6000L;
+    protected static final String DO_DAYLIGHT_CYCLE_GAMERULE = "doDaylightCycle";
 
-    protected final OptionSpec<World> worlds;
+    protected final OptionSpec<World> worldsSpec;
     protected final OptionSpec<Void> turnOff;
 
     public PermadayCommand(MessageTemplates messages) {
         super(messages);
 
-        worlds = parser.nonOptions("List of worlds to affect, if none provided runs in the world you are in")
+        worldsSpec = parser.nonOptions("List of worlds to affect, if none provided runs in the world you are in")
                 .withValuesConvertedBy(new WorldConverter());
 
         nonOptionsTabComplete = new NonDuplicateTabComplete(WorldTabComplete.INSTANCE);
@@ -63,34 +65,42 @@ public class PermadayCommand extends TemplatedOptionCommand {
 
     @Override
     protected boolean runCommand(CommandSender sender, OptionSet options) {
-        List<World> w = worlds.values(options);
+        List<World> worlds = worldsSpec.values(options);
 
-        if (w.size() == 0) {
+        if (worlds.size() == 0) {
             if (!(sender instanceof Player)) {
                 sender.sendMessage(messages.getRaw("provide world"));
                 return true;
             }
 
-            w = Lists.newArrayList(((Player) sender).getWorld());
+            worlds = Lists.newArrayList(((Player) sender).getWorld());
         }
 
-        boolean on = !options.has(turnOff);
+        final boolean on = !options.has(turnOff);
 
-        for (World world : w) {
+        for (final World world : worlds) {
             if (on) {
-                world.setGameRuleValue(TIME_FREEZE_GAMERULE, "false");
-                world.setTime(6000);
+                world.setGameRuleValue(DO_DAYLIGHT_CYCLE_GAMERULE, "false");
+                world.setTime(SUN_OVERHEAD_TIME);
             } else {
-                world.setGameRuleValue(TIME_FREEZE_GAMERULE, "true");
+                world.setGameRuleValue(DO_DAYLIGHT_CYCLE_GAMERULE, "true");
             }
 
-            String message = messages.evalTemplate(on ? "on notification" : "off notification", ImmutableMap.of("world", world.getName()));
-            for (Player player : world.getPlayers()) {
+            final String message = messages.evalTemplate(
+                    on ? "on notification" : "off notification",
+                    ImmutableMap.of("world", world.getName())
+            );
+
+            for (final Player player : world.getPlayers()) {
                 player.sendMessage(message);
             }
         }
 
-        sender.sendMessage(messages.evalTemplate(on ? "on completed" : "off completed", ImmutableMap.of("count", w.size())));
+        sender.sendMessage(messages.evalTemplate(
+                on ? "on completed" : "off completed",
+                ImmutableMap.of("count", worlds.size())
+        ));
+
         return true;
     }
 }

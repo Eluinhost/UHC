@@ -27,12 +27,13 @@
 
 package gg.uhc.uhc.modules.death;
 
+import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
+
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 import com.google.common.collect.ImmutableMap;
-import gg.uhc.uhc.modules.DisableableModule;
-import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -72,12 +73,15 @@ public class ModifiedDeathMessagesModule extends DisableableModule implements Li
             config.set(FORMAT_EXPLANATION_KEY, "<message> at <coords>");
         }
 
-        String format = config.getString(FORMAT_KEY);
+        final String format = config.getString(FORMAT_KEY);
         formatExplanation = config.getString(FORMAT_EXPLANATION_KEY);
 
-        MustacheFactory mf = new DefaultMustacheFactory();
+        final MustacheFactory mf = new DefaultMustacheFactory();
         try {
-            template = mf.compile(new StringReader(ChatColor.translateAlternateColorCodes('&', format)), "death-message");
+            template = mf.compile(
+                    new StringReader(ChatColor.translateAlternateColorCodes('&', format)),
+                    "death-message"
+            );
         } catch (Exception ex) {
             throw new InvalidConfigurationException("Error parsing death message template", ex);
         }
@@ -94,7 +98,7 @@ public class ModifiedDeathMessagesModule extends DisableableModule implements Li
     public void on(PlayerDeathEvent event) {
         if (!isEnabled()) return;
 
-        StringWriter writer = new StringWriter();
+        final StringWriter writer = new StringWriter();
         template.execute(writer, new DeathContext(event));
 
         event.setDeathMessage(writer.getBuffer().toString());

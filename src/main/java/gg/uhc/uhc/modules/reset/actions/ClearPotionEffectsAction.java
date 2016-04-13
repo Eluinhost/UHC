@@ -45,14 +45,14 @@ public class ClearPotionEffectsAction extends Action {
     protected void run(Player player) {
         effects = player.getActivePotionEffects();
 
-        for (PotionEffect effect : effects) {
+        for (final PotionEffect effect : effects) {
             player.removePotionEffect(effect.getType());
         }
     }
 
     @Override
     protected void revert(Player player) {
-        for (PotionEffect effect : effects) {
+        for (final PotionEffect effect : effects) {
             player.addPotionEffect(effect);
         }
     }

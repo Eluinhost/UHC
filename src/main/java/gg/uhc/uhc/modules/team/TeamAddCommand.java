@@ -27,11 +27,6 @@
 
 package gg.uhc.uhc.modules.team;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Sets;
 import gg.uhc.flagcommands.converters.OfflinePlayerConverter;
 import gg.uhc.flagcommands.converters.TeamConverter;
 import gg.uhc.flagcommands.joptsimple.ArgumentAcceptingOptionSpec;
@@ -42,6 +37,12 @@ import gg.uhc.flagcommands.tab.OnlinePlayerTabComplete;
 import gg.uhc.flagcommands.tab.TeamNameTabComplete;
 import gg.uhc.uhc.commands.TemplatedOptionCommand;
 import gg.uhc.uhc.messages.MessageTemplates;
+
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -72,19 +73,27 @@ public class TeamAddCommand extends TemplatedOptionCommand {
 
     @Override
     protected boolean runCommand(CommandSender sender, OptionSet options) {
-        Team team = teamSpec.value(options);
-        Set<OfflinePlayer> players = Sets.newHashSet(playersSpec.values(options));
+        final Team team = teamSpec.value(options);
+        final Set<OfflinePlayer> players = Sets.newHashSet(playersSpec.values(options));
         players.removeAll(team.getPlayers());
 
-        for (OfflinePlayer player : players) {
+        for (final OfflinePlayer player : players) {
             team.addPlayer(player);
         }
 
-        Set<OfflinePlayer> finalTeam = team.getPlayers();
+        final Set<OfflinePlayer> finalTeam = team.getPlayers();
 
-        String members = finalTeam.size() == 0 ? ChatColor.DARK_GRAY + "No members" : Joiner.on(", ").join(Iterables.transform(team.getPlayers(), FunctionalUtil.PLAYER_NAME_FETCHER));
+        final String members = finalTeam.size() == 0
+                ? ChatColor.DARK_GRAY + "No members"
+                : Joiner.on(", ").join(Iterables.transform(team.getPlayers(), FunctionalUtil.PLAYER_NAME_FETCHER));
 
-        sender.sendMessage(messages.evalTemplate("added", ImmutableMap.of("count", players.size(), "players", members)));
+        sender.sendMessage(messages.evalTemplate(
+                "added",
+                ImmutableMap.of(
+                        "count", players.size(),
+                        "players", members
+                )
+        ));
         return false;
     }
 }

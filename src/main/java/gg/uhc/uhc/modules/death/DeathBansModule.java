@@ -27,15 +27,16 @@
 
 package gg.uhc.uhc.modules.death;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import gg.uhc.flagcommands.converters.EnumConverter;
 import gg.uhc.flagcommands.joptsimple.ValueConversionException;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.util.TimeUtil;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -51,6 +52,16 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.*;
 
 public class DeathBansModule extends DisableableModule implements Listener {
+
+    protected static final int DEFAULT_DELAY_SECONDS = 20;
+    protected static final int TICKS_PER_SECOND = 20;
+
+    protected static final String ACTION_KEY = "action";
+    protected static final String MESSAGE_KEY = "message";
+    protected static final String DELAY_SECONDS_KEY = "delay";
+    protected static final String DURATION_KEY = "duration";
+    protected static final String WORLD_NAME_KEY = "world name";
+    protected static final String SERVER_NAME_KEY = "server name";
 
     protected static final EnumConverter<BanType> BAN_PARSER = EnumConverter.forEnum(BanType.class);
     protected static final String ICON_NAME = "Death Bans";
@@ -74,51 +85,53 @@ public class DeathBansModule extends DisableableModule implements Listener {
 
     @Override
     public void initialize() throws InvalidConfigurationException {
-        if (!config.contains("action")) {
-            config.set("action", "BAN+KICK");
+        if (!config.contains(ACTION_KEY)) {
+            config.set(ACTION_KEY, "BAN+KICK");
         }
 
-        if (!config.contains("message")) {
-            config.set("message", "RIP");
+        if (!config.contains(MESSAGE_KEY)) {
+            config.set(MESSAGE_KEY, "RIP");
         }
-        this.message = config.getString("message");
+        this.message = config.getString(MESSAGE_KEY);
 
-        if (!config.contains("delay seconds")) {
-            config.set("delay seconds", 20);
+        if (!config.contains(DELAY_SECONDS_KEY)) {
+            config.set(DELAY_SECONDS_KEY, DEFAULT_DELAY_SECONDS);
         }
-        this.delay = config.getInt("delay seconds");
+        this.delay = config.getInt(DELAY_SECONDS_KEY);
 
-        ImmutableSet.Builder<BanType> types = ImmutableSet.builder();
-        for (String banTypeString : config.getString("action").split("\\+")) {
+        final ImmutableSet.Builder<BanType> chosenTypes = ImmutableSet.builder();
+        for (final String banTypeString : config.getString(ACTION_KEY).split("\\+")) {
             try {
-                types.add(BAN_PARSER.convert(banTypeString));
+                chosenTypes.add(BAN_PARSER.convert(banTypeString));
             } catch (ValueConversionException ex) {
                 throw new InvalidConfigurationException("Invalid ban type given", ex);
             }
         }
 
-        this.types = types.build();
+        this.types = chosenTypes.build();
 
         // ensure extra fields are set
-        for (BanType type : this.types) {
+        for (final BanType type : this.types) {
             switch (type) {
                 case BAN:
-                    if (!config.contains("duration")) {
-                        config.set("duration", "1d");
+                    if (!config.contains(DURATION_KEY)) {
+                        config.set(DURATION_KEY, "1d");
                     }
-                    duration = TimeUtil.getSeconds(config.getString("duration"));
+                    duration = TimeUtil.getSeconds(config.getString(DURATION_KEY));
+                    break;
                 case MOVE_WORLD:
-                    if (!config.contains("world name")) {
-                        config.set("world name", "world");
+                    if (!config.contains(WORLD_NAME_KEY)) {
+                        config.set(WORLD_NAME_KEY, "world");
                     }
-                    worldName = config.getString("world name");
+                    worldName = config.getString(WORLD_NAME_KEY);
                     break;
                 case MOVE_SERVER:
-                    if (!config.contains("server name")) {
-                        config.set("server name", "lobby");
+                    if (!config.contains(SERVER_NAME_KEY)) {
+                        config.set(SERVER_NAME_KEY, "lobby");
                     }
-                    serverName = config.getString("server name");
+                    serverName = config.getString(SERVER_NAME_KEY);
                     break;
+                default:
             }
         }
 
@@ -127,19 +140,36 @@ public class DeathBansModule extends DisableableModule implements Listener {
 
     @Override
     protected List<String> getEnabledLore() {
-        List<String> parts = Lists.newArrayList();
-        parts.addAll(messages.evalTemplates(ENABLED_LORE_PATH + ".header", ImmutableMap.of("delay", TimeUtil.secondsToString(delay))));
+        final List<String> parts = Lists.newArrayList();
+        parts.addAll(messages.evalTemplates(
+                ENABLED_LORE_PATH + ".header",
+                ImmutableMap.of("delay", TimeUtil.secondsToString(delay))
+        ));
 
-        for (BanType type : types) {
+        for (final BanType type : types) {
             switch (type) {
                 case MOVE_WORLD:
-                    parts.addAll(messages.evalTemplates(ENABLED_LORE_PATH + ".actions.move world", ImmutableMap.of("world", worldName))); break;
+                    parts.addAll(messages.evalTemplates(
+                            ENABLED_LORE_PATH + ".actions.move world",
+                            ImmutableMap.of("world", worldName)
+                    ));
+                    break;
                 case BAN:
-                    parts.addAll(messages.evalTemplates(ENABLED_LORE_PATH + ".actions.ban", ImmutableMap.of("duration", TimeUtil.secondsToString(duration)))); break;
+                    parts.addAll(messages.evalTemplates(
+                            ENABLED_LORE_PATH + ".actions.ban",
+                            ImmutableMap.of("duration", TimeUtil.secondsToString(duration))
+                    ));
+                    break;
                 case MOVE_SERVER:
-                    parts.addAll(messages.evalTemplates(ENABLED_LORE_PATH + ".actions.server", ImmutableMap.of("server", serverName))); break;
+                    parts.addAll(messages.evalTemplates(
+                            ENABLED_LORE_PATH + ".actions.server",
+                            ImmutableMap.of("server", serverName)
+                    ));
+                    break;
                 case KICK:
-                    parts.addAll(messages.getRawStrings(ENABLED_LORE_PATH + ".actions.kick")); break;
+                    parts.addAll(messages.getRawStrings(ENABLED_LORE_PATH + ".actions.kick"));
+                    break;
+                default:
             }
         }
 
@@ -148,7 +178,7 @@ public class DeathBansModule extends DisableableModule implements Listener {
 
     @EventHandler
     public void on(PlayerQuitEvent event) {
-        BukkitRunnable waiting = timers.get(event.getPlayer().getUniqueId());
+        final BukkitRunnable waiting = timers.get(event.getPlayer().getUniqueId());
 
         if (waiting == null) return;
 
@@ -161,20 +191,21 @@ public class DeathBansModule extends DisableableModule implements Listener {
     public void on(PlayerDeathEvent event) {
         if (!isEnabled()) return;
 
-        UUID uuid = event.getEntity().getUniqueId();
+        final UUID uuid = event.getEntity().getUniqueId();
 
         // skip if there is already a timer running
         if (timers.containsKey(uuid)) return;
 
-        BanRunnable runnable = new BanRunnable(uuid);
-        runnable.runTaskLater(plugin, delay * 20);
+        final BanRunnable runnable = new BanRunnable(uuid);
+        runnable.runTaskLater(plugin, delay * TICKS_PER_SECOND);
         timers.put(uuid, runnable);
 
         if (types.contains(BanType.MOVE_WORLD)) {
-            World world = Bukkit.getWorld(worldName);
+            final World world = Bukkit.getWorld(worldName);
 
             if (world == null) {
-                plugin.getLogger().severe("World for deathbans `" + worldName + "` does not exist, could not move player");
+                plugin.getLogger()
+                        .severe("World for deathbans `" + worldName + "` does not exist, could not move player");
             } else {
                 event.getEntity().setBedSpawnLocation(world.getSpawnLocation(), true);
             }
@@ -198,11 +229,11 @@ public class DeathBansModule extends DisableableModule implements Listener {
         public void run() {
             timers.remove(uuid);
 
-            Player player = Bukkit.getPlayer(uuid);
+            final Player player = Bukkit.getPlayer(uuid);
             player.sendMessage(message);
 
             if (types.contains(BanType.BAN)) {
-                Calendar calendar = Calendar.getInstance();
+                final Calendar calendar = Calendar.getInstance();
                 calendar.add(Calendar.SECOND, (int) duration);
 
                 Bukkit.getBanList(BanList.Type.NAME).addBan(player.getName(), message, calendar.getTime(), "UHC");

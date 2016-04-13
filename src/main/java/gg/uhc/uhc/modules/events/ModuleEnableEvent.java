@@ -28,27 +28,27 @@
 package gg.uhc.uhc.modules.events;
 
 import gg.uhc.uhc.modules.DisableableModule;
+
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 public class ModuleEnableEvent extends Event {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList HANDLERS = new HandlerList();
 
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
-
-    protected boolean cancelled = false;
-
+    protected boolean cancelled;
     protected final DisableableModule module;
 
     public ModuleEnableEvent(DisableableModule module) {
         this.module = module;
+    }
+
+    @Override
+    public HandlerList getHandlers() {
+        return HANDLERS;
+    }
+
+    public static HandlerList getHandlerList() {
+        return HANDLERS;
     }
 
     public DisableableModule getModule() {

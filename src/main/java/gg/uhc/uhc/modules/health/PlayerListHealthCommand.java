@@ -27,8 +27,6 @@
 
 package gg.uhc.uhc.modules.health;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import gg.uhc.flagcommands.converters.EnumConverter;
 import gg.uhc.flagcommands.converters.StringConverter;
 import gg.uhc.flagcommands.joptsimple.ArgumentAcceptingOptionSpec;
@@ -39,6 +37,9 @@ import gg.uhc.flagcommands.tab.EnumTabComplete;
 import gg.uhc.flagcommands.tab.FixedValuesTabComplete;
 import gg.uhc.uhc.commands.TemplatedOptionCommand;
 import gg.uhc.uhc.messages.MessageTemplates;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -49,6 +50,9 @@ import org.bukkit.scoreboard.Scoreboard;
 
 public class PlayerListHealthCommand extends TemplatedOptionCommand {
 
+    protected static final int OBJECTIVE_NAME_MAX_LENGTH = 16;
+    protected static final int OBJECTIVE_DISPLAY_NAME_MAX_LENGTH = 32;
+
     protected final Scoreboard scoreboard;
 
     protected final OptionSpec<Void> forceSpec;
@@ -56,24 +60,42 @@ public class PlayerListHealthCommand extends TemplatedOptionCommand {
     protected final ArgumentAcceptingOptionSpec<String> displayNameSpec;
     protected final ArgumentAcceptingOptionSpec<DisplaySlot> slotSpec;
 
-    public PlayerListHealthCommand(MessageTemplates messages, Scoreboard scoreboard, DisplaySlot defaultSlot, String objectiveName, String displayName) {
+    public PlayerListHealthCommand(MessageTemplates messages, Scoreboard scoreboard, DisplaySlot defaultSlot,
+                                   String objectiveName, String displayName) {
         super(messages);
         this.scoreboard = scoreboard;
 
         forceSpec = parser
-                .acceptsAll(ImmutableList.of("f", "force"), "Remove any existing objective with the same name. Do not use this with percent health objectives");
+                .acceptsAll(
+                        ImmutableList.of("f", "force"),
+                        "Remove any existing objective with the same name."
+                        + "Do not use this with percent health objectives"
+                );
 
         nameSpec = parser
                 .acceptsAll(ImmutableList.of("n", "name"), "Name of the objective to create/use.")
                 .withRequiredArg()
-                .withValuesConvertedBy(new StringConverter().setPredicate(new StringPredicates.LessThanOrEqualLength(16)).setType("objective name (<= 16 chars)"))
+                .withValuesConvertedBy(
+                        new StringConverter()
+                                .setPredicate(new StringPredicates.LessThanOrEqualLength(OBJECTIVE_NAME_MAX_LENGTH))
+                                .setType("objective name (<= " + OBJECTIVE_NAME_MAX_LENGTH + " chars)")
+                )
                 .defaultsTo(objectiveName);
         completers.put(nameSpec, new FixedValuesTabComplete(objectiveName));
 
         displayNameSpec = parser
-                .acceptsAll(ImmutableList.of("d", "displayName"), "Change the display name of the objective. Can use colour codes like &c. Use &h for a heart")
+                .acceptsAll(
+                        ImmutableList.of("d", "displayName"),
+                        "Change the display name of the objective. Can use colour codes like &c. Use &h for a heart"
+                )
                 .withRequiredArg()
-                .withValuesConvertedBy(new StringConverter().setPredicate(new StringPredicates.LessThanOrEqualLength(32)).setType("display name (<= 32 chars)"));
+                .withValuesConvertedBy(
+                        new StringConverter()
+                                .setPredicate(
+                                        new StringPredicates.LessThanOrEqualLength(OBJECTIVE_DISPLAY_NAME_MAX_LENGTH)
+                                )
+                                .setType("display name (<= " + OBJECTIVE_DISPLAY_NAME_MAX_LENGTH + " chars)")
+                );
         completers.put(displayNameSpec, new FixedValuesTabComplete(displayName));
 
         slotSpec = parser
@@ -86,9 +108,9 @@ public class PlayerListHealthCommand extends TemplatedOptionCommand {
 
     @Override
     protected boolean runCommand(CommandSender sender, OptionSet options) {
-        String objectiveName = nameSpec.value(options);
-        boolean force = options.has(forceSpec);
-        DisplaySlot slot = slotSpec.value(options);
+        final String objectiveName = nameSpec.value(options);
+        final boolean force = options.has(forceSpec);
+        final DisplaySlot slot = slotSpec.value(options);
 
         Objective objective = scoreboard.getObjective(objectiveName);
 
@@ -104,20 +126,29 @@ public class PlayerListHealthCommand extends TemplatedOptionCommand {
             objective = scoreboard.registerNewObjective(objectiveName, "health");
 
             // add all online player manually
-            for (Player player : Bukkit.getOnlinePlayers()) {
+            for (final Player player : Bukkit.getOnlinePlayers()) {
                 objective.getScore(player.getName()).setScore((int) Math.ceil(player.getHealth()));
             }
         }
 
         // set display name if needed
         if (options.has(displayNameSpec)) {
-            objective.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayNameSpec.value(options)).replace("&h", "♥"));
+            objective.setDisplayName(
+                    ChatColor.translateAlternateColorCodes('&', displayNameSpec.value(options)).replace("&h", "♥")
+            );
         }
 
         // set the slot to render in
         objective.setDisplaySlot(slot);
 
-        sender.sendMessage(messages.evalTemplate("assigned", ImmutableMap.of("name", objective.getName(), "display", objective.getDisplayName(), "slot", objective.getDisplaySlot().name())));
+        sender.sendMessage(messages.evalTemplate(
+                "assigned",
+                ImmutableMap.of(
+                        "name", objective.getName(),
+                        "display", objective.getDisplayName(),
+                        "slot", objective.getDisplaySlot().name()
+                )
+        ));
         return true;
     }
 }

@@ -29,6 +29,7 @@ package gg.uhc.uhc.modules.recipes;
 
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
+
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -58,7 +59,7 @@ public class NotchApplesModule extends DisableableModule implements Listener {
     public void on(PrepareItemCraftEvent event) {
         if (isEnabled()) return;
 
-        Recipe recipe = event.getRecipe();
+        final Recipe recipe = event.getRecipe();
 
         if (recipe.getResult().getType() != Material.GOLDEN_APPLE) return;
 

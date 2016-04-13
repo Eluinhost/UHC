@@ -53,10 +53,10 @@ public class DebouncedRunnable {
             currentTick = 0;
 
             // start a new timer
-            Task t = new Task();
-            t.runTaskTimer(plugin, 0, 1);
+            final Task newTask = new Task();
+            newTask.runTaskTimer(plugin, 0, 1);
 
-            task = Optional.of(t);
+            this.task = Optional.of(newTask);
         }
 
         // extend the trigger time

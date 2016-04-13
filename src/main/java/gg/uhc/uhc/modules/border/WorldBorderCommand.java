@@ -27,9 +27,6 @@
 
 package gg.uhc.uhc.modules.border;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import gg.uhc.flagcommands.converters.DoubleConverter;
 import gg.uhc.flagcommands.converters.LongConverter;
 import gg.uhc.flagcommands.converters.WorldConverter;
@@ -42,6 +39,10 @@ import gg.uhc.flagcommands.tab.FixedValuesTabComplete;
 import gg.uhc.flagcommands.tab.WorldTabComplete;
 import gg.uhc.uhc.commands.TemplatedOptionCommand;
 import gg.uhc.uhc.messages.MessageTemplates;
+
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
 import org.bukkit.command.BlockCommandSender;
@@ -65,15 +66,26 @@ public class WorldBorderCommand extends TemplatedOptionCommand {
                 .acceptsAll(ImmutableList.of("reset"), "Clears the border back to default settings");
 
         sizeSpec = parser
-                .acceptsAll(ImmutableList.of("s", "size", "r", "radius"), "The radius of the border from the centre. Use 1000>200 format for shrinking borders (requires -t/--time parameter)")
+                .acceptsAll(
+                        ImmutableList.of("s", "size", "r", "radius"),
+                        "The radius of the border from the centre."
+                        + "Use 1000>200 format for shrinking borders (requires -t/--time parameter)"
+                )
                 .requiredUnless(resetSpec)
                 .withRequiredArg()
-                .withValuesConvertedBy(new DoubleConverter().setPredicate(DoublePredicates.GREATER_THAN_ZERO).setType("Number > 0"))
+                .withValuesConvertedBy(
+                        new DoubleConverter()
+                                .setPredicate(DoublePredicates.GREATER_THAN_ZERO)
+                                .setType("Number > 0")
+                )
                 .withValuesSeparatedBy('>');
         completers.put(sizeSpec, new FixedValuesTabComplete("250", "500", "1000", "1000>200"));
 
         worldSpec = parser
-                .acceptsAll(ImmutableList.of("w", "world"), "The world to create the border in, defaults to the world you are in")
+                .acceptsAll(
+                        ImmutableList.of("w", "world"),
+                        "The world to create the border in, defaults to the world you are in"
+                )
                 .withRequiredArg()
                 .withValuesConvertedBy(new WorldConverter());
         completers.put(worldSpec, WorldTabComplete.INSTANCE);
@@ -87,9 +99,16 @@ public class WorldBorderCommand extends TemplatedOptionCommand {
         completers.put(centreSpec, new FixedValuesTabComplete("0:0"));
 
         timeSpec = parser
-                .acceptsAll(ImmutableList.of("t", "time"), "How many seconds to move to the radius given from the previous value")
+                .acceptsAll(
+                        ImmutableList.of("t", "time"),
+                        "How many seconds to move to the radius given from the previous value"
+                )
                 .withRequiredArg()
-                .withValuesConvertedBy(new LongConverter().setPredicate(LongPredicates.GREATER_THAN_ZERO_INC).setType("Integer > 0"));
+                .withValuesConvertedBy(
+                        new LongConverter()
+                                .setPredicate(LongPredicates.GREATER_THAN_ZERO_INC)
+                                .setType("Integer > 0")
+                );
         completers.put(timeSpec, new FixedValuesTabComplete("300", "600", "900", "1200"));
     }
 
@@ -107,15 +126,15 @@ public class WorldBorderCommand extends TemplatedOptionCommand {
 
     @Override
     protected boolean runCommand(CommandSender sender, OptionSet options) {
-        World world;
+        final World world;
         // grab the world
         if (options.has(worldSpec)) {
             world = worldSpec.value(options);
         } else {
-            Optional<World> w = getWorld(sender);
+            final Optional<World> optionalWorld = getWorld(sender);
 
-            if (w.isPresent()) {
-                world = w.get();
+            if (optionalWorld.isPresent()) {
+                world = optionalWorld.get();
             } else {
                 sender.sendMessage(messages.getRaw("provide world"));
                 return true;
@@ -129,8 +148,8 @@ public class WorldBorderCommand extends TemplatedOptionCommand {
             return true;
         }
 
-        List<Double> coords = centreSpec.values(options);
-        List<Double> radii = sizeSpec.values(options);
+        final List<Double> coords = centreSpec.values(options);
+        final List<Double> radii = sizeSpec.values(options);
 
         if (coords.size() != 2) {
             sender.sendMessage(messages.getRaw("invalid coords"));
@@ -142,8 +161,8 @@ public class WorldBorderCommand extends TemplatedOptionCommand {
             return true;
         }
 
-        double radius = radii.get(0);
-        Optional<Double> targetRadius;
+        final double radius = radii.get(0);
+        final Optional<Double> targetRadius;
         long time = 0;
 
         if (radii.size() == 1) {
@@ -158,18 +177,29 @@ public class WorldBorderCommand extends TemplatedOptionCommand {
             time = timeSpec.value(options);
         }
 
-        WorldBorder border = world.getWorldBorder();
+        final WorldBorder border = world.getWorldBorder();
 
         // set centre
         border.setCenter(coords.get(0), coords.get(1));
 
         // set initial size
         border.setSize(radius * 2.0D);
-        sender.sendMessage(messages.evalTemplate("set regular", ImmutableMap.of("world", world.getName(), "radius", radius, "x", coords.get(0), "z", coords.get(1))));
+        sender.sendMessage(messages.evalTemplate(
+                "set regular",
+                ImmutableMap.of(
+                        "world", world.getName(),
+                        "radius", radius,
+                        "x", coords.get(0),
+                        "z", coords.get(1)
+                )
+        ));
 
         if (targetRadius.isPresent()) {
             border.setSize(radii.get(1) * 2.0D, time);
-            sender.sendMessage(messages.evalTemplate("set shrinking", ImmutableMap.of("radius", radii.get(1), "seconds", time)));
+            sender.sendMessage(messages.evalTemplate(
+                    "set shrinking",
+                    ImmutableMap.of("radius", radii.get(1), "seconds", time))
+            );
         }
 
         return true;

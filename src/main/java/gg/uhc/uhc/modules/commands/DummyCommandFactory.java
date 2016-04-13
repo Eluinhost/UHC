@@ -27,11 +27,12 @@
 
 package gg.uhc.uhc.modules.commands;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
 import gg.uhc.flagcommands.commands.StaticStringCommand;
 import gg.uhc.uhc.messages.MessageTemplates;
 import gg.uhc.uhc.modules.Module;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 
 public class DummyCommandFactory {
 
@@ -42,11 +43,14 @@ public class DummyCommandFactory {
     }
 
     public StaticStringCommand forModule(String name) {
-        return new StaticStringCommand(templates.evalTemplate("module not loaded command", ImmutableMap.of("name", name)));
+        return new StaticStringCommand(templates.evalTemplate(
+                "module not loaded command",
+                ImmutableMap.of("name", name))
+        );
     }
 
     public StaticStringCommand forModule(Module module) {
-        String id = module.getId();
+        final String id = module.getId();
         Preconditions.checkNotNull(id, "Module does not have an id set");
         return forModule(id);
     }

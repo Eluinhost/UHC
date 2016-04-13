@@ -27,13 +27,6 @@
 
 package gg.uhc.uhc.modules.team;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import gg.uhc.flagcommands.converters.IntegerConverter;
 import gg.uhc.flagcommands.joptsimple.ArgumentAcceptingOptionSpec;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
@@ -42,6 +35,14 @@ import gg.uhc.flagcommands.predicates.IntegerPredicates;
 import gg.uhc.flagcommands.tab.OptionsTabComplete;
 import gg.uhc.uhc.commands.TemplatedOptionCommand;
 import gg.uhc.uhc.messages.MessageTemplates;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -78,15 +79,22 @@ public class ListTeamsCommand extends TemplatedOptionCommand {
         pageSpec = parser
                 .acceptsAll(ImmutableList.of("p", "page"), "The page of results to show")
                 .withRequiredArg()
-                .withValuesConvertedBy(new IntegerConverter().setPredicate(IntegerPredicates.GREATER_THAN_ZERO).setType("Integer > 0"))
+                .withValuesConvertedBy(
+                        new IntegerConverter()
+                                .setPredicate(IntegerPredicates.GREATER_THAN_ZERO)
+                                .setType("Integer > 0")
+                )
                 .defaultsTo(1);
 
         completers.put(pageSpec, new OptionsTabComplete() {
             @Override
-            public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args, String complete, String[] others) {
-                List<String> results = Lists.newArrayList();
+            public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args,
+                                              String complete, String[] others) {
+                final List<String> results = Lists.newArrayList();
 
-                int pages = (int) Math.ceil((double) ListTeamsCommand.this.teamModule.getTeams().size() / (double) COUNT_PER_PAGE);
+                final int pages = (int) Math.ceil(
+                        (double) ListTeamsCommand.this.teamModule.getTeams().size() / (double) COUNT_PER_PAGE
+                );
 
                 for (int i = 1; i <= pages; i++) {
                     results.add(String.valueOf(i));
@@ -99,17 +107,17 @@ public class ListTeamsCommand extends TemplatedOptionCommand {
 
     @Override
     protected boolean runCommand(CommandSender sender, OptionSet options) {
-        int page = pageSpec.value(options);
-        boolean emptyOnly = options.has(emptyOnlySpec);
-        boolean showAll = options.has(showAllSpec);
+        final int page = pageSpec.value(options);
+        final boolean emptyOnly = options.has(emptyOnlySpec);
+        final boolean showAll = options.has(showAllSpec);
 
-        if (showAll && emptyOnly){
+        if (showAll && emptyOnly) {
             sender.sendMessage(ChatColor.RED + "You must provide -e OR -a, you cannot supply both");
             return true;
         }
 
-        Predicate<Team> predicate;
-        String type;
+        final Predicate<Team> predicate;
+        final String type;
 
         if (emptyOnly) {
             type = "(empty teams)";
@@ -122,23 +130,23 @@ public class ListTeamsCommand extends TemplatedOptionCommand {
             predicate = FunctionalUtil.TEAMS_WITH_PLAYERS;
         }
 
-        List<Team> teams = Lists.newArrayList(Iterables.filter(teamModule.getTeams().values(), predicate));
+        final List<Team> teams = Lists.newArrayList(Iterables.filter(teamModule.getTeams().values(), predicate));
 
         if (teams.size() == 0) {
             sender.sendMessage(ChatColor.RED + "No results found for query " + type);
             return true;
         }
 
-        List<List<Team>> partitioned = Lists.partition(teams, COUNT_PER_PAGE);
+        final List<List<Team>> partitioned = Lists.partition(teams, COUNT_PER_PAGE);
 
         if (page > partitioned.size()) {
             sender.sendMessage(ChatColor.RED + "Page " + page + " does not exist");
             return true;
         }
 
-        List<Team> pageItems = partitioned.get(page - 1);
+        final List<Team> pageItems = partitioned.get(page - 1);
 
-        Map<String, Object> context = ImmutableMap.<String, Object>builder()
+        final Map<String, Object> context = ImmutableMap.<String, Object>builder()
                 .put("page", page)
                 .put("pages", partitioned.size())
                 .put("type", type)
@@ -149,10 +157,10 @@ public class ListTeamsCommand extends TemplatedOptionCommand {
 
         sender.sendMessage(messages.evalTemplate("header", context));
 
-        Joiner joiner = Joiner.on(", ");
-        for (Team team : pageItems) {
-            String memberString;
-            Set<OfflinePlayer> members = team.getPlayers();
+        final Joiner joiner = Joiner.on(", ");
+        for (final Team team : pageItems) {
+            final String memberString;
+            final Set<OfflinePlayer> members = team.getPlayers();
 
             if (members.size() == 0) {
                 memberString = NO_MEMBERS;
@@ -160,7 +168,9 @@ public class ListTeamsCommand extends TemplatedOptionCommand {
                 memberString = joiner.join(Iterables.transform(team.getPlayers(), FunctionalUtil.PLAYER_NAME_FETCHER));
             }
 
-            sender.sendMessage(String.format(FORMAT, team.getPrefix() + team.getDisplayName(), team.getName(), memberString));
+            sender.sendMessage(
+                    String.format(FORMAT, team.getPrefix() + team.getDisplayName(), team.getName(), memberString)
+            );
         }
 
         return true;

@@ -27,9 +27,10 @@
 
 package gg.uhc.uhc.modules.commands;
 
-import com.google.common.collect.Lists;
 import gg.uhc.uhc.modules.Module;
 import gg.uhc.uhc.modules.ModuleRegistry;
+
+import com.google.common.collect.Lists;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -49,10 +50,10 @@ public class ModuleStatusCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        List<Module> modules = Lists.newArrayList(registry.getModules());
+        final List<Module> modules = Lists.newArrayList(registry.getModules());
 
         if (sender instanceof Player) {
-            TextComponent base = new TextComponent("");
+            final TextComponent base = new TextComponent("");
             base.addExtra(printer.complex(modules, " "));
 
             ((Player) sender).spigot().sendMessage(base);

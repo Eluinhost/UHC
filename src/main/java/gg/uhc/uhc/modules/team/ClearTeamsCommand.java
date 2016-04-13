@@ -27,8 +27,6 @@
 
 package gg.uhc.uhc.modules.team;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import gg.uhc.flagcommands.converters.TeamConverter;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
@@ -36,6 +34,9 @@ import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
 import gg.uhc.flagcommands.tab.TeamNameTabComplete;
 import gg.uhc.uhc.commands.TemplatedOptionCommand;
 import gg.uhc.uhc.messages.MessageTemplates;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scoreboard.Team;
@@ -53,8 +54,10 @@ public class ClearTeamsCommand extends TemplatedOptionCommand {
         super(messages);
         this.module = module;
 
-        allSpec = parser
-                .acceptsAll(ImmutableList.of("a", "all"), "Clears all teams, not just UHC ones (when providing no team names)");
+        allSpec = parser.acceptsAll(
+                ImmutableList.of("a", "all"),
+                "Clears all teams, not just UHC ones (when providing no team names)"
+        );
 
         teamSpec = parser
                 .nonOptions("List of team names to clear players out of. If none provided clears all UHC teams")
@@ -71,8 +74,8 @@ public class ClearTeamsCommand extends TemplatedOptionCommand {
         }
 
         int count = 0;
-        for (Team team : teams) {
-            for (OfflinePlayer player : team.getPlayers()) {
+        for (final Team team : teams) {
+            for (final OfflinePlayer player : team.getPlayers()) {
                 team.removePlayer(player);
                 count++;
             }

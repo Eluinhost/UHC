@@ -33,7 +33,11 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
-public class LocationUtil {
+public final class LocationUtil {
+
+    protected static final int NETHER_MAX_HEIGHT = 128;
+
+    private LocationUtil() {}
 
     protected static boolean damagesPlayer(Material material) {
         switch (material) {
@@ -74,19 +78,27 @@ public class LocationUtil {
     }
 
     /**
-     * Checks for the highest safe to stand on block with 2 un-solid blocks above it (excluding above world height)
+     * Checks for the highest safe to stand on block with 2 un-solid blocks above it (excluding above world height).
      *
-     * Does not teleport on to non-solid blocks or blocks that can damage the player.
+     * <p>Does not teleport on to non-solid blocks or blocks that can damage the player.</p>
+     * <p>Only teleports into water if it is not at head height (feet only)</p>
+     * <p>
+     *     If the world type is NETHER then searching will start at 128 instead of the world max height to avoid the
+     *     bedrock roof.
+     * </p>
      *
-     * Only teleports into water if it is not at head height (feet only)
-     *
-     * If the world type is NETHER then searching will start at 128 instead of the world max height to avoid the
-     * bedrock roof.
-     *
+     * @param world world to check within
+     * @param xcoord the x coord to check at
+     * @param zcoord the z coord to check at
      * @return -1 if no valid location found, otherwise coordinate with non-air Y coord with 2 air blocks above it
      */
-    public static int findHighestTeleportableY(World world, int x, int z) {
-        Location startingLocation = new Location(world, x, world.getEnvironment() == World.Environment.NETHER ? 128 : world.getMaxHeight(), z);
+    public static int findHighestTeleportableY(World world, int xcoord, int zcoord) {
+        final Location startingLocation = new Location(
+                world,
+                xcoord,
+                world.getEnvironment() == World.Environment.NETHER ? NETHER_MAX_HEIGHT : world.getMaxHeight(),
+                zcoord
+        );
 
         boolean above2WasSafe = false;
         boolean aboveWasSafe = false;
@@ -96,7 +108,9 @@ public class LocationUtil {
         Block currentBlock = startingLocation.getBlock();
 
         Material type;
-        boolean damagesPlayer, canStandOn;
+        boolean damagesPlayer;
+        boolean canStandOn;
+        boolean aboveAreSafe;
         while (currentBlock.getY() >= 0) {
             type = currentBlock.getType();
 
@@ -104,9 +118,11 @@ public class LocationUtil {
             damagesPlayer = damagesPlayer(type);
             canStandOn = canStandOn(type);
 
+            aboveAreSafe = aboveWasSafe && above2WasSafe && !above2WasWater;
+
             // valid block if it has 2 safe blocks above it, it doesn't damage the player,
             // is safe to stand on and there isn't any water in the head space
-            if (above2WasSafe && aboveWasSafe && !above2WasWater && !damagesPlayer && canStandOn) {
+            if (aboveAreSafe && !damagesPlayer && canStandOn) {
                 return currentBlock.getY();
             }
 

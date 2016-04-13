@@ -27,9 +27,10 @@
 
 package gg.uhc.uhc.modules.heads;
 
-import com.google.common.collect.ImmutableMap;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
+
+import com.google.common.collect.ImmutableMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -51,14 +52,18 @@ import java.util.List;
 public class GoldenHeadsModule extends DisableableModule implements Listener {
 
     public static final String HEAD_NAME = ChatColor.GOLD + "Golden Head";
+
+    protected static final String HEAL_AMOUNT_KEY = "heal amount";
     protected static final String ICON_NAME = "Golden Heads";
     protected static final String LORE_PATH = "lore";
-    protected static final NumberFormat formatter = NumberFormat.getNumberInstance();
+    protected static final NumberFormat FORMATTER = NumberFormat.getNumberInstance();
     protected static final int TICKS_PER_HALF_HEART = 25;
+    protected static final int DEFAULT_HEAL_AMOUNT = 6;
+    protected static final int CRAFTING_INVENTORY_CENTRE_SLOT_ID = 4;
 
     static {
-        formatter.setMinimumFractionDigits(0);
-        formatter.setMaximumFractionDigits(1);
+        FORMATTER.setMinimumFractionDigits(0);
+        FORMATTER.setMaximumFractionDigits(1);
     }
 
     protected int healAmount;
@@ -72,7 +77,7 @@ public class GoldenHeadsModule extends DisableableModule implements Listener {
         this.icon.setWeight(ModuleRegistry.CATEGORY_APPLES);
 
         // register the new recipe
-        ShapedRecipe modified = new ShapedRecipe(new ItemStack(Material.GOLDEN_APPLE, 1))
+        final ShapedRecipe modified = new ShapedRecipe(new ItemStack(Material.GOLDEN_APPLE, 1))
                 .shape("AAA", "ABA", "AAA")
                 .setIngredient('A', Material.GOLD_INGOT)
                 .setIngredient('B', Material.SKULL_ITEM, PlayerHeadProvider.PLAYER_HEAD_DATA);
@@ -86,7 +91,7 @@ public class GoldenHeadsModule extends DisableableModule implements Listener {
 
     public void setHealAmount(int amount) {
         this.healAmount = amount;
-        config.set("heal amount", this.healAmount);
+        config.set(HEAL_AMOUNT_KEY, this.healAmount);
         saveConfig();
         rerender();
     }
@@ -98,14 +103,17 @@ public class GoldenHeadsModule extends DisableableModule implements Listener {
 
     @Override
     public void initialize() throws InvalidConfigurationException {
-        if (!config.contains("heal amount")) {
-            config.set("heal amount", 6);
+        if (!config.contains(HEAL_AMOUNT_KEY)) {
+            config.set(HEAL_AMOUNT_KEY, DEFAULT_HEAL_AMOUNT);
         }
 
-        if (!config.isInt("heal amount"))
-            throw new InvalidConfigurationException("Invalid value at " + config.getCurrentPath() + ".heal amount (" + config.get("heal amount"));
+        if (!config.isInt(HEAL_AMOUNT_KEY)) {
+            throw new InvalidConfigurationException(
+                    "Invalid value at " + config.getCurrentPath() + ".heal amount (" + config.get(HEAL_AMOUNT_KEY)
+            );
+        }
 
-        healAmount = config.getInt("heal amount");
+        healAmount = config.getInt(HEAL_AMOUNT_KEY);
         super.initialize();
     }
 
@@ -123,14 +131,14 @@ public class GoldenHeadsModule extends DisableableModule implements Listener {
 
     @Override
     protected List<String> getEnabledLore() {
-        return messages.evalTemplates(ENABLED_LORE_PATH, ImmutableMap.of("amount", formatter.format(healAmount / 2D)));
+        return messages.evalTemplates(ENABLED_LORE_PATH, ImmutableMap.of("amount", FORMATTER.format(healAmount / 2D)));
     }
 
     @EventHandler
     public void on(PrepareItemCraftEvent event) {
         if (event.getRecipe().getResult().getType() != Material.GOLDEN_APPLE) return;
 
-        ItemStack centre = event.getInventory().getMatrix()[4];
+        final ItemStack centre = event.getInventory().getMatrix()[CRAFTING_INVENTORY_CENTRE_SLOT_ID];
 
         if (centre == null || centre.getType() != Material.SKULL_ITEM) return;
 
@@ -139,14 +147,14 @@ public class GoldenHeadsModule extends DisableableModule implements Listener {
             return;
         }
 
-        SkullMeta meta = (SkullMeta) centre.getItemMeta();
-        ItemStack goldenHeadItem = getGoldenHeadItem(meta.hasOwner() ? meta.getOwner() : "Manually Crafted");
+        final SkullMeta meta = (SkullMeta) centre.getItemMeta();
+        final ItemStack goldenHeadItem = getGoldenHeadItem(meta.hasOwner() ? meta.getOwner() : "Manually Crafted");
         event.getInventory().setResult(goldenHeadItem);
     }
 
     @EventHandler
     public void on(PlayerItemConsumeEvent event) {
-        if(isEnabled() && isGoldenHead(event.getItem())) {
+        if (isEnabled() && isGoldenHead(event.getItem())) {
             event.getPlayer().addPotionEffect(new PotionEffect(
                     PotionEffectType.REGENERATION,
                     TICKS_PER_HALF_HEART * healAmount,
@@ -156,25 +164,25 @@ public class GoldenHeadsModule extends DisableableModule implements Listener {
     }
 
     public boolean isGoldenHead(ItemStack itemStack) {
-        if(itemStack.getType() != Material.GOLDEN_APPLE) return false;
+        if (itemStack.getType() != Material.GOLDEN_APPLE) return false;
 
-        ItemMeta im = itemStack.getItemMeta();
+        final ItemMeta im = itemStack.getItemMeta();
 
         return im.hasDisplayName() && im.getDisplayName().equals(HEAD_NAME);
     }
 
     public ItemStack getGoldenHeadItem(String playerName) {
-        ItemStack itemStack = new ItemStack(Material.GOLDEN_APPLE, 1);
+        final ItemStack itemStack = new ItemStack(Material.GOLDEN_APPLE, 1);
 
-        ItemMeta meta = itemStack.getItemMeta();
+        final ItemMeta meta = itemStack.getItemMeta();
         meta.setDisplayName(HEAD_NAME);
 
         // add lore
-        ImmutableMap<String, String> context = ImmutableMap.of(
+        final ImmutableMap<String, String> context = ImmutableMap.of(
                 "player", playerName,
                 "amount", Integer.toString(getHealAmount())
         );
-        List<String> lore = getMessageTemaplates().evalTemplates(LORE_PATH, context);
+        final List<String> lore = getMessageTemaplates().evalTemplates(LORE_PATH, context);
         meta.setLore(lore);
         itemStack.setItemMeta(meta);
 

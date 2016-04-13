@@ -52,39 +52,39 @@ public enum BlockFaceXZ {
     private final BlockFace face;
 
     /**
-     * @param blockFace the block face to represent
+     * @param blockFace the block face to represent.
      */
     BlockFaceXZ(BlockFace blockFace) {
         face = blockFace;
     }
 
     /**
-     * Get the closest block face to the direction
+     * Get the closest block face to the direction.
      *
      * @param lookAngle the direction in radians
      * @return the closest block face in the 2D plane
      */
     public static BlockFaceXZ getClosest(double lookAngle) {
-        BlockFaceXZ[] directions = BlockFaceXZ.values();
+        final BlockFaceXZ[] directions = BlockFaceXZ.values();
         BlockFaceXZ best = directions[0];
         double angle = Math.abs(best.getAngle());
-        for(BlockFaceXZ bfv : BlockFaceXZ.values()) {
-            double a = lookAngle - bfv.getAngle();
-            if(a > Math.PI * 2) {
-                a -= Math.PI * 2;
-            } else if(a < 0) {
-                a += Math.PI * 2;
+        for (final BlockFaceXZ bfv : BlockFaceXZ.values()) {
+            double diff = lookAngle - bfv.getAngle();
+            if (diff > Math.PI * 2) {
+                diff -= Math.PI * 2;
+            } else if (diff < 0) {
+                diff += Math.PI * 2;
             }
-            if(Math.abs(a) < angle) {
+            if (Math.abs(diff) < angle) {
                 best = bfv;
-                angle = Math.abs(a);
+                angle = Math.abs(diff);
             }
         }
         return best;
     }
 
     /**
-     * Gets the closest blockface to the entities facing direction
+     * Gets the closest blockface to the entities facing direction.
      *
      * @param entity the entity
      * @return closest XZ block face
@@ -94,28 +94,28 @@ public enum BlockFaceXZ {
     }
 
     /**
-     * @return amount of X coordinates
+     * @return amount of X coordinates.
      */
     public int getX() {
         return -face.getModX();
     }
 
     /**
-     * @return amount of Z-coordinates
+     * @return amount of Z-coordinates.
      */
     public int getZ() {
         return face.getModZ();
     }
 
     /**
-     * @return the block face
+     * @return Bukkit BlockFace used in calculations.
      */
     public BlockFace getBlockFace() {
         return face;
     }
 
     /**
-     * @return The angle between the x and z
+     * @return The angle between the x and z.
      */
     public double getAngle() {
         return StrictMath.atan2(getX(), getZ());

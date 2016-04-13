@@ -27,11 +27,12 @@
 
 package gg.uhc.uhc.modules.team;
 
+import gg.uhc.uhc.messages.MessageTemplates;
+
 import com.google.common.base.Joiner;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
-import gg.uhc.uhc.messages.MessageTemplates;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -63,16 +64,19 @@ public class TeamPMCommand implements CommandExecutor {
             return true;
         }
 
-        Team team = module.getScoreboard().getPlayerTeam((OfflinePlayer) sender);
+        final Team team = module.getScoreboard().getPlayerTeam((OfflinePlayer) sender);
 
         if (team == null) {
             sender.sendMessage(messages.getRaw("not in team"));
             return true;
         }
 
-        Iterable<Player> online = Iterables.filter(Iterables.transform(team.getPlayers(), FunctionalUtil.ONLINE_VERSION), Predicates.notNull());
+        final Iterable<Player> online = Iterables.filter(
+                Iterables.transform(team.getPlayers(), FunctionalUtil.ONLINE_VERSION),
+                Predicates.notNull()
+        );
 
-        Map<String, String> context = ImmutableMap.<String, String>builder()
+        final Map<String, String> context = ImmutableMap.<String, String>builder()
                 .put("team prefix", team.getPrefix())
                 .put("team display name", team.getDisplayName())
                 .put("team name", team.getName())
@@ -80,8 +84,8 @@ public class TeamPMCommand implements CommandExecutor {
                 .put("message", Joiner.on(" ").join(args))
                 .build();
 
-        String message = messages.evalTemplate("message format", context);
-        for (Player player : online) {
+        final String message = messages.evalTemplate("message format", context);
+        for (final Player player : online) {
             player.sendMessage(message);
         }
         return true;

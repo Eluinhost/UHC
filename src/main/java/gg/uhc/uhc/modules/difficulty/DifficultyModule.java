@@ -27,10 +27,11 @@
 
 package gg.uhc.uhc.modules.difficulty;
 
-import com.google.common.collect.ImmutableList;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.WorldMatcher;
+
+import com.google.common.collect.ImmutableList;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.Material;
@@ -68,7 +69,7 @@ public class DifficultyModule extends DisableableModule implements Listener {
 
     @Override
     public void onEnable() {
-        for (World world : Bukkit.getWorlds()) {
+        for (final World world : Bukkit.getWorlds()) {
             if (worlds.worldMatches(world)) {
                 world.setDifficulty(Difficulty.HARD);
             }

@@ -39,7 +39,7 @@ import org.bukkit.event.server.PluginDisableEvent;
 public class BossBarRenderer implements TimerRenderer, Listener {
     protected final BossBar bossBar;
 
-    protected boolean isRendering = false;
+    protected boolean isRendering;
 
     public BossBarRenderer(BossBar bossBar) {
         this.bossBar = bossBar;
@@ -68,7 +68,7 @@ public class BossBarRenderer implements TimerRenderer, Listener {
         onUpdate(message, 1D);
 
         // Add all currently online players otherwise the bar doesn't render
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for (final Player p : Bukkit.getOnlinePlayers()) {
             bossBar.addPlayer(p);
         }
 

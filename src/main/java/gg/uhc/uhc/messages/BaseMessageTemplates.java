@@ -30,6 +30,7 @@ package gg.uhc.uhc.messages;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
+
 import com.google.common.base.Function;
 import com.google.common.collect.*;
 import com.typesafe.config.Config;
@@ -64,7 +65,7 @@ public class BaseMessageTemplates implements MessageTemplates {
 
     @Override
     public List<String> getRawStrings(String path) {
-        ConfigValue value = config.getValue(path);
+        final ConfigValue value = config.getValue(path);
 
         if (value.valueType() == ConfigValueType.LIST) {
             return config.getStringList(path);
@@ -87,9 +88,9 @@ public class BaseMessageTemplates implements MessageTemplates {
     public List<Mustache> getTemplates(final String path) {
         // compile the template from the config value and store it in our map
         if (!templates.containsKey(path)) {
-            List<Mustache> temps = Lists.transform(getRawStrings(path), new Function<String, Mustache>() {
+            final List<Mustache> temps = Lists.transform(getRawStrings(path), new Function<String, Mustache>() {
 
-                protected int index = 0;
+                protected int index;
 
                 @Override
                 public Mustache apply(String input) {
@@ -105,9 +106,9 @@ public class BaseMessageTemplates implements MessageTemplates {
 
     @Override
     public String evalTemplate(String key, Object... context) {
-        Mustache template = getTemplate(key);
+        final Mustache template = getTemplate(key);
 
-        StringWriter writer = new StringWriter();
+        final StringWriter writer = new StringWriter();
         template.execute(writer, context);
 
         return writer.getBuffer().toString();
@@ -115,12 +116,12 @@ public class BaseMessageTemplates implements MessageTemplates {
 
     @Override
     public List<String> evalTemplates(String path, final Object... context) {
-        List<Mustache> temps = getTemplates(path);
+        final List<Mustache> temps = getTemplates(path);
 
         return Lists.transform(temps, new Function<Mustache, String>() {
             @Override
             public String apply(Mustache input) {
-                StringWriter writer = new StringWriter();
+                final StringWriter writer = new StringWriter();
                 input.execute(writer, context);
 
                 return writer.getBuffer().toString();

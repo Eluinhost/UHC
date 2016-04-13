@@ -28,6 +28,7 @@
 package gg.uhc.uhc.modules.timer.renderer;
 
 import gg.uhc.uhc.util.ActionBarMessenger;
+
 import org.bukkit.Bukkit;
 
 public class ActionBarRenderer implements TimerRenderer {

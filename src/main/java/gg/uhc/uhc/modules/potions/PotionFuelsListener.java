@@ -46,6 +46,8 @@ public class PotionFuelsListener implements Listener {
 
     protected static final String NOT_ALLOWED = ChatColor.RED + "The material `%s` is not allowed to be brewed with.";
 
+    protected static final int INGREDIENT_SLOT_ID = 3;
+
     protected final Map<Material, String> messages = Maps.newHashMap();
     protected final Set<Material> disabled = messages.keySet();
 
@@ -75,9 +77,8 @@ public class PotionFuelsListener implements Listener {
         // if it's not a disabled type do nothing
         if (!disabled.contains(event.getOldCursor().getType())) return;
 
-        // check if they dragged over the fuel
-        // 3 is the fuel slot
-        if (event.getRawSlots().contains(3)) {
+        // check if they dragged over the ingredient
+        if (event.getRawSlots().contains(INGREDIENT_SLOT_ID)) {
             event.getWhoClicked().sendMessage(messages.get(event.getOldCursor().getType()));
             event.setCancelled(true);
         }
@@ -94,7 +95,7 @@ public class PotionFuelsListener implements Listener {
         // clicked outside of the window
         if (event.getClickedInventory() == null) return;
 
-        InventoryType clicked = event.getClickedInventory().getType();
+        final InventoryType clicked = event.getClickedInventory().getType();
 
         // get any relevant stack to check the type of based on the action took
         Optional<ItemStack> relevant = Optional.absent();
@@ -117,9 +118,12 @@ public class PotionFuelsListener implements Listener {
             case HOTBAR_SWAP:
                 // only worry about within a stand
                 if (clicked == InventoryType.BREWING) {
-                    relevant = Optional.fromNullable(event.getWhoClicked().getInventory().getItem(event.getHotbarButton()));
+                    relevant = Optional.fromNullable(
+                            event.getWhoClicked().getInventory().getItem(event.getHotbarButton())
+                    );
                 }
                 break;
+            default:
         }
 
         if (relevant.isPresent() && disabled.contains(relevant.get().getType())) {

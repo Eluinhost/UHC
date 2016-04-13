@@ -27,11 +27,6 @@
 
 package gg.uhc.uhc.modules.team;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
 import gg.uhc.flagcommands.converters.OfflinePlayerConverter;
 import gg.uhc.flagcommands.converters.StringConverter;
 import gg.uhc.flagcommands.joptsimple.ArgumentAcceptingOptionSpec;
@@ -43,6 +38,12 @@ import gg.uhc.flagcommands.tab.OnlinePlayerTabComplete;
 import gg.uhc.flagcommands.tab.TeamNameTabComplete;
 import gg.uhc.uhc.commands.TemplatedOptionCommand;
 import gg.uhc.uhc.messages.MessageTemplates;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scoreboard.Team;
@@ -51,6 +52,8 @@ import java.util.List;
 import java.util.Map;
 
 public class TeamupCommand extends TemplatedOptionCommand {
+
+    protected static final int TEAM_NAME_MAX_LENGTH = 16;
 
     protected final TeamModule teamModule;
 
@@ -62,9 +65,16 @@ public class TeamupCommand extends TemplatedOptionCommand {
         this.teamModule = teamModule;
 
         teamNameSpec = parser
-                .acceptsAll(ImmutableList.of("n", "name", "team"), "Team name of the team to use. If not specified will use the first empty UHC team")
+                .acceptsAll(
+                        ImmutableList.of("n", "name", "team"),
+                        "Team name of the team to use. If not specified will use the first empty UHC team"
+                )
                 .withRequiredArg()
-                .withValuesConvertedBy(new StringConverter().setPredicate(new StringPredicates.LessThanOrEqualLength(16)).setType("team name (<= 16 chars)"));
+                .withValuesConvertedBy(
+                        new StringConverter()
+                                .setPredicate(new StringPredicates.LessThanOrEqualLength(TEAM_NAME_MAX_LENGTH))
+                                .setType("team name (<= " + TEAM_NAME_MAX_LENGTH + " chars)")
+                );
         completers.put(teamNameSpec, new TeamNameTabComplete(teamModule.getScoreboard()));
 
         playersSpec = parser
@@ -75,17 +85,17 @@ public class TeamupCommand extends TemplatedOptionCommand {
 
     @Override
     protected boolean runCommand(CommandSender sender, OptionSet options) {
-        List<OfflinePlayer> players = playersSpec.values(options);
+        final List<OfflinePlayer> players = playersSpec.values(options);
 
         if (players.size() == 0) {
             sender.sendMessage(messages.getRaw("supply one player"));
             return true;
         }
 
-        Team team;
+        final Team team;
         // if they're specifying a team name to use
         if (options.has(teamNameSpec)) {
-            String teamName = teamNameSpec.value(options);
+            final String teamName = teamNameSpec.value(options);
 
             team = teamModule.getScoreboard().getTeam(teamName);
 
@@ -100,7 +110,7 @@ public class TeamupCommand extends TemplatedOptionCommand {
             }
         } else {
             // grab the first UHC team available
-            Optional<Team> teamOptional = teamModule.findFirstEmptyTeam();
+            final Optional<Team> teamOptional = teamModule.findFirstEmptyTeam();
 
             if (!teamOptional.isPresent()) {
                 sender.sendMessage(messages.getRaw("no uhc teams"));
@@ -110,9 +120,9 @@ public class TeamupCommand extends TemplatedOptionCommand {
             team = teamOptional.get();
         }
 
-        String members = Joiner.on(", ").join(Iterables.transform(players, FunctionalUtil.PLAYER_NAME_FETCHER));
+        final String members = Joiner.on(", ").join(Iterables.transform(players, FunctionalUtil.PLAYER_NAME_FETCHER));
 
-        Map<String, String> context = ImmutableMap.<String, String>builder()
+        final Map<String, String> context = ImmutableMap.<String, String>builder()
                 .put("prefix", team.getPrefix())
                 .put("name", team.getName())
                 .put("display name", team.getDisplayName())
@@ -120,9 +130,9 @@ public class TeamupCommand extends TemplatedOptionCommand {
                 .put("count", String.valueOf(players.size()))
                 .build();
 
-        String teamNotification = messages.evalTemplate("teamup notification", context);
+        final String teamNotification = messages.evalTemplate("teamup notification", context);
 
-        for (OfflinePlayer player : players) {
+        for (final OfflinePlayer player : players) {
             team.addPlayer(player);
 
             if (player.isOnline()) {

@@ -27,7 +27,6 @@
 
 package gg.uhc.uhc.modules.team.requests;
 
-import com.google.common.collect.ImmutableSet;
 import gg.uhc.flagcommands.commands.OptionCommand;
 import gg.uhc.flagcommands.converters.StringConverter;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
@@ -36,10 +35,14 @@ import gg.uhc.flagcommands.predicates.StringPredicates;
 import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
 import gg.uhc.flagcommands.tab.OnlinePlayerTabComplete;
 import gg.uhc.uhc.messages.MessageTemplates;
+
+import com.google.common.collect.ImmutableSet;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class TeamRequestCommand extends OptionCommand {
+
+    protected static final int PLAYER_NAME_MAX_LENGTH = 16;
 
     protected final MessageTemplates messages;
     protected final RequestManager requests;
@@ -50,8 +53,13 @@ public class TeamRequestCommand extends OptionCommand {
         this.messages = messages;
         this.requests = requests;
 
-        playerNameSpec = parser.nonOptions("Player names to create a team with")
-                .withValuesConvertedBy(new StringConverter().setPredicate(new StringPredicates.LessThanOrEqualLength(16)).setType("Player name"));
+        playerNameSpec = parser
+                .nonOptions("Player names to create a team with")
+                .withValuesConvertedBy(
+                        new StringConverter()
+                                .setPredicate(new StringPredicates.LessThanOrEqualLength(PLAYER_NAME_MAX_LENGTH))
+                                .setType("Player name")
+                );
         nonOptionsTabComplete = new NonDuplicateTabComplete(OnlinePlayerTabComplete.INSTANCE);
     }
 
@@ -62,7 +70,10 @@ public class TeamRequestCommand extends OptionCommand {
             return true;
         }
 
-        TeamRequest request = new TeamRequest(((Player) sender).getUniqueId(), ImmutableSet.copyOf(playerNameSpec.values(options)));
+        final TeamRequest request = new TeamRequest(
+                ((Player) sender).getUniqueId(),
+                ImmutableSet.copyOf(playerNameSpec.values(options))
+        );
         requests.addRequest(request);
 
         return true;

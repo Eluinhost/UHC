@@ -27,8 +27,6 @@
 
 package gg.uhc.uhc.modules.timer;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
 import gg.uhc.flagcommands.joptsimple.ArgumentAcceptingOptionSpec;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
@@ -37,6 +35,9 @@ import gg.uhc.uhc.commands.TemplatedOptionCommand;
 import gg.uhc.uhc.messages.MessageTemplates;
 import gg.uhc.uhc.modules.timer.messages.TemplatedMessage;
 import gg.uhc.uhc.modules.timer.messages.TimerMessage;
+
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -50,7 +51,7 @@ public class TimerCommand extends TemplatedOptionCommand {
     protected final OptionSpec<Void> cancelSpec;
     protected final ArgumentAcceptingOptionSpec<Long> timeSpec;
 
-    protected TimerMessage lastMessage = null;
+    protected TimerMessage lastMessage;
 
     public TimerCommand(MessageTemplates messages, TimerModule timer) {
         super(messages);
@@ -66,12 +67,14 @@ public class TimerCommand extends TemplatedOptionCommand {
                 .withValuesConvertedBy(new TimeConverter());
         completers.put(timeSpec, new FixedValuesTabComplete("10m", "30m", "1h", "90m"));
 
-        this.messageSpec = parser.nonOptions("Message to show on the timer, if none is supplied then the last message sent is used instead");
+        this.messageSpec = parser.nonOptions(
+                "Message to show on the timer, if none is supplied then the last message sent is used instead"
+        );
     }
 
     @Override
     protected boolean runCommand(CommandSender sender, OptionSet options) {
-        boolean running = timer.isRunning();
+        final boolean running = timer.isRunning();
 
         if (options.has(cancelSpec)) {
             if (!running) {
@@ -84,10 +87,10 @@ public class TimerCommand extends TemplatedOptionCommand {
             return true;
         }
 
-        long time = timeSpec.value(options);
-        List<String> messageParts = messageSpec.values(options);
+        final long time = timeSpec.value(options);
+        final List<String> messageParts = messageSpec.values(options);
 
-        TimerMessage message;
+        final TimerMessage message;
         if (messageParts.size() == 0) {
             if (lastMessage == null) {
                 sender.sendMessage(messages.getRaw("none previous"));
@@ -96,8 +99,9 @@ public class TimerCommand extends TemplatedOptionCommand {
 
             message = lastMessage;
         } else {
-            String actualMessage = ChatColor.translateAlternateColorCodes('&', Joiner.on(" ").join(messageParts));
-            lastMessage = message = new TemplatedMessage(messages.getTemplate("format"), actualMessage);
+            final String actualMessage = ChatColor.translateAlternateColorCodes('&', Joiner.on(" ").join(messageParts));
+            message = new TemplatedMessage(messages.getTemplate("format"), actualMessage);
+            lastMessage = message;
         }
 
         if (running) {

@@ -29,6 +29,7 @@ package gg.uhc.uhc.modules.potions;
 
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
+
 import org.bukkit.Material;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
@@ -44,7 +45,7 @@ public class SplashPotionsModule extends DisableableModule {
 
         this.listener = listener;
 
-        Potion potion = new Potion(PotionType.POISON);
+        final Potion potion = new Potion(PotionType.POISON);
         potion.setSplash(true);
 
         this.icon.setType(Material.POTION);

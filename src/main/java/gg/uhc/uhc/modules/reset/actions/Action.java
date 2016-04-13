@@ -37,7 +37,7 @@ public abstract class Action {
 
     protected final UUID uuid;
 
-    protected boolean canRevert = false;
+    protected boolean canRevert;
 
     public Action(UUID uuid) {
         this.uuid = uuid;
@@ -47,10 +47,12 @@ public abstract class Action {
         return Optional.fromNullable(Bukkit.getPlayer(uuid));
     }
 
+    protected abstract void run(Player player);
+
     public boolean run() {
         if (canRevert) return false;
 
-        Optional<Player> player = getPlayer();
+        final Optional<Player> player = getPlayer();
 
         if (!player.isPresent()) return false;
 
@@ -59,10 +61,12 @@ public abstract class Action {
         return true;
     }
 
+    protected abstract void revert(Player player);
+
     public boolean revert() {
         if (!canRevert) return false;
 
-        Optional<Player> player = getPlayer();
+        final Optional<Player> player = getPlayer();
 
         if (!player.isPresent()) return false;
 
@@ -70,7 +74,4 @@ public abstract class Action {
         canRevert = false;
         return true;
     }
-
-    protected abstract void run(Player player);
-    protected abstract void revert(Player player);
 }

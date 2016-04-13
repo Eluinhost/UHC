@@ -29,6 +29,7 @@ package gg.uhc.uhc.modules.autorespawn;
 
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
+
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -36,6 +37,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 
 public class AutoRespawnModule extends DisableableModule implements Listener {
 
+    protected static final long RESPAWN_DELAY = 18;
     protected static final String ICON_NAME = "Autorespawn on Death";
 
     public AutoRespawnModule() {
@@ -50,7 +52,7 @@ public class AutoRespawnModule extends DisableableModule implements Listener {
     public void on(PlayerDeathEvent event) {
         if (!isEnabled()) return;
 
-        new PlayerRespawnRunnable(event.getEntity()).runTaskLater(plugin, 18);
+        new PlayerRespawnRunnable(event.getEntity()).runTaskLater(plugin, RESPAWN_DELAY);
     }
 
     @Override

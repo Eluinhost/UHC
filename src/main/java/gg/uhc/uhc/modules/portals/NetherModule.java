@@ -27,13 +27,14 @@
 
 package gg.uhc.uhc.modules.portals;
 
+import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
+import gg.uhc.uhc.modules.team.FunctionalUtil;
+
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
-import gg.uhc.uhc.modules.DisableableModule;
-import gg.uhc.uhc.modules.ModuleRegistry;
-import gg.uhc.uhc.modules.team.FunctionalUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -58,10 +59,10 @@ public class NetherModule extends DisableableModule implements Listener {
 
     @Override
     public void onDisable() {
-        Set<OfflinePlayer> players = Sets.newHashSet();
-        Set<String> worlds = Sets.newHashSet();
+        final Set<OfflinePlayer> players = Sets.newHashSet();
+        final Set<String> worlds = Sets.newHashSet();
 
-        for (World world : Bukkit.getWorlds()) {
+        for (final World world : Bukkit.getWorlds()) {
             if (world.getEnvironment() == World.Environment.NETHER) {
                 worlds.add(world.getName());
                 players.addAll(world.getPlayers());
@@ -70,14 +71,17 @@ public class NetherModule extends DisableableModule implements Listener {
 
         if (players.size() == 0) return;
 
-        Joiner joiner = Joiner.on(", ");
-        String playerNames = joiner.join(Iterables.transform(players, FunctionalUtil.PLAYER_NAME_FETCHER));
-        String worldNames = joiner.join(worlds);
+        final Joiner joiner = Joiner.on(", ");
+        final String playerNames = joiner.join(Iterables.transform(players, FunctionalUtil.PLAYER_NAME_FETCHER));
+        final String worldNames = joiner.join(worlds);
 
-        String message = messages.evalTemplate("notification", ImmutableMap.of("players", playerNames, "worlds", worldNames));
+        final String message = messages.evalTemplate(
+                "notification",
+                ImmutableMap.of("players", playerNames, "worlds", worldNames)
+        );
         Bukkit.getConsoleSender().sendMessage(message);
 
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (final Player player : Bukkit.getOnlinePlayers()) {
             if (player.hasPermission("uhc.broadcast.netherdisable")) {
                 player.sendMessage(message);
             }
@@ -89,8 +93,9 @@ public class NetherModule extends DisableableModule implements Listener {
         if (isEnabled()) return;
         if (event.getTo() == null) return;
 
-        if (event.getTo().getWorld().getEnvironment() == World.Environment.NETHER)
+        if (event.getTo().getWorld().getEnvironment() == World.Environment.NETHER) {
             event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

@@ -29,6 +29,7 @@ package gg.uhc.uhc.modules.potions;
 
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
+
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
@@ -51,8 +52,9 @@ public class WitchesModule extends DisableableModule implements Listener {
     public void on(CreatureSpawnEvent event) {
         if (isEnabled()) return;
 
-        if (event.getEntity().getType() == EntityType.WITCH)
+        if (event.getEntity().getType() == EntityType.WITCH) {
             event.setCancelled(true);
+        }
     }
 
     @Override

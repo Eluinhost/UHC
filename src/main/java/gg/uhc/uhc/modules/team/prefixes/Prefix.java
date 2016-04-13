@@ -58,9 +58,9 @@ public class Prefix {
     public boolean containsColours(boolean exact, Set<ChatColor> colours) {
         if (exact && colours.size() != count()) return false;
 
-        Set<ChatColor> toMatch = Sets.newHashSet(colours);
+        final Set<ChatColor> toMatch = Sets.newHashSet(colours);
 
-        boolean hadColour = toMatch.remove(colour);
+        final boolean hadColour = toMatch.remove(colour);
 
         // if it didn't have the colour it wasn't an exact match
         if (exact && !hadColour) return false;

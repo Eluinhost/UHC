@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class TimeUtil {
+public final class TimeUtil {
 
     private static final Map<Character, TimeUnit> UNIT_MAP = ImmutableMap.<Character, TimeUnit>builder()
             .put('d', TimeUnit.DAYS)
@@ -55,18 +55,23 @@ public class TimeUtil {
         FORMATTER.setMinimumIntegerDigits(2);
     }
 
-    private static final Pattern PART_PATTERN = Pattern.compile("(?:" + UNIT_SIZE + OPTIONAL_WHITESPACE + UNIT_NAME + ")", Pattern.CASE_INSENSITIVE);
+    private static final Pattern PART_PATTERN = Pattern.compile(
+            "(?:" + UNIT_SIZE + OPTIONAL_WHITESPACE + UNIT_NAME + ")",
+            Pattern.CASE_INSENSITIVE
+    );
+
+    private TimeUtil() {}
 
     public static Map<TimeUnit, Long> getUnits(String timeString) {
-        ImmutableMap.Builder<TimeUnit, Long> map = ImmutableMap.builder();
+        final ImmutableMap.Builder<TimeUnit, Long> map = ImmutableMap.builder();
 
-        Matcher matcher = PART_PATTERN.matcher(timeString);
+        final Matcher matcher = PART_PATTERN.matcher(timeString);
 
         while (matcher.find()) {
-            String unit = matcher.group("unit").toLowerCase();
-            String size = matcher.group("size");
+            final String unit = matcher.group("unit").toLowerCase();
+            final String size = matcher.group("size");
 
-            TimeUnit type = UNIT_MAP.get(unit.charAt(0));
+            final TimeUnit type = UNIT_MAP.get(unit.charAt(0));
 
             if (type == null) continue;
 
@@ -77,11 +82,11 @@ public class TimeUtil {
     }
 
     public static long getSeconds(String timeString) {
-        Map<TimeUnit, Long> units = getUnits(timeString);
+        final Map<TimeUnit, Long> units = getUnits(timeString);
 
         long seconds = 0;
 
-        for (Map.Entry<TimeUnit, Long> unit : units.entrySet()) {
+        for (final Map.Entry<TimeUnit, Long> unit : units.entrySet()) {
             seconds += unit.getKey().toSeconds(unit.getValue());
         }
 
@@ -89,10 +94,11 @@ public class TimeUtil {
 
     }
 
-    public static String secondsToString(long seconds) {
-        TimeUnit[] units = TimeUnit.values();
+    public static String secondsToString(long toConvert) {
+        long seconds = toConvert;
+        final TimeUnit[] units = TimeUnit.values();
 
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
 
         boolean negative = false;
         if (seconds < 0) {
@@ -101,9 +107,9 @@ public class TimeUtil {
         }
 
         for (int i = TimeUnit.DAYS.ordinal(); i >= TimeUnit.SECONDS.ordinal(); i--) {
-            TimeUnit unit = units[i];
+            final TimeUnit unit = units[i];
 
-            long count = unit.convert(seconds, TimeUnit.SECONDS);
+            final long count = unit.convert(seconds, TimeUnit.SECONDS);
 
             if (count > 0) {
                 builder.append(FORMATTER.format(count))

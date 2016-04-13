@@ -27,12 +27,13 @@
 
 package gg.uhc.uhc.modules.commands;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
 import gg.uhc.flagcommands.joptsimple.ValueConversionException;
 import gg.uhc.flagcommands.joptsimple.ValueConverter;
 import gg.uhc.uhc.modules.Module;
 import gg.uhc.uhc.modules.ModuleRegistry;
+
+import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
 
 import java.util.Map;
 
@@ -46,7 +47,7 @@ public class ModuleEntryConverter implements ValueConverter<Map.Entry<String, Mo
 
     @Override
     public Map.Entry<String, Module> convert(String value) {
-        Optional<Module> module = registry.get(value);
+        final Optional<Module> module = registry.get(value);
 
         if (!module.isPresent()) throw new ValueConversionException("Invalid module id: " + value);
 

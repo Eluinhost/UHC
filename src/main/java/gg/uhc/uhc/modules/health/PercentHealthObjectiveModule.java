@@ -27,13 +27,14 @@
 
 package gg.uhc.uhc.modules.health;
 
+import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
+
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import gg.uhc.uhc.modules.DisableableModule;
-import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -41,7 +42,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -62,10 +62,14 @@ public class PercentHealthObjectiveModule extends DisableableModule implements L
 
     protected static final String ICON_NAME = "Health Percent Objective";
 
+    protected static final String OBJECTIVES_KEY = "objectives";
     protected static final String OBJECTIVE_NAME_KEY = "objective name";
     protected static final String OBJECTIVE_DISPLAY_NAME_KEY = "objective display name";
     protected static final String OBJECTIVE_SCALING_KEY = "scaling";
     protected static final String UPDATE_PERIOD_KEY = "update period";
+
+    protected static final int DEFAULT_SCALING = 5;
+    protected static final int TICKS_PER_SECOND = 20;
 
     protected final Map<UUID, Double> trackedHealth = Maps.newHashMap();
 
@@ -81,23 +85,26 @@ public class PercentHealthObjectiveModule extends DisableableModule implements L
         this.icon.setWeight(ModuleRegistry.CATEGORY_HEALTH);
     }
 
-    public void updatePlayer(Player player) {
-        updatePlayer(player, player.getHealth());
-    }
-
     public void updatePlayers() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (final Player player : Bukkit.getOnlinePlayers()) {
             updatePlayer(player);
         }
     }
 
+    public void updatePlayer(Player player) {
+        updatePlayer(player, player.getHealth());
+    }
+
     protected void updatePlayer(Player player, Double newHealth) {
         Preconditions.checkArgument(newHealth >= 0, "Health cannot be less than 0");
-        Double oldHealth = trackedHealth.put(player.getUniqueId(), newHealth);
+        final Double oldHealth = trackedHealth.put(player.getUniqueId(), newHealth);
 
         if (!newHealth.equals(oldHealth)) {
-            for (Map.Entry<Objective, Integer> objective : objectives.entrySet()) {
-                objective.getKey().getScore(player.getName()).setScore((int) Math.ceil(newHealth * objective.getValue()));
+            for (final Map.Entry<Objective, Integer> objective : objectives.entrySet()) {
+                objective
+                        .getKey()
+                        .getScore(player.getName())
+                        .setScore((int) Math.ceil(newHealth * objective.getValue()));
             }
         }
     }
@@ -111,10 +118,10 @@ public class PercentHealthObjectiveModule extends DisableableModule implements L
 
     @Override
     protected List<String> getEnabledLore() {
-        List<String> lore = Lists.newArrayList();
+        final List<String> lore = Lists.newArrayList();
         lore.addAll(messages.getRawStrings("enabled lore.header"));
 
-        for (Objective objective : objectives.keySet()) {
+        for (final Objective objective : objectives.keySet()) {
             lore.addAll(messages.evalTemplates("enabled lore.item", ImmutableMap.of("objective", objective.getName())));
         }
 
@@ -125,7 +132,7 @@ public class PercentHealthObjectiveModule extends DisableableModule implements L
     public void onEnable() {
         cancelTask();
 
-        HealthUpdateRunnable runnable = new HealthUpdateRunnable();
+        final HealthUpdateRunnable runnable = new HealthUpdateRunnable();
         runnable.runTaskTimer(plugin, 0, updatePeriod);
         task = Optional.<BukkitRunnable>of(runnable);
     }
@@ -138,36 +145,36 @@ public class PercentHealthObjectiveModule extends DisableableModule implements L
     @Override
     public void initialize() throws InvalidConfigurationException {
         // setup default list if there isn't one
-        if (!config.contains("objectives")) {
+        if (!config.contains(OBJECTIVES_KEY)) {
             // default for under player name
-            ConfigurationSection name = new MemoryConfiguration();
+            final ConfigurationSection name = new MemoryConfiguration();
             name.set(OBJECTIVE_NAME_KEY, "UHCHealthName");
             name.set(OBJECTIVE_DISPLAY_NAME_KEY, "&c&h");
-            name.set(OBJECTIVE_SCALING_KEY, 5);
+            name.set(OBJECTIVE_SCALING_KEY, DEFAULT_SCALING);
 
             // default for player list
-            ConfigurationSection list = new MemoryConfiguration();
+            final ConfigurationSection list = new MemoryConfiguration();
             list.set(OBJECTIVE_NAME_KEY, "UHCHealthList");
             list.set(OBJECTIVE_DISPLAY_NAME_KEY, "Health");
-            list.set(OBJECTIVE_SCALING_KEY, 5);
+            list.set(OBJECTIVE_SCALING_KEY, DEFAULT_SCALING);
 
-            config.set("objectives", Lists.newArrayList(name, list));
+            config.set(OBJECTIVES_KEY, Lists.newArrayList(name, list));
         }
 
         if (!config.contains(UPDATE_PERIOD_KEY)) {
-            config.set(UPDATE_PERIOD_KEY, 20);
+            config.set(UPDATE_PERIOD_KEY, TICKS_PER_SECOND);
         }
 
-        List objectivesSpecs = config.getList("objectives");
+        final List objectivesSpecs = config.getList(OBJECTIVES_KEY);
 
         objectives = Maps.newHashMap();
-        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+        final Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
 
-        for (Object objectiveSpecObject : objectivesSpecs) {
-            ConfigurationSection objectiveSpec;
+        for (final Object objectiveSpecObject : objectivesSpecs) {
+            final ConfigurationSection objectiveSpec;
 
             if (objectiveSpecObject instanceof Map) {
-                MemoryConfiguration mc = new MemoryConfiguration();
+                final MemoryConfiguration mc = new MemoryConfiguration();
                 mc.addDefaults((Map) objectiveSpecObject);
                 objectiveSpec = mc;
             } else {
@@ -175,25 +182,35 @@ public class PercentHealthObjectiveModule extends DisableableModule implements L
             }
 
             if (!objectiveSpec.contains(OBJECTIVE_NAME_KEY)) {
-                throw new InvalidConfigurationException("Missing required parameter `" + OBJECTIVE_NAME_KEY + "` for a percent health objective");
+                throw new InvalidConfigurationException(
+                        "Missing required parameter `" + OBJECTIVE_NAME_KEY + "` for a percent health objective"
+                );
             }
 
             if (!objectiveSpec.contains(OBJECTIVE_DISPLAY_NAME_KEY)) {
-                throw new InvalidConfigurationException("Missing required parameter `" + OBJECTIVE_DISPLAY_NAME_KEY + "` for a percent health objective");
+                throw new InvalidConfigurationException(
+                        "Missing required parameter `" + OBJECTIVE_DISPLAY_NAME_KEY + "` for a percent health objective"
+                );
             }
 
-            String objectiveName = objectiveSpec.getString(OBJECTIVE_NAME_KEY);
+            final String objectiveName = objectiveSpec.getString(OBJECTIVE_NAME_KEY);
 
             // translate colours with an extra &h for a heart icon
-            String displayName = ChatColor.translateAlternateColorCodes('&', objectiveSpec.getString(OBJECTIVE_DISPLAY_NAME_KEY)).replace("&h", "♥");
-
-            Integer scaling = objectiveSpec.contains(OBJECTIVE_SCALING_KEY) ? objectiveSpec.getInt(OBJECTIVE_SCALING_KEY) : 5;
+            final String displayName = ChatColor
+                    .translateAlternateColorCodes('&', objectiveSpec.getString(OBJECTIVE_DISPLAY_NAME_KEY))
+                    .replace("&h", "♥");
 
             Objective objective = scoreboard.getObjective(objectiveName);
 
             // check for an invalid type and reregister it
             if (objective != null && !"dummy".equals(objective.getCriteria())) {
-                plugin.getLogger().severe("Percent health objective '" + objectiveName + "' was registered as " + objective.getCriteria() + " instead of dummy, reregistering it");
+                plugin.getLogger().severe(
+                        "Percent health objective '"
+                        + objectiveName
+                        + "' was registered as "
+                        + objective.getCriteria()
+                        + " instead of dummy, reregistering it"
+                );
                 objective.unregister();
                 objective = null;
             }
@@ -205,12 +222,21 @@ public class PercentHealthObjectiveModule extends DisableableModule implements L
 
             objective.setDisplayName(displayName);
 
+            final Integer scaling =
+                    objectiveSpec.contains(OBJECTIVE_SCALING_KEY)
+                    ? objectiveSpec.getInt(OBJECTIVE_SCALING_KEY)
+                    : DEFAULT_SCALING;
+
             objectives.put(objective, scaling);
         }
 
         updatePeriod = config.getInt(UPDATE_PERIOD_KEY);
 
-        if (updatePeriod <= 0) throw new InvalidConfigurationException("Update period must be >= 1, provided: " + config.get(UPDATE_PERIOD_KEY));
+        if (updatePeriod <= 0) {
+            throw new InvalidConfigurationException(
+                    "Update period must be >= 1, provided: " + config.get(UPDATE_PERIOD_KEY)
+            );
+        }
 
         super.initialize();
     }
@@ -227,12 +253,12 @@ public class PercentHealthObjectiveModule extends DisableableModule implements L
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void on(EntityDamageEvent event) {
-        Entity entity = event.getEntity();
+        final Entity entity = event.getEntity();
         if (!(entity instanceof Player)) {
             return;
         }
 
-        Player player = (Player) entity;
+        final Player player = (Player) entity;
 
         // If the event was cancelled, another plugin may have edited the health
         // Update instantly with the current health
@@ -242,22 +268,23 @@ public class PercentHealthObjectiveModule extends DisableableModule implements L
         }
 
         // Calculate new health based on final damage instead of waiting for one tick
-        double oldHealth = player.getHealth();
-        double finalDamage = event.getFinalDamage();
-        double newHealth = Math.max(oldHealth - finalDamage, 0);
+        final double oldHealth = player.getHealth();
+        final double finalDamage = event.getFinalDamage();
+        final double newHealth = Math.max(oldHealth - finalDamage, 0);
+
         updatePlayer(player, newHealth);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void on(EntityRegainHealthEvent event) {
-        Entity entity = event.getEntity();
+        final Entity entity = event.getEntity();
         if (!(entity instanceof Player)) {
             return;
         }
 
         // If the event was cancelled, another plugin may have edited the health
         // Update instantly with the current health
-        Player player = (Player) entity;
+        final Player player = (Player) entity;
 
         if (event.isCancelled()) {
             updatePlayer(player);
@@ -265,9 +292,10 @@ public class PercentHealthObjectiveModule extends DisableableModule implements L
         }
 
         // Calculate new health based on regen amount instead of waiting for one tick
-        double oldHealth = player.getHealth();
-        double healAmount = event.getAmount();
-        double newHealth = Math.min(oldHealth + healAmount, player.getMaxHealth());
+        final double oldHealth = player.getHealth();
+        final double healAmount = event.getAmount();
+        final double newHealth = Math.min(oldHealth + healAmount, player.getMaxHealth());
+
         updatePlayer(player, newHealth);
     }
 

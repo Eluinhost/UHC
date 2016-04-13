@@ -27,12 +27,6 @@
 
 package gg.uhc.uhc.modules.commands;
 
-
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
 import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
@@ -41,6 +35,12 @@ import gg.uhc.uhc.messages.MessageTemplates;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.Module;
 import gg.uhc.uhc.modules.ModuleRegistry;
+
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -55,6 +55,13 @@ public class ModuleCommand extends TemplatedOptionCommand {
         TOGGLE
     }
 
+    protected static final Function<Module, String> FETCH_KEY_AS_STRING = new Function<Module, String>() {
+        @Override
+        public String apply(Module input) {
+            return input.getId();
+        }
+    };
+
     protected final ModuleRegistry registry;
     protected final Type type;
     protected final OptionSpec<Map.Entry<String, Module>> moduleSpec;
@@ -65,45 +72,49 @@ public class ModuleCommand extends TemplatedOptionCommand {
         this.registry = registry;
         this.type = type;
 
-        moduleSpec = parser.nonOptions("List of module ids to " + type.name().toLowerCase()).withValuesConvertedBy(new ModuleEntryConverter(registry));
+        moduleSpec = parser
+                .nonOptions("List of module ids to " + type.name().toLowerCase())
+                .withValuesConvertedBy(new ModuleEntryConverter(registry));
         nonOptionsTabComplete = new NonDuplicateTabComplete(new ModuleTabComplete(registry));
     }
 
     @Override
     protected final boolean runCommand(CommandSender sender, OptionSet options) {
-        List<Map.Entry<String, Module>> entries = moduleSpec.values(options);
+        final List<Map.Entry<String, Module>> entries = moduleSpec.values(options);
 
         if (entries.size() == 0) {
-            sender.sendMessage(messages.evalTemplate("provide modules", ImmutableMap.of("modules", Joiner.on(", ").join(Iterables.transform(registry.getModules(), FETCH_KEY_AS_STRING)))));
+            sender.sendMessage(messages.evalTemplate(
+                    "provide modules",
+                    ImmutableMap.of(
+                            "modules",
+                            Joiner.on(", ").join(Iterables.transform(registry.getModules(), FETCH_KEY_AS_STRING))
+                    )
+            ));
             return true;
         }
 
-        List<String> newStates = Lists.newArrayListWithCapacity(entries.size());
+        final List<String> newStates = Lists.newArrayListWithCapacity(entries.size());
         int count = 0;
-        for (Map.Entry<String, Module> entry : entries) {
-            Module module = entry.getValue();
-            String id = entry.getKey();
+        for (final Map.Entry<String, Module> entry : entries) {
+            final Module module = entry.getValue();
+            final String id = entry.getKey();
 
-            ChatColor stateColour;
+            final ChatColor stateColour;
 
-            if ((module instanceof DisableableModule)) {
-                DisableableModule disableable = (DisableableModule) module;
+            if (module instanceof DisableableModule) {
+                final DisableableModule disableable = (DisableableModule) module;
 
                 switch (type) {
                     case ENABLE:
-                        if (!disableable.isEnabled()) {
-                            if (disableable.enable()) {
-                                disableable.announceState();
-                                count++;
-                            }
+                        if (!disableable.isEnabled() && disableable.enable()) {
+                            disableable.announceState();
+                            count++;
                         }
                         break;
                     case DISABLE:
-                        if (disableable.isEnabled()) {
-                            if (disableable.disable()) {
-                                disableable.announceState();
-                                count++;
-                            }
+                        if (disableable.isEnabled() && disableable.disable()) {
+                            disableable.announceState();
+                            count++;
                         }
                         break;
                     case TOGGLE:
@@ -112,6 +123,7 @@ public class ModuleCommand extends TemplatedOptionCommand {
                             count++;
                         }
                         break;
+                    default:
                 }
 
                 stateColour = disableable.isEnabled() ? ChatColor.GREEN : ChatColor.RED;
@@ -122,14 +134,14 @@ public class ModuleCommand extends TemplatedOptionCommand {
             newStates.add(stateColour + id);
         }
 
-        sender.sendMessage(messages.evalTemplate("processed", ImmutableMap.of("completed", count, "total", entries.size(), "states", Joiner.on(", ").join(newStates))));
+        sender.sendMessage(messages.evalTemplate(
+                "processed",
+                ImmutableMap.of(
+                        "completed", count,
+                        "total", entries.size(),
+                        "states", Joiner.on(", ").join(newStates)
+                )
+        ));
         return true;
     }
-
-    protected static final Function<Module, String> FETCH_KEY_AS_STRING = new Function<Module, String>() {
-        @Override
-        public String apply(Module input) {
-            return input.getId();
-        }
-    };
 }

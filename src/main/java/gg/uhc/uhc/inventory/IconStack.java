@@ -31,6 +31,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
+
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -42,7 +43,7 @@ import java.util.List;
 
 public class IconStack extends ItemStack implements Comparable<IconStack> {
 
-    protected int weight = 0;
+    protected int weight;
 
     protected List<ClickHandler> clickHandlers = Lists.newArrayList();
     protected List<IconUpdateListener> iconUpdateListeners = Lists.newArrayList();
@@ -63,6 +64,7 @@ public class IconStack extends ItemStack implements Comparable<IconStack> {
      * Registers a click handler to this icon. When this icon is clicked the handler will be called.
      *
      * @param handler the handler to register
+     * @return this
      */
     public IconStack registerClickHandler(ClickHandler handler) {
         Preconditions.checkNotNull(handler);
@@ -79,7 +81,7 @@ public class IconStack extends ItemStack implements Comparable<IconStack> {
     }
 
     protected void onClick(Player player) {
-        for (ClickHandler handler : clickHandlers) {
+        for (final ClickHandler handler : clickHandlers) {
             handler.onClick(player);
         }
     }
@@ -91,25 +93,25 @@ public class IconStack extends ItemStack implements Comparable<IconStack> {
     public void setWeight(int weight) {
         this.weight = weight;
 
-        for (IconUpdateListener listener : iconUpdateListeners) {
+        for (final IconUpdateListener listener : iconUpdateListeners) {
             listener.onWeightUpdate(this);
         }
     }
 
     public void refresh() {
-        for (IconUpdateListener handler : iconUpdateListeners) {
+        for (final IconUpdateListener handler : iconUpdateListeners) {
             handler.onUpdate(this);
         }
     }
 
     public void setDisplayName(String displayName) {
-        ItemMeta meta = getItemMeta();
+        final ItemMeta meta = getItemMeta();
         meta.setDisplayName(displayName);
         setItemMeta(meta);
     }
 
     public void setLore(String... lore) {
-        ItemMeta meta = getItemMeta();
+        final ItemMeta meta = getItemMeta();
         meta.setLore(ImmutableList.copyOf(lore));
         setItemMeta(meta);
     }
@@ -158,16 +160,16 @@ public class IconStack extends ItemStack implements Comparable<IconStack> {
     }
 
     public int removeEnchantment(Enchantment ench) {
-        int r = super.removeEnchantment(ench);
+        final int previousLevel = super.removeEnchantment(ench);
 
         refresh();
-        return r;
+        return previousLevel;
     }
 
     public boolean setItemMeta(ItemMeta itemMeta) {
-        boolean b = super.setItemMeta(itemMeta);
+        final boolean applied = super.setItemMeta(itemMeta);
 
         refresh();
-        return b;
+        return applied;
     }
 }

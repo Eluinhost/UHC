@@ -42,14 +42,14 @@ public class ComboAction extends Action {
 
     @Override
     protected void run(Player player) {
-        for (Action action : subActions) {
+        for (final Action action : subActions) {
             action.run(player);
         }
     }
 
     @Override
     protected void revert(Player player) {
-        for (Action action : subActions) {
+        for (final Action action : subActions) {
             action.revert(player);
         }
     }

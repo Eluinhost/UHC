@@ -29,6 +29,8 @@ package gg.uhc.uhc.modules.timer.renderer;
 
 public interface TimerRenderer {
     void onStart(String message);
+
     void onUpdate(String message, double progress);
+
     void onStop();
 }

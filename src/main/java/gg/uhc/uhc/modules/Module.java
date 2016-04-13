@@ -27,9 +27,10 @@
 
 package gg.uhc.uhc.modules;
 
-import com.google.common.base.Preconditions;
 import gg.uhc.uhc.inventory.IconStack;
 import gg.uhc.uhc.messages.MessageTemplates;
+
+import com.google.common.base.Preconditions;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -51,17 +52,17 @@ public abstract class Module {
     }
 
     /**
-     * @return the plugin instance used by this module. May be null if not set yet
+     * @return plugin instance used by this module. May be null if not set yet
      */
     public Plugin getPlugin() {
         return plugin;
     }
 
     /**
-     * @param messages templating section to pull messages from
+     * @param messageTemplates templating section to pull messages from.
      */
-    public void setMessageTemplates(MessageTemplates messages) {
-        this.messages = messages;
+    public void setMessageTemplates(MessageTemplates messageTemplates) {
+        this.messages = messageTemplates;
     }
 
     /**
@@ -72,21 +73,21 @@ public abstract class Module {
     }
 
     /**
-     * @param section the config section to pull values from
+     * @param section config section to pull values from.
      */
     public void setConfig(ConfigurationSection section) {
         this.config = section;
     }
 
     /**
-     * @return config section to pull config from, null if not set yet
+     * @return config section to pull config from, null if not set yet.
      */
     public ConfigurationSection getConfig() {
         return config;
     }
 
     /**
-     * @param id set the id of this module
+     * @param id set the id of this module.
      * @throws IllegalStateException if id has already been set
      */
     public void setId(String id) {
@@ -95,15 +96,15 @@ public abstract class Module {
     }
 
     /**
-     * @return the id of this module, may be null if not set yet
+     * @return id of this module, may be null if not set yet.
      */
     public String getId() {
         return this.id;
     }
 
     /**
-     * Should be called after constuctor and setters have been called
-     * @throws InvalidConfigurationException
+     * Should be called after constuctor and setters have been called.
+     * @throws InvalidConfigurationException on failure parsing/setting configuration values
      */
     public abstract void initialize() throws InvalidConfigurationException;
 
@@ -115,7 +116,7 @@ public abstract class Module {
     }
 
     /**
-     * @return this modules IconStack
+     * @return this modules IconStack.
      */
     public final IconStack getIconStack() {
         return icon;

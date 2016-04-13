@@ -27,13 +27,14 @@
 
 package gg.uhc.uhc.modules;
 
-import com.google.common.collect.ImmutableMap;
 import gg.uhc.uhc.ItemStackNBTStringFetcher;
 import gg.uhc.uhc.inventory.ClickHandler;
 import gg.uhc.uhc.inventory.IconInventory;
 import gg.uhc.uhc.inventory.IconStack;
 import gg.uhc.uhc.modules.events.ModuleDisableEvent;
 import gg.uhc.uhc.modules.events.ModuleEnableEvent;
+
+import com.google.common.collect.ImmutableMap;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -46,11 +47,18 @@ import org.bukkit.entity.Player;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("checkstyle:classdataabstractioncoupling")
 public abstract class DisableableModule extends Module implements ClickHandler {
 
+    public static final String ADMIN_PERMISSION = "uhc.command.uhc.admin";
+
+    protected static final String ENABLED_KEY = "enabled";
     protected static final String ENABLED_LORE_PATH = "enabled lore";
     protected static final String DISABLED_LORE_PATH = "disabled lore";
     protected static final String CONFIRMATION_TITLE = ChatColor.DARK_PURPLE + "Toggle: ";
+    protected static final int INVENTORY_WIDTH = 9;
+    protected static final int CONFIRM_ITEM_SLOT = 4;
+    protected static final short CONFIRM_WOOL_COLOUR_ID = 5;
 
     protected static final ClickHandler CLOSE_INVENTORY = new ClickHandler() {
         @Override
@@ -71,28 +79,31 @@ public abstract class DisableableModule extends Module implements ClickHandler {
     protected String iconName = "ERROR: NO ICON NAME SET";
 
     /**
-     * @return if enabled isn't set in the config what should the default be
+     * @return if enabled isn't set in the config what should the default be.
      */
     protected abstract boolean isEnabledByDefault();
 
     @Override
     public void initialize() throws InvalidConfigurationException {
-        if (!config.contains("enabled")) {
-            config.set("enabled", isEnabledByDefault());
+        if (!config.contains(ENABLED_KEY)) {
+            config.set(ENABLED_KEY, isEnabledByDefault());
         }
 
-        if (!config.isBoolean("enabled"))
-            throw new InvalidConfigurationException("Invalid value at key " + config.getCurrentPath() + ".enabled (" + config.get("enabled") + ")");
+        if (!config.isBoolean(ENABLED_KEY)) {
+            throw new InvalidConfigurationException(
+                    "Invalid value at key " + config.getCurrentPath() + ".enabled (" + config.get(ENABLED_KEY) + ")"
+            );
+        }
 
         // store inverted version to trigger change
-        this.enabled = !config.getBoolean("enabled");
+        this.enabled = !config.getBoolean(ENABLED_KEY);
         toggle();
 
         // register a click handler on our icon to show the confirmation inventory
         icon.registerClickHandler(new ClickHandler() {
             @Override
             public void onClick(Player player) {
-                if (player.hasPermission("uhc.command.uhc.admin")) {
+                if (player.hasPermission(ADMIN_PERMISSION)) {
                     confirmation.showTo(player);
                 }
             }
@@ -101,10 +112,10 @@ public abstract class DisableableModule extends Module implements ClickHandler {
         // setup confirmation inventory
         confirmation = new IconInventory(CONFIRMATION_TITLE + id);
 
-        for (int i = 0; i < 9; i++) {
-            IconStack stack;
-            if (i == 4) {
-                stack = new IconStack(Material.WOOL, 1, (short) 5);
+        for (int i = 0; i < INVENTORY_WIDTH; i++) {
+            final IconStack stack;
+            if (i == CONFIRM_ITEM_SLOT) {
+                stack = new IconStack(Material.WOOL, 1, CONFIRM_WOOL_COLOUR_ID);
                 stack.setDisplayName(ChatColor.GREEN + "Confirm Toggle");
                 stack.setLore("Clicking this will toggle the module " + id);
                 stack.registerClickHandler(this);
@@ -123,10 +134,11 @@ public abstract class DisableableModule extends Module implements ClickHandler {
     }
 
     protected final void rerender() {
-        if (isEnabled())
+        if (isEnabled()) {
             renderEnabled();
-        else
+        } else {
             renderDisabled();
+        }
     }
 
     protected void renderEnabled() {
@@ -156,13 +168,13 @@ public abstract class DisableableModule extends Module implements ClickHandler {
     public final boolean enable() {
         if (isEnabled()) return false;
 
-        ModuleEnableEvent event = new ModuleEnableEvent(this);
+        final ModuleEnableEvent event = new ModuleEnableEvent(this);
         Bukkit.getPluginManager().callEvent(event);
 
         if (event.isCancelled()) return false;
 
         enabled = true;
-        config.set("enabled", true);
+        config.set(ENABLED_KEY, true);
         saveConfig();
         onEnable();
         rerender();
@@ -173,7 +185,7 @@ public abstract class DisableableModule extends Module implements ClickHandler {
     public final boolean disable() {
         if (!isEnabled()) return false;
 
-        ModuleDisableEvent event = new ModuleDisableEvent(this);
+        final ModuleDisableEvent event = new ModuleDisableEvent(this);
         Bukkit.getPluginManager().callEvent(event);
 
         if (event.isCancelled()) return false;
@@ -188,22 +200,27 @@ public abstract class DisableableModule extends Module implements ClickHandler {
     }
 
     public void announceState() {
-        String enableStatus = isEnabled() ? "enabled" : "disabled";
+        final String enableStatus = isEnabled() ? "enabled" : "disabled";
 
-        Map<String, Object> context = ImmutableMap.<String, Object>builder()
+        final Map<String, Object> context = ImmutableMap.<String, Object>builder()
                 .put("name", iconName)
                 .put("status", enableStatus)
                 .build();
 
-        Bukkit.getConsoleSender().sendMessage(messages.getRoot().evalTemplate("modules.changed.console notice", context));
+        Bukkit.getConsoleSender().sendMessage(
+                messages.getRoot().evalTemplate("modules.changed.console notice", context)
+        );
 
-        TextComponent base = new TextComponent(messages.getRoot().evalTemplate("modules.changed.broadcast.prefix", context));
+        final TextComponent base = new TextComponent(
+                messages.getRoot().evalTemplate("modules.changed.broadcast.prefix", context)
+        );
+
         base.setColor(ChatColor.AQUA);
 
-        TextComponent itemNBT = new TextComponent(ItemStackNBTStringFetcher.readFromItemStack(getIconStack()));
+        final TextComponent itemNbt = new TextComponent(ItemStackNBTStringFetcher.readFromItemStack(getIconStack()));
 
-        TextComponent module = new TextComponent(iconName);
-        module.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[]{itemNBT}));
+        final TextComponent module = new TextComponent(iconName);
+        module.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[]{itemNbt}));
         module.setUnderlined(true);
         module.setColor(isEnabled() ? ChatColor.GREEN : ChatColor.RED);
 
@@ -223,7 +240,7 @@ public abstract class DisableableModule extends Module implements ClickHandler {
 
     @Override
     public void onClick(Player player) {
-        if (!player.hasPermission("uhc.command.uhc.admin")) return;
+        if (!player.hasPermission(ADMIN_PERMISSION)) return;
 
         if (toggle()) {
             announceState();

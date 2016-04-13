@@ -27,6 +27,11 @@
 
 package gg.uhc.uhc.modules;
 
+import gg.uhc.uhc.inventory.IconInventory;
+import gg.uhc.uhc.inventory.IconStack;
+import gg.uhc.uhc.messages.MessageTemplates;
+import gg.uhc.uhc.messages.SubsectionMessageTemplates;
+
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicates;
@@ -34,10 +39,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import gg.uhc.uhc.inventory.IconInventory;
-import gg.uhc.uhc.inventory.IconStack;
-import gg.uhc.uhc.messages.MessageTemplates;
-import gg.uhc.uhc.messages.SubsectionMessageTemplates;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -64,6 +65,12 @@ public class ModuleRegistry {
     public static final String ADDON_INVENTORY_TITLE = ChatColor.DARK_PURPLE + "UHC Control Panel";
     public static final Pattern VALID_MODULE_NAME_REGEX = Pattern.compile("^\\w+$");
 
+    protected static final String SPACERS_KEY = "spacers";
+    protected static final String LOAD_KEY = "load";
+    protected static final String WEIGHTS_KEY = "weights";
+    protected static final short SPACER_GLASS_COLOUR_ID = 8;
+    protected static final int MODULE_NAME_MAX_LENGTH = 22;
+
     protected final Plugin plugin;
     protected final PluginManager pluginManager;
     protected final MessageTemplates strings;
@@ -84,13 +91,13 @@ public class ModuleRegistry {
     }
 
     protected void setupSpacers() {
-        if (!config.contains("spacers")) {
-            config.set("spacers", Lists.newArrayList());
+        if (!config.contains(SPACERS_KEY)) {
+            config.set(SPACERS_KEY, Lists.newArrayList());
         }
 
-        for (int i : config.getIntegerList("spacers")) {
-            IconStack spacer = new IconStack(Material.STAINED_GLASS_PANE);
-            spacer.setDurability((short) 8);
+        for (final int i : config.getIntegerList(SPACERS_KEY)) {
+            final IconStack spacer = new IconStack(Material.STAINED_GLASS_PANE);
+            spacer.setDurability(SPACER_GLASS_COLOUR_ID);
             spacer.setDisplayName(" ");
             spacer.setWeight(i);
             addonInventory.registerNewIcon(spacer);
@@ -125,12 +132,15 @@ public class ModuleRegistry {
      * Helper method for transition.
      * Sets the module id and then registers it using #register(Module)
      *
+     * @param module the module to register
+     * @param id the id to give the module before registering
      * @return true if module loaded
      * @throws IllegalStateException if module's id was already set
      * @see ModuleRegistry#register(Module)
      *
-     * @deprecated
+     * @deprecated shoule be setting ID yourself and use the regular register method
      */
+    @Deprecated
     public boolean register(Module module, String id) {
         module.setId(id);
         return register(module);
@@ -158,12 +168,18 @@ public class ModuleRegistry {
      *     These will only be added if they have not already been set
      * </p>
      *
-     * <p>If the configuration says not to load the module this method will then return false and nothing else will be done</p>
+     * <p>
+     *     If the configuration says not to load the module this method will then return false
+     *     and nothing else will be done
+     * </p>
      *
      * <p>
      *     If the module does load:
      *     <ul>
-     *         <li>Module#initialize() is called for initialization of the module, If any exceptions are thrown during initialization the module will not be loaded</li>
+     *         <li>
+     *             Module#initialize() is called for initialization of the module,
+     *             If any exceptions are thrown during initialization the module will not be loaded
+     *         </li>
      *         <li>If the module implements Listener it is registered for events</li>
      *         <li>the module's icon is registered in the config inventory</li>
      *         <li>it is stored in the registry</li>
@@ -175,8 +191,14 @@ public class ModuleRegistry {
     public boolean register(Module module) {
         String id = module.getId();
         Preconditions.checkNotNull(id, "Module does not have an id set");
-        Preconditions.checkArgument(VALID_MODULE_NAME_REGEX.matcher(id).matches(), "Module id may only contain alphanumberic characters and _, found `" + id + "`");
-        Preconditions.checkArgument(module.getId().length() <= 22, "Module names can only be 22 characters at most");
+        Preconditions.checkArgument(
+                VALID_MODULE_NAME_REGEX.matcher(id).matches(),
+                "Module id may only contain alphanumberic characters and _, found `" + id + "`"
+        );
+        Preconditions.checkArgument(
+                module.getId().length() <= MODULE_NAME_MAX_LENGTH,
+                "Module names can only be 22 characters at most"
+        );
 
         // use all lower case in the map
         id = id.toLowerCase();
@@ -184,7 +206,7 @@ public class ModuleRegistry {
         // make sure it's a new key
         Preconditions.checkArgument(!modules.containsKey(id), "Module `" + id + "` is already registered");
 
-        String sectionId = "modules." + id;
+        final String sectionId = "modules." + id;
 
         // check add inject plugin
         if (module.getPlugin() == null) {
@@ -201,7 +223,7 @@ public class ModuleRegistry {
         }
 
         // check and inject configuration
-        ConfigurationSection section;
+        final ConfigurationSection section;
         if (module.getConfig() == null) {
             section = config.getConfigurationSection(sectionId);
 
@@ -212,12 +234,12 @@ public class ModuleRegistry {
         }
 
         // set load parameter if it doesn't exist
-        if (!section.contains("load")) {
-            section.set("load", true);
+        if (!section.contains(LOAD_KEY)) {
+            section.set(LOAD_KEY, true);
         }
 
         // if it's configured to not load then don't load it
-        if (!section.getBoolean("load")) {
+        if (!section.getBoolean(LOAD_KEY)) {
             return false;
         }
 
@@ -239,18 +261,18 @@ public class ModuleRegistry {
         }
 
         // check weights exists
-        if (!config.contains("weights")) {
-            config.createSection("weights");
+        if (!config.contains(WEIGHTS_KEY)) {
+            config.createSection(WEIGHTS_KEY);
         }
 
-        int currentWeight = module.getIconStack().getWeight();
+        final int currentWeight = module.getIconStack().getWeight();
 
-        if (!config.contains("weights." + id)) {
+        if (!config.contains(WEIGHTS_KEY + "." + id)) {
             // save the default value if it doesn't exist
-            config.set("weights." + id, currentWeight);
+            config.set(WEIGHTS_KEY + "." + id, currentWeight);
         } else {
             // set the saved weight on the icon stack
-            int saved = config.getInt("weights." + id);
+            final int saved = config.getInt(WEIGHTS_KEY + "." + id);
 
             if (saved != currentWeight) {
                 module.getIconStack().setWeight(saved);

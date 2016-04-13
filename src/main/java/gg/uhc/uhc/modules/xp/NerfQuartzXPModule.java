@@ -27,10 +27,11 @@
 
 package gg.uhc.uhc.modules.xp;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.EventHandler;
@@ -47,6 +48,11 @@ public class NerfQuartzXPModule extends DisableableModule implements Listener {
     protected static final String DROP_COUNT_HIGHER_KEY = "drop count max";
     protected static final String ICON_NAME = "Nerfed Quartz XP";
 
+    protected static final int REGULAR_RATE_LOWER_RANGE = 2;
+    protected static final int REGULAR_RATE_HIGHER_RANGE = 5;
+    protected static final int DEFAULT_LOWER_RANGE = 1;
+    protected static final int DEFAULT_HIGHER_RANGE = 2;
+
     protected int lower;
     protected int higher;
 
@@ -61,11 +67,11 @@ public class NerfQuartzXPModule extends DisableableModule implements Listener {
     @Override
     public void initialize() throws InvalidConfigurationException {
         if (!config.contains(DROP_COUNT_LOWER_KEY)) {
-            config.set(DROP_COUNT_LOWER_KEY, 1);
+            config.set(DROP_COUNT_LOWER_KEY, DEFAULT_LOWER_RANGE);
         }
 
         if (!config.contains(DROP_COUNT_HIGHER_KEY)) {
-            config.set(DROP_COUNT_HIGHER_KEY, 2);
+            config.set(DROP_COUNT_HIGHER_KEY, DEFAULT_HIGHER_RANGE);
         }
 
         lower = config.getInt(DROP_COUNT_LOWER_KEY);
@@ -85,14 +91,20 @@ public class NerfQuartzXPModule extends DisableableModule implements Listener {
 
     @Override
     protected List<String> getDisabledLore() {
-        return messages.evalTemplates("lore", ImmutableMap.of("lower", 2, "higher", 5));
+        return messages.evalTemplates(
+                "lore",
+                ImmutableMap.of(
+                        "lower", REGULAR_RATE_LOWER_RANGE,
+                        "higher", REGULAR_RATE_HIGHER_RANGE
+                )
+        );
     }
 
     @EventHandler(ignoreCancelled = true)
     public void on(BlockBreakEvent event) {
         if (!isEnabled() || event.getBlock().getType() != Material.QUARTZ_ORE) return;
 
-        int count;
+        final int count;
         if (higher == lower) {
             count = higher;
         } else {

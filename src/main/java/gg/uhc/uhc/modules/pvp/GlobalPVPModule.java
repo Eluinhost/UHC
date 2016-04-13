@@ -27,10 +27,11 @@
 
 package gg.uhc.uhc.modules.pvp;
 
-import com.google.common.collect.ImmutableList;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.WorldMatcher;
+
+import com.google.common.collect.ImmutableList;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -62,7 +63,7 @@ public class GlobalPVPModule extends DisableableModule implements Listener {
 
     @Override
     public void onEnable() {
-        for (World world : Bukkit.getWorlds()) {
+        for (final World world : Bukkit.getWorlds()) {
             if (worlds.worldMatches(world)) {
                 world.setPVP(true);
             }
@@ -71,7 +72,7 @@ public class GlobalPVPModule extends DisableableModule implements Listener {
 
     @Override
     public void onDisable() {
-        for (World world : Bukkit.getWorlds()) {
+        for (final World world : Bukkit.getWorlds()) {
             if (worlds.worldMatches(world)) {
                 world.setPVP(false);
             }
@@ -80,7 +81,7 @@ public class GlobalPVPModule extends DisableableModule implements Listener {
 
     @EventHandler
     public void on(WorldLoadEvent event) {
-        World world = event.getWorld();
+        final World world = event.getWorld();
 
         if (worlds.worldMatches(world)) {
             world.setPVP(isEnabled());

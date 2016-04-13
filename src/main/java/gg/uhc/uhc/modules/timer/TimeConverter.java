@@ -36,9 +36,11 @@ public class TimeConverter implements ValueConverter<Long> {
 
     @Override
     public Long convert(String value) {
-        long seconds = TimeUtil.getSeconds(value);
+        final long seconds = TimeUtil.getSeconds(value);
 
-        if (seconds == 0) throw new ValueConversionException("Invalid time supplied, must supply using time format and must be > 0");
+        if (seconds == 0) {
+            throw new ValueConversionException("Invalid time supplied, must supply using time format and must be > 0");
+        }
 
         return seconds;
     }

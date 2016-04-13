@@ -42,6 +42,8 @@ import java.util.List;
 
 public class IconInventory implements IconUpdateListener, Listener {
 
+    protected static final int INVENTORY_WIDTH = 9;
+
     protected final List<IconStack> icons = Lists.newArrayList();
 
     protected final String title;
@@ -49,7 +51,7 @@ public class IconInventory implements IconUpdateListener, Listener {
 
     public IconInventory(String title) {
         this.title = title;
-        inventory = Bukkit.createInventory(null, 9, title);
+        inventory = Bukkit.createInventory(null, INVENTORY_WIDTH, title);
     }
 
     public void showTo(HumanEntity entity) {
@@ -64,7 +66,7 @@ public class IconInventory implements IconUpdateListener, Listener {
     protected int add(IconStack icon) {
         // check where to insert and
         // add item to list in the correct location
-        int index = indexToInsert(icon);
+        final int index = indexToInsert(icon);
         icons.add(index, icon);
 
         // make sure this is enough space now
@@ -91,7 +93,7 @@ public class IconInventory implements IconUpdateListener, Listener {
 
     @Override
     public void onUpdate(IconStack icon) {
-        int index = icons.indexOf(icon);
+        final int index = icons.indexOf(icon);
 
         // this isn't one of our icons
         if (index < 0) return;
@@ -102,7 +104,7 @@ public class IconInventory implements IconUpdateListener, Listener {
 
     @Override
     public void onWeightUpdate(IconStack icon) {
-        int index = icons.indexOf(icon);
+        final int index = icons.indexOf(icon);
 
         // this isn't one of our icons
         if (index < 0) return;
@@ -111,7 +113,7 @@ public class IconInventory implements IconUpdateListener, Listener {
         icons.remove(index);
 
         // readd to the list
-        int newIndex = add(icon);
+        final int newIndex = add(icon);
 
         // rerender the changed items (index+ is handled by the add() method)
         for (int i = newIndex; i < index; i++) {
@@ -121,10 +123,16 @@ public class IconInventory implements IconUpdateListener, Listener {
 
     protected void ensureInventorySize() {
         // how many icons do we want to show
-        int iconCount = icons.size();
+        final int iconCount = icons.size();
 
         // how many slots are required, in increments of 9, min 9, max 54
-        int slotsRequired = Math.max(9, Math.min(54, 9 * ((iconCount + 8) / 9)));
+        final int slotsRequired = Math.max(
+                9,
+                Math.min(
+                        54,
+                        INVENTORY_WIDTH * ((iconCount + INVENTORY_WIDTH - 1) / INVENTORY_WIDTH)
+                )
+        );
 
         // if it's already the right size then do nothing
         if (slotsRequired == inventory.getSize()) return;
@@ -133,10 +141,10 @@ public class IconInventory implements IconUpdateListener, Listener {
         inventory.clear();
 
         // create a replacement
-        Inventory newInventory = Bukkit.createInventory(null, slotsRequired, title);
+        final Inventory newInventory = Bukkit.createInventory(null, slotsRequired, title);
 
         // rerender entire inventory
-        ItemStack[] contents = new ItemStack[slotsRequired];
+        final ItemStack[] contents = new ItemStack[slotsRequired];
         for (int i = 0; i < icons.size(); i++) {
             contents[i] = icons.get(i);
         }
@@ -144,7 +152,7 @@ public class IconInventory implements IconUpdateListener, Listener {
         newInventory.setContents(contents);
 
         // replace the old inventory
-        for (HumanEntity entity : inventory.getViewers()) {
+        for (final HumanEntity entity : inventory.getViewers()) {
             entity.closeInventory();
             entity.openInventory(newInventory);
         }
@@ -158,12 +166,12 @@ public class IconInventory implements IconUpdateListener, Listener {
 
         event.setCancelled(true);
 
-        int slot = event.getRawSlot();
+        final int slot = event.getRawSlot();
 
         if (slot < 0 || slot > inventory.getSize()) return;
 
         // call event
-        IconStack icon = icons.get(slot);
+        final IconStack icon = icons.get(slot);
 
         if (icon != null) {
             icon.onClick((Player) event.getWhoClicked());

@@ -27,12 +27,6 @@
 
 package gg.uhc.uhc.modules.health;
 
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import gg.uhc.flagcommands.converters.DoubleConverter;
 import gg.uhc.flagcommands.converters.OnlinePlayerConverter;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
@@ -42,6 +36,13 @@ import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
 import gg.uhc.flagcommands.tab.OnlinePlayerTabComplete;
 import gg.uhc.uhc.commands.TemplatedOptionCommand;
 import gg.uhc.uhc.messages.MessageTemplates;
+
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -51,8 +52,17 @@ import java.util.List;
 
 public class HealthCommand extends TemplatedOptionCommand {
 
+    protected static final double PERCENT_MULTIPLIER = 100D;
+    protected static final double WARNING_LIMIT = 200D;
     protected static final NumberFormat FORMAT = NumberFormat.getInstance();
     protected static final String MODIFY_PERMISSION = "uhc.command.health.modify";
+
+    protected Function<Player, String> convert = new Function<Player, String>() {
+        @Override
+        public String apply(Player input) {
+            return messages.evalTemplate("player", new PlayerContext(input));
+        }
+    };
 
     static {
         FORMAT.setMaximumFractionDigits(2);
@@ -64,11 +74,9 @@ public class HealthCommand extends TemplatedOptionCommand {
     protected final OptionSpec<Void> silentSpec;
     protected final OptionSpec<Double> setCurrentHealthSpec;
     protected final OptionSpec<Double> setMaximumHealthSpec;
-    protected final double maximumHealthWarningLimit;
 
-    public HealthCommand(MessageTemplates messages, double maximumHealthWarningLimit) {
+    public HealthCommand(MessageTemplates messages) {
         super(messages);
-        this.maximumHealthWarningLimit = maximumHealthWarningLimit;
 
         playerSpec = parser.nonOptions("List of player names to check/modify the health of")
                 .withValuesConvertedBy(new OnlinePlayerConverter());
@@ -114,9 +122,9 @@ public class HealthCommand extends TemplatedOptionCommand {
             }
         }
 
-        boolean isSettingCurrentHealth = optionSet.has(setCurrentHealthSpec);
-        boolean isSettingMaximumHealth = optionSet.has(setMaximumHealthSpec);
-        boolean isModification = isSettingCurrentHealth || isSettingMaximumHealth;
+        final boolean isSettingCurrentHealth = optionSet.has(setCurrentHealthSpec);
+        final boolean isSettingMaximumHealth = optionSet.has(setMaximumHealthSpec);
+        final boolean isModification = isSettingCurrentHealth || isSettingMaximumHealth;
 
         if (isModification && !commandSender.hasPermission(MODIFY_PERMISSION)) {
             commandSender.sendMessage(messages.getRaw("cannot modify"));
@@ -125,17 +133,17 @@ public class HealthCommand extends TemplatedOptionCommand {
 
         // Set maximum health before current health in case of multiple operation
         if (isSettingMaximumHealth) {
-            double newMaximumHealth = setMaximumHealthSpec.value(optionSet);
+            final double newMaximumHealth = setMaximumHealthSpec.value(optionSet);
 
             boolean limitedByServer = false;
 
-            for (Player player : players) {
+            for (final Player player : players) {
                 player.setMaxHealth(newMaximumHealth);
-                double actualMaxHealth = player.getMaxHealth();
+                final double actualMaxHealth = player.getMaxHealth();
                 if (!limitedByServer && actualMaxHealth != newMaximumHealth) {
                     limitedByServer = true;
 
-                    ImmutableMap<String, String> context = ImmutableMap.of(
+                    final ImmutableMap<String, String> context = ImmutableMap.of(
                             "attempted", FORMAT.format(newMaximumHealth),
                             "limit", FORMAT.format(actualMaxHealth)
                     );
@@ -144,10 +152,10 @@ public class HealthCommand extends TemplatedOptionCommand {
                 }
             }
 
-            if (newMaximumHealth > maximumHealthWarningLimit) {
-                ImmutableMap<String, String> context = ImmutableMap.of(
+            if (newMaximumHealth > WARNING_LIMIT) {
+                final ImmutableMap<String, String> context = ImmutableMap.of(
                         "attempted", FORMAT.format(newMaximumHealth),
-                        "limit", FORMAT.format(maximumHealthWarningLimit)
+                        "limit", FORMAT.format(WARNING_LIMIT)
                 );
 
                 commandSender.sendMessage(messages.evalTemplate("very high maximum health", context));
@@ -155,26 +163,31 @@ public class HealthCommand extends TemplatedOptionCommand {
         }
 
         if (isSettingCurrentHealth) {
-            double newCurrentHealth = setCurrentHealthSpec.value(optionSet);
-            for (Player player : players) {
-                double playerMaxHealth = player.getMaxHealth();
+            final double newCurrentHealth = setCurrentHealthSpec.value(optionSet);
+            for (final Player player : players) {
+                final double playerMaxHealth = player.getMaxHealth();
                 // Spigot 1.9+ throws an error trying to set a player's health higher than his maximum health
                 player.setHealth(Math.min(playerMaxHealth, newCurrentHealth));
             }
         }
 
-        String playerPart = Joiner.on(messages.getRaw("player separator")).join(Iterables.transform(players, convert));
+        final String playerPart = Joiner
+                .on(messages.getRaw("player separator"))
+                .join(Iterables.transform(players, convert));
 
-        String template = isModification ? "modify message" : "message";
-        commandSender.sendMessage(messages.evalTemplate(template, ImmutableMap.of("total", players.size(), "players", playerPart)));
+        final String template = isModification ? "modify message" : "message";
+        commandSender.sendMessage(messages.evalTemplate(
+                template,
+                ImmutableMap.of("total", players.size(), "players", playerPart)
+        ));
 
         if (isModification && !optionSet.has(silentSpec)) {
-            for (Player player : players) {
+            for (final Player player : players) {
                 if (player.equals(commandSender)) {
                     continue;
                 }
 
-                PlayerContext context = new PlayerContext(player);
+                final PlayerContext context = new PlayerContext(player);
                 player.sendMessage(messages.evalTemplate("modify feedback", context));
             }
         }
@@ -202,14 +215,7 @@ public class HealthCommand extends TemplatedOptionCommand {
         }
 
         public String percentage() {
-            return FORMAT.format(player.getHealth() / player.getMaxHealth() * 100D);
+            return FORMAT.format(player.getHealth() / player.getMaxHealth() * PERCENT_MULTIPLIER);
         }
     }
-
-    protected Function<Player, String> convert = new Function<Player, String>() {
-        @Override
-        public String apply(Player input) {
-            return messages.evalTemplate("player", new PlayerContext(input));
-        }
-    };
 }

@@ -35,32 +35,43 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class ItemStackNBTStringFetcher {
+public final class ItemStackNBTStringFetcher {
+
+    protected static final String CRAFTBUKKIT_FORMAT = "org.bukkit.craftbukkit.%s.%s";
+    protected static final String NMS_FORMAT = "net.minecraft.server.%s.%s";
 
     protected static Method asNMSCopyMethod;
     protected static Method saveMethod;
     protected static Constructor nbtTagCompoundConstructor;
 
-    protected static boolean ensureNMS() {
+    private ItemStackNBTStringFetcher() {}
+
+    protected static boolean ensureNms() {
         if (nbtTagCompoundConstructor != null) {
             return true;
         }
 
         try {
-            String packageName = Bukkit.getServer().getClass().getPackage().getName();
-            String version = packageName.substring(packageName.lastIndexOf(".") + 1);
+            final String packageName = Bukkit.getServer().getClass().getPackage().getName();
+            final String version = packageName.substring(packageName.lastIndexOf(".") + 1);
 
-            Class<?> craftItemClass = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
-            Class<?> nbtTagCompoundClass = Class.forName("net.minecraft.server." + version + ".NBTTagCompound");
-            Class<?> nmsStackClass = Class.forName("net.minecraft.server." + version + ".ItemStack");
+            final Class<?> craftItemClass = Class.forName(
+                    String.format(CRAFTBUKKIT_FORMAT, version, "inventory.CraftItemStack")
+            );
+            final Class<?> nbtTagCompoundClass = Class.forName(
+                    String.format(NMS_FORMAT, version, "NBTTagCompound")
+            );
+            final Class<?> nmsStackClass = Class.forName(
+                    String.format(NMS_FORMAT, version, "ItemStack")
+            );
 
             asNMSCopyMethod = craftItemClass.getDeclaredMethod("asNMSCopy", ItemStack.class);
             saveMethod = nmsStackClass.getDeclaredMethod("save", nbtTagCompoundClass);
             nbtTagCompoundConstructor = nbtTagCompoundClass.getConstructor();
 
             return true;
-        } catch (ReflectiveOperationException e) {
-            e.printStackTrace();
+        } catch (ReflectiveOperationException ex) {
+            ex.printStackTrace();
             return false;
         }
     }
@@ -69,24 +80,24 @@ public class ItemStackNBTStringFetcher {
         Preconditions.checkNotNull(stack);
         Preconditions.checkArgument(stack.getTypeId() != 0, "Stack cannot be air");
 
-        if (!ensureNMS()) {
+        if (!ensureNms()) {
             return null;
         }
 
         try {
             // copy to NMS version
-            Object nmsStack = asNMSCopyMethod.invoke(null, stack);
+            final Object nmsStack = asNMSCopyMethod.invoke(null, stack);
 
             // create a new NBTTagCompound to save into
-            Object newTag = nbtTagCompoundConstructor.newInstance();
+            final Object newTag = nbtTagCompoundConstructor.newInstance();
 
             // save the NMS stack into the tag
             saveMethod.invoke(nmsStack, newTag);
 
             // return string representation of the tag
             return newTag.toString();
-        } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
-            e.printStackTrace();
+        } catch (IllegalAccessException | InvocationTargetException | InstantiationException ex) {
+            ex.printStackTrace();
             return null;
         }
     }

@@ -27,11 +27,6 @@
 
 package gg.uhc.uhc.modules.team;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.*;
 import gg.uhc.flagcommands.converters.IntegerConverter;
 import gg.uhc.flagcommands.converters.OfflinePlayerConverter;
 import gg.uhc.flagcommands.converters.OnlinePlayerConverter;
@@ -44,6 +39,12 @@ import gg.uhc.flagcommands.tab.NonDuplicateTabComplete;
 import gg.uhc.flagcommands.tab.OnlinePlayerTabComplete;
 import gg.uhc.uhc.commands.TemplatedOptionCommand;
 import gg.uhc.uhc.messages.MessageTemplates;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+import com.google.common.collect.*;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -65,6 +66,13 @@ public class RandomTeamsCommand extends TemplatedOptionCommand {
     protected final ArgumentAcceptingOptionSpec<OfflinePlayer> excludingSpec;
     protected final OptionSpec<Void> excludeExtrasSpec;
 
+    protected final Predicate<OfflinePlayer> playerHasTeam = new Predicate<OfflinePlayer>() {
+        @Override
+        public boolean apply(OfflinePlayer input) {
+            return module.getScoreboard().getPlayerTeam(input) != null;
+        }
+    };
+
     public RandomTeamsCommand(MessageTemplates messages, TeamModule module) {
         super(messages);
         this.module = module;
@@ -75,22 +83,43 @@ public class RandomTeamsCommand extends TemplatedOptionCommand {
         nonOptionsTabComplete = new NonDuplicateTabComplete(OnlinePlayerTabComplete.INSTANCE);
 
         excludeExtrasSpec = parser
-                .acceptsAll(ImmutableList.of("x"), "Players who don't fit into a team will be excluded instead of put into their own team");
+                .acceptsAll(
+                        ImmutableList.of("x"),
+                        "Players who don't fit into a team will be excluded instead of put into their own team"
+                );
 
         teamCountSpec = parser
-                .acceptsAll(ImmutableList.of("c", "count"), "How many teams to create, teams will be as even as possible. Cannot be used with -s")
+                .acceptsAll(
+                        ImmutableList.of("c", "count"),
+                        "How many teams to create, teams will be as even as possible. Cannot be used with -s"
+                )
                 .withRequiredArg()
-                .withValuesConvertedBy(new IntegerConverter().setPredicate(IntegerPredicates.GREATER_THAN_ZERO).setType("Integer > 0"));
+                .withValuesConvertedBy(
+                        new IntegerConverter()
+                                .setPredicate(IntegerPredicates.GREATER_THAN_ZERO)
+                                .setType("Integer > 0")
+                );
         completers.put(teamCountSpec, new FixedValuesTabComplete("4"));
 
         teamSizeSpec = parser
-                .acceptsAll(ImmutableList.of("s", "size"), "How big to attempt make each team. The final team may have less members. Cannot be used with -c")
+                .acceptsAll(
+                        ImmutableList.of("s", "size"),
+                        "How big to attempt make each team. The final team may have less members."
+                        + " Cannot be used with -c"
+                )
                 .withRequiredArg()
-                .withValuesConvertedBy(new IntegerConverter().setPredicate(IntegerPredicates.GREATER_THAN_ZERO).setType("Integer > 0"));
+                .withValuesConvertedBy(
+                        new IntegerConverter()
+                                .setPredicate(IntegerPredicates.GREATER_THAN_ZERO)
+                                .setType("Integer > 0")
+                );
         completers.put(teamSizeSpec, new FixedValuesTabComplete("3"));
 
         excludingSpec = parser
-                .acceptsAll(ImmutableList.of("e", "exclude"), "List of players to exclude from selection separated with commas")
+                .acceptsAll(
+                        ImmutableList.of("e", "exclude"),
+                        "List of players to exclude from selection separated with commas"
+                )
                 .withRequiredArg()
                 .withValuesSeparatedBy(",")
                 .withValuesConvertedBy(new OfflinePlayerConverter());
@@ -123,7 +152,7 @@ public class RandomTeamsCommand extends TemplatedOptionCommand {
         }
 
         // parse excludes into online players
-        Set<Player> excludes = Sets.newHashSet(
+        final Set<Player> excludes = Sets.newHashSet(
                 Iterables.filter(
                         Iterables.transform(
                                 excludingSpec.values(options),
@@ -134,10 +163,10 @@ public class RandomTeamsCommand extends TemplatedOptionCommand {
         );
 
         // final list with excludes removed and players that already in a team
-        List<Player> toAssign = Lists.newArrayList(
+        final List<Player> toAssign = Lists.newArrayList(
                 Iterables.filter(
                         Sets.difference(choice, excludes),
-                        Predicates.not(PLAYER_HAS_TEAM)
+                        Predicates.not(playerHasTeam)
                 )
         );
 
@@ -154,9 +183,9 @@ public class RandomTeamsCommand extends TemplatedOptionCommand {
         }
 
         // partition into teams
-        List<List<Player>> teams = Lists.newArrayList(Lists.partition(toAssign, size));
+        final List<List<Player>> teams = Lists.newArrayList(Lists.partition(toAssign, size));
 
-        int extras = toAssign.size() % size;
+        final int extras = toAssign.size() % size;
 
         // if we're excluding leftovers and there were leftovers in a final
         // team, then remove that team from the list. If it's the only team
@@ -171,36 +200,36 @@ public class RandomTeamsCommand extends TemplatedOptionCommand {
         }
 
         // start assigning teams
-        for (List<Player> teamPlayers : teams) {
-            Optional<Team> optional = module.findFirstEmptyTeam();
+        for (final List<Player> teamPlayers : teams) {
+            final Optional<Team> optional = module.findFirstEmptyTeam();
 
             if (!optional.isPresent()) {
                 sender.sendMessage(messages.getRaw("not enough teams"));
                 return true;
             }
 
-            Team team = optional.get();
-            String playerNames = Joiner.on(", ").join(Iterables.transform(teamPlayers, FunctionalUtil.PLAYER_NAME_FETCHER));
+            final Team team = optional.get();
+            final String playerNames = Joiner
+                    .on(", ")
+                    .join(Iterables.transform(teamPlayers, FunctionalUtil.PLAYER_NAME_FETCHER));
 
-            //"teamup notification" : ${colours.command}"You were teamed up into the team {{prefix}}{{name}}"${colours.reset}${colours.command}" with: "${colours.secondary}"{{players}}";
-
-            Map<String, String> context = ImmutableMap.<String, String>builder()
+            final Map<String, String> context = ImmutableMap.<String, String>builder()
                     .put("prefix", team.getPrefix())
                     .put("name", team.getName())
                     .put("display name", team.getDisplayName())
                     .put("players", playerNames)
                     .build();
 
-            String message = messages.evalTemplate("teamup notification", context);
+            final String message = messages.evalTemplate("teamup notification", context);
 
             // add each player
-            for (Player player : teamPlayers) {
+            for (final Player player : teamPlayers) {
                 team.addPlayer(player);
                 player.sendMessage(message);
             }
         }
 
-        Map<String, Integer> context = ImmutableMap.<String, Integer>builder()
+        final Map<String, Integer> context = ImmutableMap.<String, Integer>builder()
                 .put("count", teams.size())
                 .put("size", teams.get(0).size())
                 .put("players", toAssign.size())
@@ -214,11 +243,4 @@ public class RandomTeamsCommand extends TemplatedOptionCommand {
 
         return true;
     }
-
-    protected final Predicate<OfflinePlayer> PLAYER_HAS_TEAM = new Predicate<OfflinePlayer>() {
-        @Override
-        public boolean apply(OfflinePlayer input) {
-            return module.getScoreboard().getPlayerTeam(input) != null;
-        }
-    };
 }

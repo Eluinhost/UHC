@@ -27,9 +27,6 @@
 
 package gg.uhc.uhc.modules.reset;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import gg.uhc.flagcommands.converters.OnlinePlayerConverter;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
@@ -39,6 +36,10 @@ import gg.uhc.uhc.commands.TemplatedOptionCommand;
 import gg.uhc.uhc.messages.MessageTemplates;
 import gg.uhc.uhc.modules.reset.actions.Action;
 import gg.uhc.uhc.modules.reset.resetters.PlayerResetter;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -48,6 +49,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class PlayerAffectingCommand extends TemplatedOptionCommand {
+
+    protected static final int TICKS_PER_SECOND = 20;
 
     protected final PlayerResetter resetter;
 
@@ -65,7 +68,12 @@ public class PlayerAffectingCommand extends TemplatedOptionCommand {
 
         allPlayerSpec = parser.acceptsAll(ImmutableSet.of("a", "all"), "Affect all online players");
 
-        undoSpec = parser.acceptsAll(ImmutableSet.of("u", "undo"), "Undo the last command you ran (within ~" + (int) (resetter.getCacheTicks() / 20) + " seconds of running it)");
+        undoSpec = parser.acceptsAll(
+                ImmutableSet.of("u", "undo"),
+                "Undo the last command you ran (within ~"
+                + (int) (resetter.getCacheTicks() / TICKS_PER_SECOND)
+                + " seconds of running it)"
+        );
     }
 
     // override to show a message when ran with *
@@ -82,7 +90,7 @@ public class PlayerAffectingCommand extends TemplatedOptionCommand {
     @Override
     protected boolean runCommand(CommandSender sender, OptionSet options) {
         if (options.has(undoSpec)) {
-            List<Action> actions = resetter.getLastActions(sender.getName());
+            final List<Action> actions = resetter.getLastActions(sender.getName());
 
             if (actions.size() == 0) {
                 sender.sendMessage(messages.getRaw("nothing to undo"));
@@ -90,11 +98,17 @@ public class PlayerAffectingCommand extends TemplatedOptionCommand {
             }
 
             int reverted = 0;
-            for (Action revertable : actions) {
+            for (final Action revertable : actions) {
                 if (revertable.revert()) reverted++;
             }
 
-            sender.sendMessage(messages.evalTemplate("undone", ImmutableMap.of("count", reverted, "total", actions.size())));
+            sender.sendMessage(messages.evalTemplate(
+                    "undone",
+                    ImmutableMap.of(
+                            "count", reverted,
+                            "total", actions.size()
+                    )
+            ));
             return true;
         }
 
@@ -103,31 +117,40 @@ public class PlayerAffectingCommand extends TemplatedOptionCommand {
             players = Lists.newArrayList(Bukkit.getOnlinePlayers());
         } else {
             players = playersSpec.values(options);
+        }
 
-            // check if none are provided and run for just the player
-            if (players.size() == 0) {
-                if (sender instanceof Player) {
-                    players = Lists.newArrayList((Player) sender);
-                } else {
-                    sender.sendMessage(messages.getRaw("players only"));
-                    return true;
-                }
+        // check if none are provided and run for just the player
+        if (players.size() == 0) {
+            if (sender instanceof Player) {
+                players = Lists.newArrayList((Player) sender);
+            } else {
+                sender.sendMessage(messages.getRaw("players only"));
+                return true;
             }
         }
 
-        List<Action> toRun = resetter.createActions(sender.getName(), players);
+        final List<Action> toRun = resetter.createActions(sender.getName(), players);
 
         int affected = 0;
-        for (Action action : toRun) {
+        for (final Action action : toRun) {
             if (action.run()) affected++;
         }
 
-        for (Player player : players) {
+        for (final Player player : players) {
             player.sendMessage(messages.getRaw("for player"));
         }
 
-        sender.sendMessage(messages.evalTemplate("for sender", ImmutableMap.of("count", affected, "total", toRun.size())));
-        sender.sendMessage(messages.evalTemplate("notice", ImmutableMap.of("cache", (int) (resetter.getCacheTicks() / 20))));
+        sender.sendMessage(messages.evalTemplate(
+                "for sender",
+                ImmutableMap.of(
+                        "count", affected,
+                        "total", toRun.size()
+                )
+        ));
+        sender.sendMessage(messages.evalTemplate(
+                "notice",
+                ImmutableMap.of("cache", (int) (resetter.getCacheTicks() / TICKS_PER_SECOND))
+        ));
         return true;
     }
 }

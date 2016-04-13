@@ -47,12 +47,12 @@ public class SaturationMultiplierRunnable extends BukkitRunnable {
 
     @Override
     public void run() {
-        Player player = Bukkit.getPlayer(uuid);
+        final Player player = Bukkit.getPlayer(uuid);
 
         if (player == null) return;
 
-        float change = player.getSaturation() - pre;
+        final float change = player.getSaturation() - pre;
 
-        player.setSaturation(pre + (change * ((float)multiplier)));
+        player.setSaturation(pre + (change * ((float) multiplier)));
     }
 }

@@ -27,15 +27,16 @@
 
 package gg.uhc.uhc.modules.health;
 
+import gg.uhc.uhc.modules.Module;
+import gg.uhc.uhc.modules.ModuleRegistry;
+import gg.uhc.uhc.modules.autorespawn.AutoRespawnModule;
+import gg.uhc.uhc.modules.events.ModuleDisableEvent;
+
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import gg.uhc.uhc.modules.Module;
-import gg.uhc.uhc.modules.ModuleRegistry;
-import gg.uhc.uhc.modules.autorespawn.AutoRespawnModule;
-import gg.uhc.uhc.modules.events.ModuleDisableEvent;
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.EventHandler;
@@ -44,6 +45,7 @@ import org.bukkit.event.Listener;
 
 public class HardcoreHeartsModule extends Module implements Listener {
 
+    protected static final short PLANT_TYPE_ID = 4;
     protected static final String ICON_NAME = "Hardcore Hearts";
 
     protected final AutoRespawnModule respawnModule;
@@ -53,7 +55,7 @@ public class HardcoreHeartsModule extends Module implements Listener {
 
         this.respawnModule = respawnModule;
         this.icon.setType(Material.DOUBLE_PLANT);
-        this.icon.setDurability((short) 4);
+        this.icon.setDurability(PLANT_TYPE_ID);
         this.icon.setWeight(ModuleRegistry.CATEGORY_HEALTH);
         this.icon.setDisplayName(ICON_NAME);
     }
@@ -63,8 +65,10 @@ public class HardcoreHeartsModule extends Module implements Listener {
         // make sure to enable the respawn module
         respawnModule.enable();
 
-        if (!respawnModule.isEnabled()){
-            throw new InvalidConfigurationException("Error enabling the respawn module. The respawn module is required to run hardcore hearts");
+        if (!respawnModule.isEnabled()) {
+            throw new InvalidConfigurationException(
+                    "Error enabling the respawn module. The respawn module is required to run hardcore hearts"
+            );
         }
 
         ProtocolLibrary.getProtocolManager().addPacketListener(new HardcoreHeartsListener());
@@ -79,7 +83,7 @@ public class HardcoreHeartsModule extends Module implements Listener {
 
     class HardcoreHeartsListener extends PacketAdapter {
 
-        public HardcoreHeartsListener() {
+        HardcoreHeartsListener() {
             super(HardcoreHeartsModule.this.plugin, ListenerPriority.NORMAL, PacketType.Play.Server.LOGIN);
         }
 

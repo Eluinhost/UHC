@@ -27,17 +27,20 @@
 
 package gg.uhc.uhc.modules.commands;
 
-import com.google.common.collect.ImmutableSet;
 import gg.uhc.flagcommands.commands.SubcommandCommand;
 import gg.uhc.uhc.inventory.ShowIconsCommand;
 import gg.uhc.uhc.messages.MessageTemplates;
 import gg.uhc.uhc.modules.ModuleRegistry;
+
+import com.google.common.collect.ImmutableSet;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import java.util.Set;
 
 public class ModuleCommands extends SubcommandCommand {
+
+    protected static final String PERMISSION = "uhc.command.uhc.admin";
 
     protected final ModuleRegistry registry;
     protected final ModuleEntryConverter moduleEntryConverter;
@@ -55,7 +58,7 @@ public class ModuleCommands extends SubcommandCommand {
         registerSubcommand("disable", new ModuleCommand(messages, registry, ModuleCommand.Type.DISABLE));
         registerSubcommand("status", new ModuleStatusCommand(registry));
 
-        ShowIconsCommand icons = new ShowIconsCommand(messages, registry.getInventory());
+        final ShowIconsCommand icons = new ShowIconsCommand(messages, registry.getInventory());
         registerSubcommand("show", icons);
         registerSubcommand(NO_ARG_SPECIAL, icons);
     }
@@ -63,7 +66,7 @@ public class ModuleCommands extends SubcommandCommand {
     // add a extra permission check for any subcommands other than show or no-arg
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         // allow noarg + noPerm commands to bypass perm check
-        if (args.length != 0 && !noPerm.contains(args[0].toLowerCase()) && !sender.hasPermission("uhc.command.uhc.admin")) {
+        if (args.length != 0 && !noPerm.contains(args[0].toLowerCase()) && !sender.hasPermission(PERMISSION)) {
             sender.sendMessage(messages.getRaw("no modify permission"));
             return true;
         }

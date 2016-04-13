@@ -27,9 +27,6 @@
 
 package gg.uhc.uhc.modules.timer;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import gg.uhc.flagcommands.converters.EnumConverter;
 import gg.uhc.flagcommands.joptsimple.ValueConversionException;
 import gg.uhc.uhc.modules.Module;
@@ -39,6 +36,10 @@ import gg.uhc.uhc.modules.timer.renderer.ActionBarRenderer;
 import gg.uhc.uhc.modules.timer.renderer.BossBarRenderer;
 import gg.uhc.uhc.modules.timer.renderer.TimerRenderer;
 import gg.uhc.uhc.util.ActionBarMessenger;
+
+import com.comphenix.protocol.ProtocolLibrary;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -56,9 +57,11 @@ public class TimerModule extends Module {
     protected static final String BOSS_BAR_COLOUR_KEY = "boss bar colour";
     protected static final String BOSS_BAR_STYLE_KEY = "boss bar style";
     protected static final String USE_ACTION_BAR_KEY = "use action bar";
+    protected static final int TICKS_PER_SECOND = 20;
+    protected static final double PERCENT_MULTIPLIER = 100D;
 
     protected TimerRenderer renderer;
-    protected BukkitTask currentTask = null;
+    protected BukkitTask currentTask;
     protected TimerMessage currentMessage;
     protected long currentTick;
     protected long targetTick;
@@ -75,7 +78,7 @@ public class TimerModule extends Module {
     public void initialize() throws InvalidConfigurationException {
         this.icon.setLore(messages.getRawStrings("lore"));
 
-        List<TimerRenderer> renderers = Lists.newArrayList();
+        final List<TimerRenderer> renderers = Lists.newArrayList();
 
         if (!config.contains(USE_BOSS_BAR_KEY)) {
             config.set(USE_BOSS_BAR_KEY, true);
@@ -111,12 +114,15 @@ public class TimerModule extends Module {
                 }
 
                 // setup the renderer
-                BossBarRenderer bossbar = new BossBarRenderer(Bukkit.createBossBar("", colour, style));
+                final BossBarRenderer bossbar = new BossBarRenderer(Bukkit.createBossBar("", colour, style));
                 Bukkit.getPluginManager().registerEvents(bossbar, plugin);
                 renderers.add(bossbar);
             } catch (NoClassDefFoundError ex) {
                 // happens when boss bar API not implemented, < 1.9
-                plugin.getLogger().severe("Could not load the boss bar timer type, this is only supported in 1.9+, disabling in the config file...");
+                plugin.getLogger().severe(
+                        "Could not load the boss bar timer type, this is only supported in 1.9+, "
+                        + "disabling in the config file..."
+                );
 
                 // turn of the boss bar in the config to stop it happening over again
                 config.set(USE_BOSS_BAR_KEY, false);
@@ -132,20 +138,28 @@ public class TimerModule extends Module {
                 renderers.add(new ActionBarRenderer(new ActionBarMessenger(ProtocolLibrary.getProtocolManager())));
             } catch (NoClassDefFoundError ex) {
                 // Happens when protocollib isn't installed, don't disable in config just give a warning
-                plugin.getLogger().severe("Could not load the action bar timer type, this is only supported when ProtocolLib is installed.");
+                plugin.getLogger().severe(
+                        "Could not load the action bar timer type,"
+                        + "this is only supported when ProtocolLib is installed."
+                );
             }
         }
 
         // No renders worked, throw an error to stop the module from loading
         if (renderers.size() == 0) {
-            throw new InvalidConfigurationException("The timer module can only be used when the Boss bar or Action bar type are loaded");
+            throw new InvalidConfigurationException(
+                    "The timer module can only be used when the Boss bar or Action bar type are loaded"
+            );
         }
 
         // if more than one renderer is chosen pick the first one
         renderer = renderers.get(0);
 
         if (renderers.size() > 1) {
-            plugin.getLogger().warning("More than one style of timer is being used, using only the first one loaded (" + renderer.getClass().getName() + ")");
+            plugin.getLogger().warning(
+                    "More than one style of timer is being used, using only the first one loaded "
+                    + "(" + renderer.getClass().getName() + ")"
+            );
         }
     }
 
@@ -174,7 +188,7 @@ public class TimerModule extends Module {
                     updateMessage();
                 }
             }
-        }.runTaskTimer(plugin, 20, 20);
+        }.runTaskTimer(plugin, TICKS_PER_SECOND, TICKS_PER_SECOND);
 
         renderer.onStart(message.getMessage(targetTick));
     }
@@ -193,9 +207,9 @@ public class TimerModule extends Module {
     public void updateMessage() {
         Preconditions.checkState(currentTask != null, "There is no timer in progress");
 
-        double percentRemaining = 100D - (((double) currentTick / (double) targetTick) * 100D);
+        final double percentRemaining = 100D - (((double) currentTick / (double) targetTick) * PERCENT_MULTIPLIER);
 
-        renderer.onUpdate(compileMessage(), percentRemaining / 100D);
+        renderer.onUpdate(compileMessage(), percentRemaining / PERCENT_MULTIPLIER);
     }
 
     public void cancel() {

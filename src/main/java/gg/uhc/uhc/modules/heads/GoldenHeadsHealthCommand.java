@@ -27,7 +27,6 @@
 
 package gg.uhc.uhc.modules.heads;
 
-import com.google.common.collect.ImmutableMap;
 import gg.uhc.flagcommands.converters.IntegerConverter;
 import gg.uhc.flagcommands.joptsimple.OptionSet;
 import gg.uhc.flagcommands.joptsimple.OptionSpec;
@@ -35,6 +34,8 @@ import gg.uhc.flagcommands.predicates.IntegerPredicates;
 import gg.uhc.flagcommands.tab.FixedValuesTabComplete;
 import gg.uhc.uhc.commands.TemplatedOptionCommand;
 import gg.uhc.uhc.messages.MessageTemplates;
+
+import com.google.common.collect.ImmutableMap;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
@@ -51,8 +52,13 @@ public class GoldenHeadsHealthCommand extends TemplatedOptionCommand {
         super(messages);
         this.module = module;
 
-        spec = parser.nonOptions("How much HP points to heal total with a golden apple")
-                .withValuesConvertedBy(new IntegerConverter().setPredicate(IntegerPredicates.GREATER_THAN_ZERO).setType("Integer > 0"));
+        spec = parser
+                .nonOptions("How much HP points to heal total with a golden apple")
+                .withValuesConvertedBy(
+                        new IntegerConverter()
+                                .setPredicate(IntegerPredicates.GREATER_THAN_ZERO)
+                                .setType("Integer > 0")
+                );
         nonOptionsTabComplete = new FixedValuesTabComplete("4", "5", "6", "7", "8");
 
         silentSpec = parser.accepts("s", "Sends the response only to you and not the entire server");
@@ -60,7 +66,7 @@ public class GoldenHeadsHealthCommand extends TemplatedOptionCommand {
 
     @Override
     protected boolean runCommand(CommandSender sender, OptionSet options) {
-        List<Integer> healths = spec.values(options);
+        final List<Integer> healths = spec.values(options);
 
         if (healths.size() == 0) {
             sender.sendMessage(messages.getRaw("provide number"));
@@ -69,9 +75,12 @@ public class GoldenHeadsHealthCommand extends TemplatedOptionCommand {
 
         module.setHealAmount(healths.get(0));
 
-        boolean silent = options.has(silentSpec);
+        final boolean silent = options.has(silentSpec);
 
-        String response = messages.evalTemplate(silent ? "silent" : "response", ImmutableMap.of("amount", module.getHealAmount()));
+        final String response = messages.evalTemplate(
+                silent ? "silent" : "response",
+                ImmutableMap.of("amount", module.getHealAmount())
+        );
 
         if (options.has(silentSpec)) {
             sender.sendMessage(response);

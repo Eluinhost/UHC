@@ -39,9 +39,15 @@ import java.util.Set;
 
 public class WorldMatcher {
 
+    protected static final Function<String, String> TO_LOWER_CASE = new Function<String, String>() {
+        @Override
+        public String apply(String input) {
+            return input == null ? null : input.toLowerCase();
+        }
+    };
+
     protected static final String WORLDS_KEY = "worlds";
     protected static final String IS_WHITELIST_KEY = "worlds are whitelist";
-
 
     protected Set<String> worlds;
     protected boolean isWhitelist;
@@ -55,7 +61,12 @@ public class WorldMatcher {
             section.set(IS_WHITELIST_KEY, isWhitelistDefault);
         }
 
-        worlds = ImmutableSet.copyOf(Iterables.filter(Iterables.transform(section.getStringList(WORLDS_KEY), TO_LOWER_CASE), Predicates.notNull()));
+        worlds = ImmutableSet.copyOf(
+                Iterables.filter(
+                        Iterables.transform(section.getStringList(WORLDS_KEY), TO_LOWER_CASE),
+                        Predicates.notNull()
+                )
+        );
         isWhitelist = section.getBoolean(IS_WHITELIST_KEY);
     }
 
@@ -64,15 +75,8 @@ public class WorldMatcher {
     }
 
     public boolean worldMatches(String world) {
-        boolean contained = worlds.contains(world.toLowerCase());
+        final boolean contained = worlds.contains(world.toLowerCase());
 
-        return isWhitelist ? contained : !contained;
+        return isWhitelist == contained;
     }
-
-    protected static final Function<String, String> TO_LOWER_CASE = new Function<String, String>() {
-        @Override
-        public String apply(String input) {
-            return input == null ? null : input.toLowerCase();
-        }
-    };
 }

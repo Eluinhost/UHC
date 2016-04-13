@@ -27,6 +27,11 @@
 
 package gg.uhc.uhc.modules.team;
 
+import gg.uhc.uhc.modules.Module;
+import gg.uhc.uhc.modules.ModuleRegistry;
+import gg.uhc.uhc.modules.team.prefixes.Prefix;
+import gg.uhc.uhc.modules.team.prefixes.PrefixColourPredicateConverter;
+
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -35,10 +40,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import gg.uhc.uhc.modules.Module;
-import gg.uhc.uhc.modules.ModuleRegistry;
-import gg.uhc.uhc.modules.team.prefixes.Prefix;
-import gg.uhc.uhc.modules.team.prefixes.PrefixColourPredicateConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -52,6 +53,9 @@ import java.util.Set;
 
 public class TeamModule extends Module {
 
+    protected static final short ICON_COLOUR_ID = 3;
+    protected static final String REMOVED_COMBOS_KEY = "removed team combos";
+
     protected final Scoreboard scoreboard;
 
     protected Map<String, Team> teams;
@@ -62,7 +66,7 @@ public class TeamModule extends Module {
         scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
 
         this.icon.setType(Material.WOOL);
-        this.icon.setDurability((short) 3);
+        this.icon.setDurability(ICON_COLOUR_ID);
         this.icon.setDisplayName(ChatColor.GREEN + "Team Manager");
         this.icon.setWeight(ModuleRegistry.CATEGORY_MISC);
     }
@@ -81,8 +85,8 @@ public class TeamModule extends Module {
 
     @Override
     public void initialize() throws InvalidConfigurationException {
-        if (!config.contains("removed team combos")) {
-            config.set("removed team combos", Lists.newArrayList(
+        if (!config.contains(REMOVED_COMBOS_KEY)) {
+            config.set(REMOVED_COMBOS_KEY, Lists.newArrayList(
                     "RESET",
                     "STRIKETHROUGH",
                     "MAGIC",
@@ -94,11 +98,11 @@ public class TeamModule extends Module {
 
         Predicate<Prefix> isFiltered;
         try {
-            List<String> removedCombos = config.getStringList("removed team combos");
-            List<Predicate<Prefix>> temp = Lists.newArrayListWithCapacity(removedCombos.size());
+            final List<String> removedCombos = config.getStringList(REMOVED_COMBOS_KEY);
+            final List<Predicate<Prefix>> temp = Lists.newArrayListWithCapacity(removedCombos.size());
 
-            PrefixColourPredicateConverter converter = new PrefixColourPredicateConverter();
-            for (String combo : removedCombos) {
+            final PrefixColourPredicateConverter converter = new PrefixColourPredicateConverter();
+            for (final String combo : removedCombos) {
                 temp.add(converter.convert(combo));
             }
 
@@ -114,13 +118,13 @@ public class TeamModule extends Module {
     }
 
     protected void setupTeams(Predicate<Prefix> allowedPrefixes) {
-        ImmutableMap.Builder<String, Team> teamBuilder = ImmutableMap.builder();
+        final ImmutableMap.Builder<String, Team> teamBuilder = ImmutableMap.builder();
 
         // separate colours + formatting codes
-        Set<ChatColor> colours = Sets.newHashSet();
-        Set<ChatColor> formatting = Sets.newHashSet();
+        final Set<ChatColor> colours = Sets.newHashSet();
+        final Set<ChatColor> formatting = Sets.newHashSet();
 
-        for (ChatColor colour : ChatColor.values()) {
+        for (final ChatColor colour : ChatColor.values()) {
             if (colour.isColor()) {
                 colours.add(colour);
             } else {
@@ -128,19 +132,19 @@ public class TeamModule extends Module {
             }
         }
 
-        Set<Set<ChatColor>> formattingCombinations = Sets.powerSet(formatting);
+        final Set<Set<ChatColor>> formattingCombinations = Sets.powerSet(formatting);
 
         int teamId = 1;
-        int totalId = formattingCombinations.size() * colours.size();
-        Joiner joiner = Joiner.on("");
-        String reset = ChatColor.RESET.toString();
+        final int totalId = formattingCombinations.size() * colours.size();
+        final Joiner joiner = Joiner.on("");
+        final String reset = ChatColor.RESET.toString();
 
-        for (Set<ChatColor> combination : formattingCombinations) {
-            for (ChatColor color : colours) {
+        for (final Set<ChatColor> combination : formattingCombinations) {
+            for (final ChatColor color : colours) {
                 if (!allowedPrefixes.apply(new Prefix(color, combination))) continue;
 
-                String prefix = color + joiner.join(combination);
-                String teamName = "UHC-" + teamId;
+                final String prefix = color + joiner.join(combination);
+                final String teamName = "UHC-" + teamId;
 
                 Team team = scoreboard.getTeam(teamName);
 
@@ -159,7 +163,7 @@ public class TeamModule extends Module {
 
         // unregister extra ids
         for (int i = teamId; i <= totalId; i++) {
-            Team team = scoreboard.getTeam("UHC-" + i);
+            final Team team = scoreboard.getTeam("UHC-" + i);
 
             if (team != null) {
                 team.unregister();

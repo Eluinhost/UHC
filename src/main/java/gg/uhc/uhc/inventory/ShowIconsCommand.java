@@ -28,6 +28,7 @@
 package gg.uhc.uhc.inventory;
 
 import gg.uhc.uhc.messages.MessageTemplates;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -44,7 +45,7 @@ public class ShowIconsCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage(messages.getRaw("players only"));
             return true;

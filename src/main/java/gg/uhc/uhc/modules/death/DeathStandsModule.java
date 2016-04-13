@@ -27,11 +27,12 @@
 
 package gg.uhc.uhc.modules.death;
 
+import gg.uhc.uhc.modules.DisableableModule;
+import gg.uhc.uhc.modules.ModuleRegistry;
+
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Maps;
-import gg.uhc.uhc.modules.DisableableModule;
-import gg.uhc.uhc.modules.ModuleRegistry;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -59,6 +60,18 @@ import java.util.Map;
 
 public class DeathStandsModule extends DisableableModule implements Listener {
 
+    protected static final int DEATH_ANIMATION_TIME = 18;
+    protected static final int TICKS_PER_SECOND = 20;
+    protected static final double PLAYER_VELOCITY_MULTIPLIER = 1.5D;
+    protected static final double PLAYER_VELOICY_Y_ADDITIONAL = .2D;
+
+    protected static final Predicate<ItemStack> EMPTY_ITEM = new Predicate<ItemStack>() {
+        @Override
+        public boolean apply(ItemStack input) {
+            return input == null || input.getType() == Material.AIR;
+        }
+    };
+
     protected static final String ICON_NAME = "Death armour stands";
     protected static final String STAND_PREFIX = ChatColor.RED + "RIP: " + ChatColor.RESET;
 
@@ -72,14 +85,14 @@ public class DeathStandsModule extends DisableableModule implements Listener {
     }
 
     protected boolean isProtectedArmourStand(Entity entity) {
-        String customName = entity.getCustomName();
+        final String customName = entity.getCustomName();
 
         return customName != null && customName.startsWith(STAND_PREFIX);
     }
 
     @SuppressWarnings("Duplicates")
     protected Map<EquipmentSlot, ItemStack> getItems(ArmorStand stand) {
-        Map<EquipmentSlot, ItemStack> slots = Maps.newHashMapWithExpectedSize(5);
+        final Map<EquipmentSlot, ItemStack> slots = Maps.newHashMapWithExpectedSize(5);
 
         slots.put(EquipmentSlot.HAND, stand.getItemInHand());
         slots.put(EquipmentSlot.HEAD, stand.getHelmet());
@@ -92,7 +105,7 @@ public class DeathStandsModule extends DisableableModule implements Listener {
 
     @SuppressWarnings("Duplicates")
     protected Map<EquipmentSlot, ItemStack> getItems(PlayerInventory inventory) {
-        Map<EquipmentSlot, ItemStack> slots = Maps.newHashMapWithExpectedSize(5);
+        final Map<EquipmentSlot, ItemStack> slots = Maps.newHashMapWithExpectedSize(5);
 
         slots.put(EquipmentSlot.HAND, inventory.getItemInHand());
         slots.put(EquipmentSlot.HEAD, inventory.getHelmet());
@@ -104,7 +117,7 @@ public class DeathStandsModule extends DisableableModule implements Listener {
     }
 
     protected EnumMap<EquipmentSlot, ItemStack> getSavedSlots(Player player) {
-        for (MetadataValue value : player.getMetadata(StandItemsMetadata.KEY)) {
+        for (final MetadataValue value : player.getMetadata(StandItemsMetadata.KEY)) {
             if (!(value instanceof StandItemsMetadata)) continue;
 
             // remove the metadata
@@ -118,7 +131,7 @@ public class DeathStandsModule extends DisableableModule implements Listener {
     }
 
     protected void removeFirstEquals(Iterable iterable, Object equal) {
-        Iterator iterator = iterable.iterator();
+        final Iterator iterator = iterable.iterator();
         while (iterator.hasNext()) {
             if (iterator.next().equals(equal)) {
                 iterator.remove();
@@ -132,15 +145,15 @@ public class DeathStandsModule extends DisableableModule implements Listener {
     public void on(PlayerDeathEvent event) {
         if (!isEnabled()) return;
 
-        Player player = event.getEntity();
+        final Player player = event.getEntity();
 
         // make the player invisible for the duration of their death animation
-        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 18, 1));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, DEATH_ANIMATION_TIME, 1));
 
-        Location location = player.getLocation();
+        final Location location = player.getLocation();
 
         // create an armour stand at the player
-        ArmorStand stand = player.getWorld().spawn(location.clone().add(0, .2D, 0), ArmorStand.class);
+        final ArmorStand stand = player.getWorld().spawn(location.clone().add(0, .2D, 0), ArmorStand.class);
         stand.setBasePlate(false);
         stand.setArms(true);
 
@@ -155,7 +168,12 @@ public class DeathStandsModule extends DisableableModule implements Listener {
         stand.setHeadPose(new EulerAngle(Math.toRadians(location.getPitch()), 0, 0));
 
         // use the player's velocity as a base and apply it to the stand
-        stand.setVelocity(player.getVelocity().clone().multiply(1.5D).add(new Vector(0D, .2D, 0D)));
+        stand.setVelocity(
+                player.getVelocity()
+                        .clone()
+                        .multiply(PLAYER_VELOCITY_MULTIPLIER)
+                        .add(new Vector(0D, PLAYER_VELOICY_Y_ADDITIONAL, 0D))
+        );
 
         // start with player's existing items in each slot (if exists)
         Map<EquipmentSlot, ItemStack> toSet = getItems(player.getInventory());
@@ -166,10 +184,10 @@ public class DeathStandsModule extends DisableableModule implements Listener {
         // filter out the invalid items
         toSet = Maps.filterValues(toSet, Predicates.not(EMPTY_ITEM));
 
-        List<ItemStack> drops = event.getDrops();
+        final List<ItemStack> drops = event.getDrops();
 
-        for (Map.Entry<EquipmentSlot, ItemStack> entry : toSet.entrySet()) {
-            ItemStack stack = entry.getValue();
+        for (final Map.Entry<EquipmentSlot, ItemStack> entry : toSet.entrySet()) {
+            final ItemStack stack = entry.getValue();
 
             if (stack == null) continue;
 
@@ -179,27 +197,33 @@ public class DeathStandsModule extends DisableableModule implements Listener {
             // set the item on the armour stand in the correct slot
             switch (entry.getKey()) {
                 case HAND:
-                    stand.setItemInHand(stack); break;
+                    stand.setItemInHand(stack);
+                    break;
                 case HEAD:
-                    stand.setHelmet(stack); break;
+                    stand.setHelmet(stack);
+                    break;
                 case CHEST:
-                    stand.setChestplate(stack); break;
+                    stand.setChestplate(stack);
+                    break;
                 case LEGS:
-                    stand.setLeggings(stack); break;
+                    stand.setLeggings(stack);
+                    break;
                 case FEET:
-                    stand.setBoots(stack); break;
+                    stand.setBoots(stack);
+                    break;
+                default:
             }
         }
     }
 
     @EventHandler
     public void on(PlayerArmorStandManipulateEvent event) {
-        ArmorStand stand = event.getRightClicked();
+        final ArmorStand stand = event.getRightClicked();
 
         if (!isProtectedArmourStand(stand)) return;
 
-        ItemStack players = event.getPlayerItem();
-        ItemStack stands = event.getArmorStandItem();
+        final ItemStack players = event.getPlayerItem();
+        final ItemStack stands = event.getArmorStandItem();
 
         // if the player is holding something it will be a swap
         if (players == null || players.getType() != Material.AIR) return;
@@ -225,19 +249,19 @@ public class DeathStandsModule extends DisableableModule implements Listener {
         // always cancel events, we choose when to break the stand
         event.setCancelled(true);
 
-        ArmorStand stand = (ArmorStand) event.getEntity();
-        Location loc = stand.getLocation();
-        World world = stand.getWorld();
+        final ArmorStand stand = (ArmorStand) event.getEntity();
+        final Location loc = stand.getLocation();
+        final World world = stand.getWorld();
 
         // for the first 2 seconds don't allow breaking
         // to avoid accidental breaks after kill
-        if (event.getEntity().getTicksLived() < 40) {
+        if (event.getEntity().getTicksLived() < 2 * TICKS_PER_SECOND) {
             world.playEffect(stand.getEyeLocation(), Effect.WITCH_MAGIC, 0);
             return;
         }
 
         // drop each of it's worn items
-        for (ItemStack stack : Maps.filterValues(getItems(stand), Predicates.not(EMPTY_ITEM)).values()) {
+        for (final ItemStack stack : Maps.filterValues(getItems(stand), Predicates.not(EMPTY_ITEM)).values()) {
             world.dropItemNaturally(loc, stack);
         }
 
@@ -249,11 +273,4 @@ public class DeathStandsModule extends DisableableModule implements Listener {
     protected boolean isEnabledByDefault() {
         return true;
     }
-
-    protected static final Predicate<ItemStack> EMPTY_ITEM = new Predicate<ItemStack>() {
-        @Override
-        public boolean apply(ItemStack input) {
-            return input == null || input.getType() == Material.AIR;
-        }
-    };
 }

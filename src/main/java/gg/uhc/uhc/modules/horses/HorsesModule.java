@@ -29,6 +29,7 @@ package gg.uhc.uhc.modules.horses;
 
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -53,7 +54,7 @@ public class HorsesModule extends DisableableModule implements Listener {
     }
 
     protected void kickOffHorse(Player player) {
-        Entity vehicle = player.getVehicle();
+        final Entity vehicle = player.getVehicle();
         if (vehicle == null) return;
 
         vehicle.eject();
@@ -62,7 +63,7 @@ public class HorsesModule extends DisableableModule implements Listener {
 
     @Override
     public void onDisable() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (final Player player : Bukkit.getOnlinePlayers()) {
             kickOffHorse(player);
         }
     }

@@ -27,9 +27,10 @@
 
 package gg.uhc.uhc.modules.team.requests;
 
+import gg.uhc.uhc.messages.MessageTemplates;
+
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
-import gg.uhc.uhc.messages.MessageTemplates;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -49,15 +50,15 @@ public class RequestListCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        List<TeamRequest> requests = requestManager.getRequests();
+        final List<TeamRequest> requests = requestManager.getRequests();
 
         if (requests.size() == 0) {
             sender.sendMessage(messages.getRaw("no requests"));
             return true;
         }
 
-        for (TeamRequest request : requests) {
-            Map<String, Object> context = ImmutableMap.<String, Object>builder()
+        for (final TeamRequest request : requests) {
+            final Map<String, Object> context = ImmutableMap.<String, Object>builder()
                     .put("id", request.getId())
                     .put("name", request.getOwnerName())
                     .put("members", Joiner.on(", ").join(request.getOthers()))

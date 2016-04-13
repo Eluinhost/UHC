@@ -34,7 +34,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
-public class FunctionalUtil {
+public final class FunctionalUtil {
+
     public static final Predicate<OfflinePlayer> PLAYERS_ONLINE = new Predicate<OfflinePlayer>() {
         @Override
         public boolean apply(OfflinePlayer input) {
@@ -63,10 +64,13 @@ public class FunctionalUtil {
         }
     };
 
-    public static final Function<String, OfflinePlayer> OFFLINE_PLAYER_FROM_NAME = new Function<String, OfflinePlayer>() {
-        @Override
-        public OfflinePlayer apply(String input) {
-            return input == null ? null : Bukkit.getOfflinePlayer(input);
-        }
-    };
+    public static final Function<String, OfflinePlayer> OFFLINE_PLAYER_FROM_NAME
+            = new Function<String, OfflinePlayer>() {
+                @Override
+                public OfflinePlayer apply(String input) {
+                    return input == null ? null : Bukkit.getOfflinePlayer(input);
+                }
+            };
+
+    private FunctionalUtil() {}
 }

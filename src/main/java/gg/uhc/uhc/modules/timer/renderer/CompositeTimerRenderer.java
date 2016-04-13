@@ -37,21 +37,21 @@ public class CompositeTimerRenderer implements TimerRenderer {
 
     @Override
     public void onStart(String message) {
-        for (TimerRenderer renderer : renderers) {
+        for (final TimerRenderer renderer : renderers) {
             renderer.onStart(message);
         }
     }
 
     @Override
     public void onUpdate(String message, double progress) {
-        for (TimerRenderer renderer : renderers) {
+        for (final TimerRenderer renderer : renderers) {
             renderer.onUpdate(message, progress);
         }
     }
 
     @Override
     public void onStop() {
-        for (TimerRenderer renderer : renderers) {
+        for (final TimerRenderer renderer : renderers) {
             renderer.onStop();
         }
     }

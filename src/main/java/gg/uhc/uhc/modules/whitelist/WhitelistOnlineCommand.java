@@ -27,8 +27,9 @@
 
 package gg.uhc.uhc.modules.whitelist;
 
-import com.google.common.collect.ImmutableMap;
 import gg.uhc.uhc.messages.MessageTemplates;
+
+import com.google.common.collect.ImmutableMap;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -49,8 +50,8 @@ public class WhitelistOnlineCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         int count = 0;
 
-        Collection<? extends Player> players = Bukkit.getOnlinePlayers();
-        for (Player player : players) {
+        final Collection<? extends Player> players = Bukkit.getOnlinePlayers();
+        for (final Player player : players) {
             if (!player.isWhitelisted()) {
                 count++;
                 player.setWhitelisted(true);

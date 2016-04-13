@@ -28,6 +28,7 @@
 package gg.uhc.uhc.modules.reset.resetters;
 
 import gg.uhc.uhc.modules.reset.actions.*;
+
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -41,7 +42,7 @@ public class FullPlayerResetter extends PlayerResetter {
 
     @Override
     protected Action getActionForPlayer(Player player) {
-        UUID uuid = player.getUniqueId();
+        final UUID uuid = player.getUniqueId();
 
         return new ComboAction(
                 uuid,

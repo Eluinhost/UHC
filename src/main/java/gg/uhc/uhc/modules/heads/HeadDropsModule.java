@@ -27,12 +27,13 @@
 
 package gg.uhc.uhc.modules.heads;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.death.StandItemsMetadata;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
@@ -50,18 +51,21 @@ import java.util.Random;
 
 public class HeadDropsModule extends DisableableModule implements Listener {
 
-    protected static final Random random = new Random();
+    protected static final Random RANDOM = new Random();
+    protected static final String DROP_CHANCE_KEY = "drop chance";
     protected static final String ICON_NAME = "Head Drops";
+    protected static final double DEFAULT_DROP_CHANCE = 100D;
+    protected static final double PERCENT_MULTIPLIER = 100D;
 
-    protected static final NumberFormat formatter = NumberFormat.getNumberInstance();
+    protected static final NumberFormat FORMATTER = NumberFormat.getNumberInstance();
 
     static {
-        formatter.setMinimumFractionDigits(0);
-        formatter.setMaximumFractionDigits(1);
+        FORMATTER.setMinimumFractionDigits(0);
+        FORMATTER.setMaximumFractionDigits(1);
     }
 
     protected final PlayerHeadProvider playerHeadProvider;
-    protected double dropRate = 0;
+    protected double dropRate;
 
     public HeadDropsModule(PlayerHeadProvider playerHeadProvider) {
         setId("HeadDrops");
@@ -80,14 +84,17 @@ public class HeadDropsModule extends DisableableModule implements Listener {
 
     @Override
     public void initialize() throws InvalidConfigurationException {
-        if (!config.contains("drop chance")) {
-            config.set("drop chance", 100D);
+        if (!config.contains(DROP_CHANCE_KEY)) {
+            config.set(DROP_CHANCE_KEY, DEFAULT_DROP_CHANCE);
         }
 
-        if (!config.isDouble("drop chance") && !config.isInt("drop chance"))
-            throw new InvalidConfigurationException("Invalid value at " + config.getCurrentPath() + ".drop chance (" + config.get("drop chance"));
+        if (!config.isDouble(DROP_CHANCE_KEY) && !config.isInt(DROP_CHANCE_KEY)) {
+            throw new InvalidConfigurationException(
+                    "Invalid value at " + config.getCurrentPath() + ".drop chance (" + config.get(DROP_CHANCE_KEY)
+            );
+        }
 
-        dropRate = config.getDouble("drop chance") / 100D;
+        dropRate = config.getDouble(DROP_CHANCE_KEY) / PERCENT_MULTIPLIER;
 
         super.initialize();
     }
@@ -99,33 +106,36 @@ public class HeadDropsModule extends DisableableModule implements Listener {
     public void setDropRate(double rate) {
         Preconditions.checkArgument(rate >= 0D && rate <= 1D);
         this.dropRate = rate;
-        config.set("drop chance", this.dropRate);
+        config.set(DROP_CHANCE_KEY, this.dropRate);
         saveConfig();
         rerender();
     }
 
     protected List<String> getEnabledLore() {
-        return messages.evalTemplates(ENABLED_LORE_PATH, ImmutableMap.of("rate", formatter.format(dropRate * 100)));
+        return messages.evalTemplates(
+                ENABLED_LORE_PATH,
+                ImmutableMap.of("rate", FORMATTER.format(dropRate * PERCENT_MULTIPLIER))
+        );
     }
 
     @EventHandler(priority = EventPriority.LOW)
     public void on(PlayerDeathEvent event) {
-        if (!isEnabled() || random.nextDouble() < (1D - dropRate)) {
+        if (!isEnabled() || RANDOM.nextDouble() < (1D - dropRate)) {
             // set to an empty map to avoid stale metadata problems
             event.getEntity().setMetadata(StandItemsMetadata.KEY, new StandItemsMetadata(plugin));
             return;
         }
 
-        Player player = event.getEntity();
+        final Player player = event.getEntity();
 
         // create a head
-        ItemStack head = playerHeadProvider.getPlayerHeadItem(player);
+        final ItemStack head = playerHeadProvider.getPlayerHeadItem(player);
 
         // add it to the drops
         event.getDrops().add(head);
 
         // add metadata for the armour stand module to put the helmet on the player and remove from drops
-        EnumMap<EquipmentSlot, ItemStack> standItems = Maps.newEnumMap(EquipmentSlot.class);
+        final EnumMap<EquipmentSlot, ItemStack> standItems = Maps.newEnumMap(EquipmentSlot.class);
         standItems.put(EquipmentSlot.HEAD, head);
 
         player.setMetadata(StandItemsMetadata.KEY, new StandItemsMetadata(plugin, standItems));

@@ -27,10 +27,11 @@
 
 package gg.uhc.uhc.modules.health;
 
-import com.google.common.collect.ImmutableList;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.WorldMatcher;
+
+import com.google.common.collect.ImmutableList;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -85,7 +86,7 @@ public class HealthRegenerationModule extends DisableableModule implements Liste
 
     @Override
     public void onEnable() {
-        for (World world : Bukkit.getWorlds()) {
+        for (final World world : Bukkit.getWorlds()) {
             if (worlds.worldMatches(world)) {
                 world.setGameRuleValue(GAME_RULE, "true");
             }
@@ -94,7 +95,7 @@ public class HealthRegenerationModule extends DisableableModule implements Liste
 
     @Override
     public void onDisable() {
-        for (World world : Bukkit.getWorlds()) {
+        for (final World world : Bukkit.getWorlds()) {
             if (worlds.worldMatches(world)) {
                 world.setGameRuleValue(GAME_RULE, "false");
             }

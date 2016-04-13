@@ -27,9 +27,10 @@
 
 package gg.uhc.uhc.modules.commands;
 
-import com.google.common.collect.Lists;
 import gg.uhc.flagcommands.tab.OptionsTabComplete;
 import gg.uhc.uhc.modules.ModuleRegistry;
+
+import com.google.common.collect.Lists;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.util.StringUtil;
@@ -45,7 +46,8 @@ public class ModuleTabComplete extends OptionsTabComplete {
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args, String complete, String[] others) {
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args,
+                                      String complete, String[] others) {
         return StringUtil.copyPartialMatches(complete, registry.getIds(), Lists.<String>newArrayList());
     }
 }

@@ -51,7 +51,7 @@ public class ClearInventoryAction extends Action {
 
     @Override
     protected void run(Player player) {
-        PlayerInventory inv = player.getInventory();
+        final PlayerInventory inv = player.getInventory();
 
         // clear main inventory
         contents = inv.getContents();
@@ -67,8 +67,8 @@ public class ClearInventoryAction extends Action {
 
         // if they have a crafting inventory open clear items from it too
         // stops storing items in crafting slots bypassing clear inventories
-        InventoryView openInventory = player.getOpenInventory();
-        if(openInventory.getType() == InventoryType.CRAFTING) {
+        final InventoryView openInventory = player.getOpenInventory();
+        if (openInventory.getType() == InventoryType.CRAFTING) {
             crafting = Optional.of(openInventory.getTopInventory().getContents());
             openInventory.getTopInventory().clear();
         } else {
@@ -78,7 +78,7 @@ public class ClearInventoryAction extends Action {
 
     @Override
     protected void revert(Player player) {
-        PlayerInventory inv = player.getInventory();
+        final PlayerInventory inv = player.getInventory();
 
         inv.setContents(contents);
         inv.setArmorContents(armourContents);

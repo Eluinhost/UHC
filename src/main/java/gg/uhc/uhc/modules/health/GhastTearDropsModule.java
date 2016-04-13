@@ -27,9 +27,10 @@
 
 package gg.uhc.uhc.modules.health;
 
-import com.google.common.collect.ImmutableMap;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
+
+import com.google.common.collect.ImmutableMap;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
@@ -81,7 +82,7 @@ public class GhastTearDropsModule extends DisableableModule implements Listener 
     public void on(EntityDeathEvent event) {
         if (isEnabled() || event.getEntity().getType() != EntityType.GHAST) return;
 
-        for (ItemStack drop : event.getDrops()) {
+        for (final ItemStack drop : event.getDrops()) {
             if (drop.getType() == Material.GHAST_TEAR) {
                 drop.setType(Material.GOLD_INGOT);
             }

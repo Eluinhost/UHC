@@ -27,8 +27,9 @@
 
 package gg.uhc.uhc.modules.team;
 
-import com.google.common.collect.ImmutableMap;
 import gg.uhc.uhc.messages.MessageTemplates;
+
+import com.google.common.collect.ImmutableMap;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -56,17 +57,17 @@ public class TeamCoordinatesCommand implements CommandExecutor {
             return true;
         }
 
-        Player player = (Player) sender;
+        final Player player = (Player) sender;
 
-        Team team = module.getScoreboard().getPlayerTeam(player);
+        final Team team = module.getScoreboard().getPlayerTeam(player);
 
         if (team == null) {
             sender.sendMessage(messages.getRaw("not in team"));
             return true;
         }
 
-        Location loc = player.getLocation();
-        Map<String, String> context = ImmutableMap.<String, String>builder()
+        final Location loc = player.getLocation();
+        final Map<String, String> context = ImmutableMap.<String, String>builder()
                 .put("name", player.getName())
                 .put("display name", player.getDisplayName())
                 .put("world", loc.getWorld().getName())
@@ -75,9 +76,9 @@ public class TeamCoordinatesCommand implements CommandExecutor {
                 .put("z", String.valueOf(loc.getBlockZ()))
                 .build();
 
-        String message = messages.evalTemplate("format", context);
+        final String message = messages.evalTemplate("format", context);
 
-        for (OfflinePlayer p : team.getPlayers()) {
+        for (final OfflinePlayer p : team.getPlayers()) {
             if (p.isOnline()) {
                 p.getPlayer().sendMessage(message);
             }

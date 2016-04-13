@@ -33,6 +33,10 @@ import java.util.UUID;
 
 public class FullHungerAction extends Action {
 
+    protected static final int FULL_FOOD_LEVEL = 20;
+    protected static final float FULL_SATURATION_LEVEL = 5.0F;
+    protected static final float FULL_EXHAUSTION_LEVEL = 0F;
+
     protected int level;
     protected float saturation;
     protected float exhaustion;
@@ -49,9 +53,9 @@ public class FullHungerAction extends Action {
         exhaustion = player.getExhaustion();
 
         // max out values
-        player.setFoodLevel(20);
-        player.setSaturation(5.0F);
-        player.setExhaustion(0F);
+        player.setFoodLevel(FULL_FOOD_LEVEL);
+        player.setSaturation(FULL_SATURATION_LEVEL);
+        player.setExhaustion(FULL_EXHAUSTION_LEVEL);
     }
 
     @Override

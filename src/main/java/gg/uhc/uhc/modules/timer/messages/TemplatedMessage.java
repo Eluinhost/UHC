@@ -27,9 +27,10 @@
 
 package gg.uhc.uhc.modules.timer.messages;
 
+import gg.uhc.uhc.util.TimeUtil;
+
 import com.github.mustachejava.Mustache;
 import com.google.common.collect.ImmutableMap;
-import gg.uhc.uhc.util.TimeUtil;
 
 import java.io.StringWriter;
 
@@ -45,8 +46,14 @@ public class TemplatedMessage implements TimerMessage {
 
     @Override
     public String getMessage(long secondsRemaining) {
-        StringWriter writer = new StringWriter();
-        template.execute(writer, ImmutableMap.of("message", message, "timer", TimeUtil.secondsToString(secondsRemaining)));
+        final StringWriter writer = new StringWriter();
+        template.execute(
+                writer,
+                ImmutableMap.of(
+                        "message", message,
+                        "timer", TimeUtil.secondsToString(secondsRemaining)
+                )
+        );
         return writer.getBuffer().toString();
     }
 }

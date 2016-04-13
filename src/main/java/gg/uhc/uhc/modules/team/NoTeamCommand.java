@@ -27,12 +27,13 @@
 
 package gg.uhc.uhc.modules.team;
 
+import gg.uhc.uhc.messages.MessageTemplates;
+
 import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
-import gg.uhc.uhc.messages.MessageTemplates;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -44,6 +45,13 @@ public class NoTeamCommand implements CommandExecutor {
     protected final MessageTemplates messages;
     protected final TeamModule module;
 
+    protected final Predicate<Player> hasTeam = new Predicate<Player>() {
+        @Override
+        public boolean apply(Player input) {
+            return module.getScoreboard().getPlayerTeam(input) != null;
+        }
+    };
+
     public NoTeamCommand(MessageTemplates messages, TeamModule module) {
         this.messages = messages;
         this.module = module;
@@ -51,7 +59,7 @@ public class NoTeamCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        Iterable<? extends Player> noTeam = Iterables.filter(Bukkit.getOnlinePlayers(), Predicates.not(HAS_TEAM));
+        final Iterable<? extends Player> noTeam = Iterables.filter(Bukkit.getOnlinePlayers(), Predicates.not(hasTeam));
 
         String noTeamNames = Joiner.on(", ").join(Iterables.transform(noTeam, FunctionalUtil.PLAYER_NAME_FETCHER));
 
@@ -60,11 +68,4 @@ public class NoTeamCommand implements CommandExecutor {
         sender.sendMessage(messages.evalTemplate("list", ImmutableMap.of("players", noTeamNames)));
         return true;
     }
-
-    protected final Predicate<Player> HAS_TEAM = new Predicate<Player>() {
-        @Override
-        public boolean apply(Player input) {
-            return module.getScoreboard().getPlayerTeam(input) != null;
-        }
-    };
 }
