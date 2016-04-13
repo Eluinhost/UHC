@@ -160,7 +160,7 @@
         <module name="AbbreviationAsWordInName">
             <property name="ignoreFinal" value="false"/>
             <property name="allowedAbbreviationLength" value="1"/>
-            <property name="allowedAbbreviations" value="XZ,XYZ,UUID,UHC,XP,NBT,PVP"/>
+            <property name="allowedAbbreviations" value="XZ,XYZ,UUID,UHC,XP,NBT,PVP,PM"/>
         </module>
         <module name="CatchParameterName">
             <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9]*$"/>
