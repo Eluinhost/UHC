@@ -30,14 +30,31 @@ package gg.uhc.uhc.modules.recipes;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.ModuleRegistry;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterators;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapedRecipe;
 
 public class NotchApplesModule extends DisableableModule implements Listener {
+
+    protected static final short NOTCH_APPLE_DURABILITY = 1;
+    protected static final ItemStack NOTCH_APPLE_ITEM = new ItemStack(Material.GOLDEN_APPLE, 1, NOTCH_APPLE_DURABILITY);
+
+    protected static final ShapedRecipe NOTCH_APPLE_RECIPE = new ShapedRecipe(NOTCH_APPLE_ITEM)
+            .shape("GGG", "GAG", "GGG")
+            .setIngredient('G', Material.GOLD_BLOCK)
+            .setIngredient('A', Material.APPLE);
+
+    protected static final Predicate<Recipe> IS_NOTCH_APPLE_RECIPE = new Predicate<Recipe>() {
+        @Override
+        public boolean apply(Recipe recipe) {
+            return recipe.getResult().equals(NOTCH_APPLE_ITEM);
+        }
+    };
 
     protected static final String ICON_NAME = "Notch apples";
 
@@ -46,25 +63,23 @@ public class NotchApplesModule extends DisableableModule implements Listener {
 
         this.iconName = ICON_NAME;
         this.icon.setType(Material.GOLDEN_APPLE);
-        this.icon.setDurability((short) 1);
+        this.icon.setDurability(NOTCH_APPLE_DURABILITY);
         this.icon.setWeight(ModuleRegistry.CATEGORY_RECIPIES);
+    }
+
+    @Override
+    protected void onEnable() {
+        final boolean recipeExists = Iterators.any(Bukkit.recipeIterator(), IS_NOTCH_APPLE_RECIPE);
+        if (!recipeExists) Bukkit.addRecipe(NOTCH_APPLE_RECIPE);
+    }
+
+    @Override
+    protected void onDisable() {
+        Iterators.removeIf(Bukkit.recipeIterator(), IS_NOTCH_APPLE_RECIPE);
     }
 
     @Override
     protected boolean isEnabledByDefault() {
         return false;
-    }
-
-    @EventHandler
-    public void on(PrepareItemCraftEvent event) {
-        if (isEnabled()) return;
-
-        final Recipe recipe = event.getRecipe();
-
-        if (recipe.getResult().getType() != Material.GOLDEN_APPLE) return;
-
-        if (recipe.getResult().getDurability() == 1) {
-            event.getInventory().setResult(new ItemStack(Material.AIR));
-        }
     }
 }
