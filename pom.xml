@@ -30,7 +30,25 @@
             <id>dmulloy2-repo</id>
             <url>http://repo.dmulloy2.net/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>uhcgg-releases</id>
+            <name>uhc.gg-releases</name>
+            <url>http://repo.uhc.gg/libs-release-local</url>
+        </repository>
     </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>uhcgg-releases</id>
+            <name>uhc.gg-releases</name>
+            <url>http://repo.uhc.gg/libs-release-local</url>
+        </repository>
+        <snapshotRepository>
+            <id>uhcgg-snapshots</id>
+            <name>uhc.gg-snapshots</name>
+            <url>http://repo.uhc.gg/libs-snapshot-local</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
