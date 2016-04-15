@@ -3,13 +3,19 @@ jdk:
 - oraclejdk8
 - oraclejdk7
 - openjdk7
-script: mvn test -DfailOnCheckstyleViolation=true
 branches:
   only:
   - master
   - /^releases\/.*$/
-after_success:
-- mvn deploy --settings travis-settings.xml
+script: mvn test -DfailOnCheckstyleViolation=true
+after_script:
+  - |
+      declare exitCode
+      curl -sSL https://raw.githubusercontent.com/alrra/travis-after-all/1.4.4/lib/travis-after-all.js | node
+      exitCode=$?
+      if [ $exitCode -eq 0 ]; then
+          mvn deploy --settings travis-settings.xml
+      fi
 env:
   global:
   - secure: IETN44Hi9UW0oh/92aPRlOKUItclJaTgw0g5IN876+JPWistyWANlKYKz5kj3Ahb+pv0E2SXJ/WPtD5CG3gjBuhxW4jQanXuXbP9WL2dDKuhoYCbXlUTXJgR2qRK/XmTjIjwZdMhRgL5ctwmewxeTiVUDzHSWaSiP0iEu2YZU9IxdGw66eudA/6KLxGA2TMnqFgHi7KUfekbjDfWQTi4uYz43a7oq6N1RSn3n3ZB1eYicmR11eMgvAHY3P7NuESTyN2eA4Rjm92J/r5ByhJcUK1YwroW3CaZItFhABu1B1uzcOOIX4iC0qxxPlMSGd9BnSZMUPSKfwOVm46s7O0zfjF+331HUcIX7lDJN6wNzd0a5zPW5yBoaLXxk7pP8gOxy3ajySY7+UZ5C0m5WY+WLxolLGtirAdK2R2GkFcZPMomFII5etQTJGQCVjs5Eeg4XLE8z8u3wEVsIdXw3MeNSqu9I/jiik/GucmD8RGT6DNN08F6akN+4dXzTXiA5bPZqis+EEXJDncfE3FUGQPjYwngImlJfhWDPwyPE8HILjGrcOwDmbzJZrmZxA6KNA3YsTpaF6z/hyrAmsWitecb/SlfdfWDdANJRWaO4LOA+duufISOElxiFw3RAEhi6z88AePdvG6mYrey/Rl0smpRsu/SoDGtQMElsJErljROuFQ=

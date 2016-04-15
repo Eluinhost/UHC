@@ -8,5 +8,10 @@
             <username>${env.REPO_USERNAME}</username>
             <password>${env.REPO_PASSWORD}</password>
         </server>
+        <server>
+            <id>uhcgg-snapshots</id>
+            <username>${env.REPO_USERNAME}</username>
+            <password>${env.REPO_PASSWORD}</password>
+        </server>
     </servers>
 </settings>
