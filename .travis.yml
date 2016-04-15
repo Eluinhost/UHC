@@ -4,3 +4,6 @@ jdk:
   - oraclejdk7
   - openjdk7
 script: mvn test -DfailOnCheckstyleViolation=true
+branches:
+  only:
+    - master
