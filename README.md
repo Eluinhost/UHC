@@ -5,6 +5,8 @@ This is a plugin to help run games of UltraHardcore.
 
 This plugin is developed for Spigot 1.8+ and Java 7+.
 
+Master [![Master Branch Build Status](https://travis-ci.org/Eluinhost/UHC.svg?branch=master)](https://travis-ci.org/Eluinhost/UHC)
+
 ## Other Useful Plugins
 
 - [FancyFreeze](https://github.com/Eluinhost/FancyFreeze/releases) - Freezes players in an area where they can't move
