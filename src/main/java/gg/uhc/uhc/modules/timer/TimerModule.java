@@ -32,9 +32,7 @@ import gg.uhc.flagcommands.joptsimple.ValueConversionException;
 import gg.uhc.uhc.modules.Module;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.timer.messages.TimerMessage;
-import gg.uhc.uhc.modules.timer.renderer.ActionBarRenderer;
-import gg.uhc.uhc.modules.timer.renderer.BossBarRenderer;
-import gg.uhc.uhc.modules.timer.renderer.TimerRenderer;
+import gg.uhc.uhc.modules.timer.renderer.*;
 import gg.uhc.uhc.util.ActionBarMessenger;
 
 import com.comphenix.protocol.ProtocolLibrary;
@@ -57,6 +55,9 @@ public class TimerModule extends Module {
     protected static final String BOSS_BAR_COLOUR_KEY = "boss bar colour";
     protected static final String BOSS_BAR_STYLE_KEY = "boss bar style";
     protected static final String USE_ACTION_BAR_KEY = "use action bar";
+    protected static final String USE_TAB_LIST_KEY = "use tab list";
+    protected static final String TAB_LIST_POSITION_KEY = "tab list position";
+
     protected static final int TICKS_PER_SECOND = 20;
     protected static final double PERCENT_MULTIPLIER = 100D;
 
@@ -144,6 +145,36 @@ public class TimerModule extends Module {
                 );
             }
         }
+
+        if (!config.contains(USE_TAB_LIST_KEY)) {
+            config.set(USE_TAB_LIST_KEY, true);
+        }
+
+        if (config.getBoolean(USE_TAB_LIST_KEY)) {
+            if (!config.contains(TAB_LIST_POSITION_KEY)) {
+                config.set(TAB_LIST_POSITION_KEY, TabListPosition.BOTTOM.name());
+            }
+
+            // attempt to parse the style
+            TabListPosition position;
+            try {
+                position = EnumConverter.forEnum(TabListPosition.class).convert(config.getString(TAB_LIST_POSITION_KEY));
+            } catch (ValueConversionException ex) {
+                plugin.getLogger().warning("Invalid postion for tab list, switching to BOTTOM");
+                config.set(TAB_LIST_POSITION_KEY, TabListPosition.BOTTOM.name());
+                position = TabListPosition.BOTTOM;
+            }
+
+            try {
+                renderers.add(new TabListRenderer(plugin, ProtocolLibrary.getProtocolManager(), position));
+            } catch (NoClassDefFoundError ex) {
+                // Happens when protocollib isn't installed, don't disable in config just give a warning
+                plugin.getLogger().severe(
+                        "Could not load the tab list timer type, this is only supported when ProtocolLib is installed."
+                );
+            }
+        }
+
 
         // No renders worked, throw an error to stop the module from loading
         if (renderers.size() == 0) {
