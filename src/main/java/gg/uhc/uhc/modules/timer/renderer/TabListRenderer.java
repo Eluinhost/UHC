@@ -54,6 +54,8 @@ public class TabListRenderer implements TimerRenderer {
         CLEAR_BAR_JSON
     };
 
+    protected WrappedChatComponent lastSentMessage = null;
+
     public TabListRenderer(Plugin plugin, ProtocolManager manager, TabListPosition position) {
         this.manager = manager;
 
@@ -70,25 +72,38 @@ public class TabListRenderer implements TimerRenderer {
             public void onPacketSending(PacketEvent event) {
                 final StructureModifier<WrappedChatComponent> components = event.getPacket().getChatComponents();
 
-                lastInterceptedMessages[TOP_INDEX] =
-                        Optional.fromNullable(components.readSafely(TOP_INDEX)).or(CLEAR_BAR_JSON);
-                lastInterceptedMessages[BOTTOM_INDEX] =
-                        Optional.fromNullable(components.readSafely(BOTTOM_INDEX)).or(CLEAR_BAR_JSON);
+                final WrappedChatComponent[] intercepted = new WrappedChatComponent[] {
+                        Optional
+                                .fromNullable(components.readSafely(TOP_INDEX))
+                                .or(CLEAR_BAR_JSON),
+                        Optional
+                                .fromNullable(components.readSafely(BOTTOM_INDEX))
+                                .or(CLEAR_BAR_JSON)
+                };
+
+                // Only write if it wasn't one of our timer messages
+                if (lastSentMessage != null && !intercepted[writeIndex].equals(lastSentMessage)) {
+                    lastInterceptedMessages[TOP_INDEX] = intercepted[TOP_INDEX];
+                    lastInterceptedMessages[BOTTOM_INDEX] = intercepted[BOTTOM_INDEX];
+                }
             }
         });
     }
 
     protected void sendBarMessage(String message) {
+        lastSentMessage = WrappedChatComponent.fromText(message);
         final PacketContainer container = this.manager.createPacket(PACKET_TYPE);
 
         container.getChatComponents()
-                .write(writeIndex, WrappedChatComponent.fromText(message))
+                .write(writeIndex, lastSentMessage)
                 .write(clearIndex, lastInterceptedMessages[clearIndex]);
 
         this.manager.broadcastServerPacket(container);
     }
 
     protected void removeBar() {
+        lastSentMessage = null;
+
         final PacketContainer container = this.manager.createPacket(PACKET_TYPE);
 
         container.getChatComponents()
