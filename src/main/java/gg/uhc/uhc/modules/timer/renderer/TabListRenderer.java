@@ -82,7 +82,7 @@ public class TabListRenderer implements TimerRenderer {
                 };
 
                 // Only write if it wasn't one of our timer messages
-                if (lastSentMessage != null && !intercepted[writeIndex].equals(lastSentMessage)) {
+                if (lastSentMessage == null || !intercepted[writeIndex].equals(lastSentMessage)) {
                     lastInterceptedMessages[TOP_INDEX] = intercepted[TOP_INDEX];
                     lastInterceptedMessages[BOTTOM_INDEX] = intercepted[BOTTOM_INDEX];
                 }
