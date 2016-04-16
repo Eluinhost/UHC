@@ -29,9 +29,7 @@ package gg.uhc.uhc.modules.timer.renderer;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.events.*;
 import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.google.common.base.Optional;
@@ -54,7 +52,7 @@ public class TabListRenderer implements TimerRenderer {
         CLEAR_BAR_JSON
     };
 
-    protected WrappedChatComponent lastSentMessage = null;
+    protected WrappedChatComponent lastSentMessage;
 
     public TabListRenderer(Plugin plugin, ProtocolManager manager, TabListPosition position) {
         this.manager = manager;
@@ -67,27 +65,7 @@ public class TabListRenderer implements TimerRenderer {
             clearIndex = TOP_INDEX;
         }
 
-        manager.addPacketListener(new PacketAdapter(plugin, PACKET_TYPE) {
-            @Override
-            public void onPacketSending(PacketEvent event) {
-                final StructureModifier<WrappedChatComponent> components = event.getPacket().getChatComponents();
-
-                final WrappedChatComponent[] intercepted = new WrappedChatComponent[] {
-                        Optional
-                                .fromNullable(components.readSafely(TOP_INDEX))
-                                .or(CLEAR_BAR_JSON),
-                        Optional
-                                .fromNullable(components.readSafely(BOTTOM_INDEX))
-                                .or(CLEAR_BAR_JSON)
-                };
-
-                // Only write if it wasn't one of our timer messages
-                if (lastSentMessage == null || !intercepted[writeIndex].equals(lastSentMessage)) {
-                    lastInterceptedMessages[TOP_INDEX] = intercepted[TOP_INDEX];
-                    lastInterceptedMessages[BOTTOM_INDEX] = intercepted[BOTTOM_INDEX];
-                }
-            }
-        });
+        manager.addPacketListener(new TabListListener(plugin));
     }
 
     protected void sendBarMessage(String message) {
@@ -126,5 +104,31 @@ public class TabListRenderer implements TimerRenderer {
     @Override
     public void onStop() {
         removeBar();
+    }
+
+    class TabListListener extends PacketAdapter {
+        TabListListener(Plugin plugin) {
+            super(plugin, PACKET_TYPE);
+        }
+
+        @Override
+        public void onPacketSending(PacketEvent event) {
+            final StructureModifier<WrappedChatComponent> components = event.getPacket().getChatComponents();
+
+            final WrappedChatComponent[] intercepted = new WrappedChatComponent[] {
+                    Optional
+                            .fromNullable(components.readSafely(TOP_INDEX))
+                            .or(CLEAR_BAR_JSON),
+                    Optional
+                            .fromNullable(components.readSafely(BOTTOM_INDEX))
+                            .or(CLEAR_BAR_JSON)
+            };
+
+            // Only write if it wasn't one of our timer messages
+            if (lastSentMessage == null || !intercepted[writeIndex].equals(lastSentMessage)) {
+                lastInterceptedMessages[TOP_INDEX] = intercepted[TOP_INDEX];
+                lastInterceptedMessages[BOTTOM_INDEX] = intercepted[BOTTOM_INDEX];
+            }
+        }
     }
 }
