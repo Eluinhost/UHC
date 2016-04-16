@@ -6,17 +6,17 @@ jdk:
 branches:
   only:
   - master
-  - /^releases\/.*$/
+  - "/^releases\\/.*$/"
 script: mvn test -DfailOnCheckstyleViolation=true
 after_script:
-  - |
-      declare exitCode
-      curl -sSL https://raw.githubusercontent.com/alrra/travis-after-all/1.4.4/lib/travis-after-all.js | node
-      exitCode=$?
-      if [ $exitCode -eq 0 ]; then
-          mvn deploy --settings travis-settings.xml
-      fi
+- |
+  declare exitCode
+  curl -sSL https://raw.githubusercontent.com/alrra/travis-after-all/1.4.4/lib/travis-after-all.js | node
+  exitCode=$?
+  if [ $exitCode -eq 0 ]; then
+      mvn deploy --settings travis-settings.xml
+  fi
 env:
   global:
-  - secure: IETN44Hi9UW0oh/92aPRlOKUItclJaTgw0g5IN876+JPWistyWANlKYKz5kj3Ahb+pv0E2SXJ/WPtD5CG3gjBuhxW4jQanXuXbP9WL2dDKuhoYCbXlUTXJgR2qRK/XmTjIjwZdMhRgL5ctwmewxeTiVUDzHSWaSiP0iEu2YZU9IxdGw66eudA/6KLxGA2TMnqFgHi7KUfekbjDfWQTi4uYz43a7oq6N1RSn3n3ZB1eYicmR11eMgvAHY3P7NuESTyN2eA4Rjm92J/r5ByhJcUK1YwroW3CaZItFhABu1B1uzcOOIX4iC0qxxPlMSGd9BnSZMUPSKfwOVm46s7O0zfjF+331HUcIX7lDJN6wNzd0a5zPW5yBoaLXxk7pP8gOxy3ajySY7+UZ5C0m5WY+WLxolLGtirAdK2R2GkFcZPMomFII5etQTJGQCVjs5Eeg4XLE8z8u3wEVsIdXw3MeNSqu9I/jiik/GucmD8RGT6DNN08F6akN+4dXzTXiA5bPZqis+EEXJDncfE3FUGQPjYwngImlJfhWDPwyPE8HILjGrcOwDmbzJZrmZxA6KNA3YsTpaF6z/hyrAmsWitecb/SlfdfWDdANJRWaO4LOA+duufISOElxiFw3RAEhi6z88AePdvG6mYrey/Rl0smpRsu/SoDGtQMElsJErljROuFQ=
-  - secure: bkz8ZNrkIRL4HiYbNETumjh5cdrOlapnpkmXFQji+IvuAtDPRqfm+NvdMxr4A7DgxPS0uUrw5eQcdwlH5IEjyvIsxnSGUa0mCl+J9X7aEOFeNo4so+kzZCwMAt/+0fGJ+K2prjFcShG4frrHM4gZdKjMb7BkmJ/Be7jc3vkEsN58rXCeAzK6bsUY3jCNMg2DLoE7qrBmIoTX1up+oJMH//wDaejxYYtHdmdVP2OGSfq5k+4zh4QDnfGrlKkQ084Pjuc0mT/IipDEVJ1ykv1fUo2+wZ9Iot5D5SLMGRVJZoDsqMoOghowmjbwV5yKD0BSWEe9+kzvfOacNbTKOPfkcXTVTDfL63HboRaGCZ79olq2thSWGjoycL2RRFCoCLES6uQBBn2yLFlf31PQD76z3+0Kw/Z3B8Y9iquYCHXo2TsGPQ4cHP7i9YkbCrRkJjOozkrVITOGcdlOrU/xQGuDykrSGJY423Iz6BCqgMdPplNhkryow1cXzUHak6iUIpAlSdWUOpPAqhBbl1mySx7Ub37EO6N/L+F4SQffDm8B+ulDuuf+3ljE6nLt4LUgCwpvor7AqBciFgNqH8ypT758nHo5G9azd3apDC5Vy08WYfccGrrBA9XkRi7WWMbi6w0fPpa642wAuLg+Ljn+pRZPV+9v+Y6S3mkHl+Mp6TGMbOw=
+  - secure: Z/M7S6BnGK7s7qylRKIdVTfIU9esjlpeL74NF1mfLGPWioKKbLKxfv9eckFrzdRT3om/D+/3OZyumPUAXVKxrxQKp+h+awlJAp6ClBXz2LqavCmr8N35TLCepHQZCbFE/vOvEVeLzkmxHGqp7EeflakDA3LYRBo7iy2UN+z4jmDzQoOhA5qjHwd+bIHzDymp4WeONt3B9GzPwr7ByoTJ33dtSli6sESJVK38ND32LJxH92oGObL0O82nSByG3gupCsMrY+4nff1spbf7rBOvSYng5zx4UqueMbjR0VprDc1fRvL9OArrbg9dSyhAmDH1d6MeBRyKMlzAv5ec0oEDs1JKeqCSGGOo4VpuuFm6RjTWi7vgwZNVuAKcd4y0xuy9nY22hBTtxC3anA3vIifobWqjQpR2cgvkpJFL92zqKLpavXF4UNT1elSNoA3bZC0ORryFEBQKK+JIXCn33yjzJBv8YNxuVpo/Z4jHZlPKpYz2pTBatthvk9+OD1Yr5rszYQnbyQtU8QmwD4oO5ArABdClopJwbykGIV0VnXkrlC/jRuDV4shmXkJS5guai0/WhmEbxEX2Fo3/VwSCzFzBeSSotR4ERNv6oPFZdEtpE25pMeSCoKliT0eTYbGme5ZUn6ZUzUHi8yqc+pVmkvSwMo8uqhty0eEOQaYL8CKi2Vg=
+  - secure: EkMSqW8xx7krseXh7H4XN/tGOk/r+4LEtbaQMIgNlcBBdV/KyXSs2KDGyeipOSKhd5AV8Zze5n+pKXTNPFPJaNozfzHgg5wvxWoIA2ZRaK1bu8PC3fAV7Iv1w4scgndGHZl/+WrcMyOvnO2i00O5nNI61DK5D3STYvsU1T8/2Z0O6RfxZQUxR879E1y6PCPTsVlu80lshjVXScy5nrK3kYszQ9tKub+jCgF7rYdK9vvbdcHHB1skVxW2KIzJaphY3urtZS+23PSN67ZYo+RBxDYTEIwVKb+bxUWZDYBwh4gWr8+7bRY4LsE/gVxRp+YOpO9l51Ve98Xro6zQjRswn+qcoic3lB9C38OZaGnnmUy/2PZTRzIm+NpEwY50DCCqdgmbqtCoKK+dmlQ3RWDyMctTacaNJ1bG8Nd/WOG2sFt/dnOknTaDutzPTVdLpdlatKx4zeZWU3MV3u+ZUFxQ1NzV5Zz+FAhezwXJFR+FbKYza/XYFvOHCXsT8aw4j74Vf6UVCRmASMzCIxVLk1m+uG7TyTR/cU4X5nLnDEZEehwfJJ+nmVdwq2i3KmiuC1VJsZ06yjuvTfJMopFmS6IhxBnfaJU+luqdOLhZrs0eKn/JCzAq1FkUQxqdneYtG2kLqlvc3c0Xpq7khkQEx4zHtyW7o6u0K50vpZBhukoTWfk=
