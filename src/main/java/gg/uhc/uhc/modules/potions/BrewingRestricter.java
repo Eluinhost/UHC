@@ -34,10 +34,7 @@ import com.google.common.collect.*;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
-import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -84,6 +81,11 @@ public class BrewingRestricter implements Listener {
             ),
             Predicates.not(IS_NULL_OR_EMPTY)
         );
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void on(BrewEvent event) {
+        // TODO we need to run state checks here too to 'pop' out disallowed output items/input items
     }
 
     // cancel hoppers moving disallowed items into the stand
