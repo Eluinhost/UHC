@@ -49,7 +49,7 @@ public class BrewingRestricter implements Listener {
     public static final Set<Integer> INGREDIENT_SLOTS = ImmutableSet.of(3);
     public static final Set<Integer> OUTPUT_SLOTS = ImmutableSet.of(0, 1, 2);
 
-    protected final static Predicate<ItemStack> IS_NULL_OR_EMPTY = new Predicate<ItemStack>() {
+    protected static final Predicate<ItemStack> IS_NULL_OR_EMPTY = new Predicate<ItemStack>() {
         @Override
         public boolean apply(ItemStack itemStack) {
             return itemStack == null || itemStack.getType() == Material.AIR;
@@ -95,7 +95,7 @@ public class BrewingRestricter implements Listener {
         boolean isIngredient = true;
         boolean isOutput = true;
 
-        BrewerInventory inv = (BrewerInventory) event.getDestination();
+        final BrewerInventory inv = (BrewerInventory) event.getDestination();
 
         if (isIngredient && !isIngredientItemAllowed(event.getItem(), getOutputSlots(inv))) {
             event.setCancelled(true);
@@ -113,16 +113,18 @@ public class BrewingRestricter implements Listener {
     public void on(InventoryDragEvent event) {
         if (event.getInventory().getType() != InventoryType.BREWING) return;
 
-        BrewerInventory inv = (BrewerInventory) event.getInventory();
-        ItemStack cursorStack = event.getOldCursor();
-        Set<Integer> affectedSlots = Sets.newHashSet(event.getRawSlots());
+        final BrewerInventory inv = (BrewerInventory) event.getInventory();
+        final ItemStack cursorStack = event.getOldCursor();
+        final Set<Integer> affectedSlots = Sets.newHashSet(event.getRawSlots());
 
-        if (Sets.intersection(INGREDIENT_SLOTS, affectedSlots).size() > 0 && !isIngredientItemAllowed(cursorStack, getOutputSlots(inv))) {
+        if (Sets.intersection(INGREDIENT_SLOTS, affectedSlots).size() > 0
+                && !isIngredientItemAllowed(cursorStack, getOutputSlots(inv))) {
             event.setCancelled(true);
             return;
         }
 
-        if (Sets.intersection(OUTPUT_SLOTS, affectedSlots).size() > 0 && !isOutputItemAllowed(cursorStack, inv.getIngredient())) {
+        if (Sets.intersection(OUTPUT_SLOTS, affectedSlots).size() > 0
+                && !isOutputItemAllowed(cursorStack, inv.getIngredient())) {
             event.setCancelled(true);
             return;
         }
@@ -136,7 +138,7 @@ public class BrewingRestricter implements Listener {
         // clicked outside of the window
         if (event.getClickedInventory() == null) return;
 
-        InventoryType clicked = event.getClickedInventory().getType();
+        final InventoryType clicked = event.getClickedInventory().getType();
 
         // get any relevant stack to check the type of based on the action took
         ItemStack relevant = null;
@@ -162,6 +164,7 @@ public class BrewingRestricter implements Listener {
                     relevant = event.getWhoClicked().getInventory().getItem(event.getHotbarButton());
                 }
                 break;
+            default:
         }
 
         // TODO check item
