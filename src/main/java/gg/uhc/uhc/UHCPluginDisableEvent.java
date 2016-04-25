@@ -30,7 +30,7 @@ package gg.uhc.uhc;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class PluginDisableEvent extends Event {
+public class UHCPluginDisableEvent extends Event {
     private static final HandlerList HANDLERS = new HandlerList();
 
     @Override
