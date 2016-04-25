@@ -172,7 +172,7 @@ public class UHC extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        Bukkit.getPluginManager().callEvent(new PluginDisableEvent());
+        Bukkit.getPluginManager().callEvent(new UHCPluginDisableEvent());
     }
 
     protected void setupTeamCommands() {
