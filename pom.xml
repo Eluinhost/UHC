@@ -60,6 +60,13 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>gg.uhc</groupId>
+            <artifactId>github-release-checker</artifactId>
+            <version>1.1.0</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>com.github.spullara.mustache.java</groupId>
             <artifactId>compiler</artifactId>
             <version>0.8.18</version>
@@ -199,6 +206,10 @@
                         <relocation>
                             <pattern>gg.uhc.flagcommands</pattern>
                             <shadedPattern>${project.groupId}.${project.artifactId}.flagcommands</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>gg.uhc.githubreleasechecker</pattern>
+                            <shadedPattern>${project.groupId}.${project.artifactId}.githubreleasechecker</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>

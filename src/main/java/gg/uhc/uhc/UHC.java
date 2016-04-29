@@ -88,6 +88,7 @@ import java.io.IOException;
 public class UHC extends JavaPlugin {
 
     protected static final int TICKS_PER_SECOND = 20;
+    protected static final int TICKS_PER_HOUR = TICKS_PER_SECOND * 3600;
 
     protected ModuleRegistry registry;
     protected DebouncedRunnable configSaver;
@@ -115,6 +116,8 @@ public class UHC extends JavaPlugin {
             setEnabled(false);
             return;
         }
+
+        setupUpdateManager();
 
         baseCommandMessages = new SubsectionMessageTemplates(baseMessages, "commands");
         dummyCommands = new DummyCommandFactory(baseCommandMessages);
@@ -351,5 +354,21 @@ public class UHC extends JavaPlugin {
         }
 
         return user.withFallback(fallback).resolve(ConfigResolveOptions.noSystem());
+    }
+
+    protected void setupUpdateManager() {
+        if (!getConfig().contains("run update check")) {
+            getConfig().set("run update check", true);
+        }
+
+        if (getConfig().getBoolean("run update check")) {
+            final UpdateManager manager = new UpdateManager(
+                this,
+                new SubsectionMessageTemplates(baseMessages, "update available")
+            );
+            // register for events so that it can notify on join
+            getServer().getPluginManager().registerEvents(manager, this);
+            getServer().getScheduler().runTaskTimerAsynchronously(this, manager, 0, TICKS_PER_SECOND * TICKS_PER_HOUR);
+        }
     }
 }
