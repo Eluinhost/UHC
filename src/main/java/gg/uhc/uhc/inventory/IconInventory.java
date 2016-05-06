@@ -27,7 +27,7 @@
 
 package gg.uhc.uhc.inventory;
 
-import gg.uhc.uhc.UHCPluginDisableEvent;
+import gg.uhc.uhc.ShutdownRegistry;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -47,7 +47,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public class IconInventory implements IconUpdateListener, Listener {
+public class IconInventory implements IconUpdateListener, Listener, ShutdownRegistry.ShutdownListener {
 
     protected static final int INVENTORY_WIDTH = 9;
 
@@ -58,6 +58,7 @@ public class IconInventory implements IconUpdateListener, Listener {
 
     public IconInventory(String title) {
         this.title = title;
+        ShutdownRegistry.addListener(this);
     }
 
     public void showTo(HumanEntity entity) {
@@ -190,8 +191,8 @@ public class IconInventory implements IconUpdateListener, Listener {
         openedInventories.remove(event.getInventory());
     }
 
-    @EventHandler
-    public void on(UHCPluginDisableEvent event) {
+    @Override
+    public void onPluginShutdown() {
         for (final HumanEntity viewer : getCurrentViewers()) {
             viewer.closeInventory();
         }

@@ -27,7 +27,7 @@
 
 package gg.uhc.uhc.modules.timer.renderer;
 
-import gg.uhc.uhc.UHCPluginDisableEvent;
+import gg.uhc.uhc.ShutdownRegistry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BossBar;
@@ -37,13 +37,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-public class BossBarRenderer implements TimerRenderer, Listener {
+public class BossBarRenderer implements TimerRenderer, Listener, ShutdownRegistry.ShutdownListener {
     protected final BossBar bossBar;
 
     protected boolean isRendering;
 
     public BossBarRenderer(BossBar bossBar) {
         this.bossBar = bossBar;
+        ShutdownRegistry.addListener(this);
     }
 
     @EventHandler
@@ -58,8 +59,8 @@ public class BossBarRenderer implements TimerRenderer, Listener {
         bossBar.removePlayer(event.getPlayer());
     }
 
-    @EventHandler
-    public void on(UHCPluginDisableEvent event) {
+    @Override
+    public void onPluginShutdown() {
         onStop();
     }
 

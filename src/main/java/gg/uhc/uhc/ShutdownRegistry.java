@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.PluginDisableEvent
+ * Class: gg.uhc.uhc.ShutdownRegistry
  *
  * The MIT License (MIT)
  *
@@ -27,18 +27,31 @@
 
 package gg.uhc.uhc;
 
-import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
+import com.google.common.collect.Lists;
 
-public class UHCPluginDisableEvent extends Event {
-    private static final HandlerList HANDLERS = new HandlerList();
+import java.util.List;
 
-    @Override
-    public HandlerList getHandlers() {
-        return HANDLERS;
+public final class ShutdownRegistry {
+
+    protected static final List<ShutdownListener> LISTENERS = Lists.newArrayList();
+
+    private ShutdownRegistry() {
+        throw new AssertionError();
     }
 
-    public static HandlerList getHandlerList() {
-        return HANDLERS;
+    public static void addListener(ShutdownListener listener) {
+        LISTENERS.add(listener);
+    }
+
+    static void runListeners() {
+        for (final ShutdownListener listener : LISTENERS) {
+            listener.onPluginShutdown();
+        }
+
+        LISTENERS.clear();
+    }
+
+    public interface ShutdownListener {
+        void onPluginShutdown();
     }
 }
