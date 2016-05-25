@@ -95,7 +95,7 @@ public class HorseArmourModule extends DisableableModule implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void on(EntityMountEvent event) {
-        if (!isEnabled()) return;
+        if (isEnabled()) return;
 
         if (event.getEntityType() != EntityType.PLAYER || event.getMount().getType() != EntityType.HORSE) return;
 
