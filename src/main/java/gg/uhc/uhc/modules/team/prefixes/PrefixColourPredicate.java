@@ -27,7 +27,6 @@
 
 package gg.uhc.uhc.modules.team.prefixes;
 
-
 import com.google.common.base.Predicate;
 import org.bukkit.ChatColor;
 

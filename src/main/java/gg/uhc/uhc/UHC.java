@@ -69,6 +69,7 @@ import gg.uhc.uhc.modules.timer.TimerModule;
 import gg.uhc.uhc.modules.whitelist.WhitelistClearCommand;
 import gg.uhc.uhc.modules.whitelist.WhitelistOnlineCommand;
 import gg.uhc.uhc.modules.xp.NerfQuartzXPModule;
+import gg.uhc.uhc.skript.SkriptHook;
 
 import com.google.common.base.Optional;
 import com.typesafe.config.Config;
@@ -157,6 +158,8 @@ public class UHC extends JavaPlugin {
         );
         registry.register(new HeadDropsModule(headProvider));
         registry.register(new DeathStandsModule());
+
+        setupPluginHooks();
 
         setupTeamCommands();
 
@@ -265,6 +268,12 @@ public class UHC extends JavaPlugin {
         teamrequest.registerSubcommand("request", new TeamRequestCommand(requestMessages, requestManager));
         teamrequest.registerSubcommand("list", new RequestListCommand(requestMessages, requestManager));
         setupCommand(teamrequest, "teamrequest");
+    }
+
+    protected void setupPluginHooks() {
+        if (getServer().getPluginManager().getPlugin("Skript") != null) {
+            SkriptHook.register(this);
+        }
     }
 
     protected void setupProtocolLibModules() {

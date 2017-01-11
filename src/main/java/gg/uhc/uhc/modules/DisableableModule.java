@@ -31,8 +31,7 @@ import gg.uhc.uhc.ItemStackNBTStringFetcher;
 import gg.uhc.uhc.inventory.ClickHandler;
 import gg.uhc.uhc.inventory.IconInventory;
 import gg.uhc.uhc.inventory.IconStack;
-import gg.uhc.uhc.modules.events.ModuleDisableEvent;
-import gg.uhc.uhc.modules.events.ModuleEnableEvent;
+import gg.uhc.uhc.modules.events.ModuleChangeStatusEvent;
 
 import com.google.common.collect.ImmutableMap;
 import net.md_5.bungee.api.ChatColor;
@@ -168,7 +167,7 @@ public abstract class DisableableModule extends Module implements ClickHandler {
     public final boolean enable() {
         if (isEnabled()) return false;
 
-        final ModuleEnableEvent event = new ModuleEnableEvent(this);
+        final ModuleChangeStatusEvent event = new ModuleChangeStatusEvent(this, true);
         Bukkit.getPluginManager().callEvent(event);
 
         if (event.isCancelled()) return false;
@@ -185,7 +184,7 @@ public abstract class DisableableModule extends Module implements ClickHandler {
     public final boolean disable() {
         if (!isEnabled()) return false;
 
-        final ModuleDisableEvent event = new ModuleDisableEvent(this);
+        final ModuleChangeStatusEvent event = new ModuleChangeStatusEvent(this, false);
         Bukkit.getPluginManager().callEvent(event);
 
         if (event.isCancelled()) return false;

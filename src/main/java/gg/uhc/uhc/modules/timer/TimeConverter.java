@@ -27,7 +27,6 @@
 
 package gg.uhc.uhc.modules.timer;
 
-
 import gg.uhc.flagcommands.joptsimple.ValueConversionException;
 import gg.uhc.flagcommands.joptsimple.ValueConverter;
 import gg.uhc.uhc.util.TimeUtil;

@@ -4,6 +4,7 @@ version: ${project.version}
 author: ghowden/Eluinhost
 database: false
 soft-depend: [ProtocolLib]
+loadbefore: [Skript]
 commands:
   showhealth:
     permission: uhc.command.showhealth

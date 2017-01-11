@@ -15,7 +15,9 @@
         <property name="fileExtensions" value="java"/>
     </module>
     <module name="SuppressWarningsFilter" />
-    <module name="NewlineAtEndOfFile"/>
+    <module name="NewlineAtEndOfFile">
+        <property name="lineSeparator" value="lf" />
+    </module>
     <module name="TreeWalker">
         <module name="SuppressWarningsHolder" />
         <module name="AnnotationUseStyle"/>

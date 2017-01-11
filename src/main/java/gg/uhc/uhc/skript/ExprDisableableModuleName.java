@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.modules.events.ModuleDisableEvent
+ * Class: gg.uhc.uhc.modules.ExpDisableableModuleStatus
  *
  * The MIT License (MIT)
  *
@@ -25,41 +25,32 @@
  * THE SOFTWARE.
  */
 
-package gg.uhc.uhc.modules.events;
+
+package gg.uhc.uhc.skript;
 
 import gg.uhc.uhc.modules.DisableableModule;
 
-import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
+import ch.njol.skript.expressions.base.SimplePropertyExpression;
 
-public class ModuleDisableEvent extends Event {
-    private static final HandlerList HANDLERS = new HandlerList();
+public class ExprDisableableModuleName extends SimplePropertyExpression<DisableableModule, String> {
+    private static final String PROPERTY = "name";
 
-    protected final DisableableModule module;
-    protected boolean cancelled;
-
-    public ModuleDisableEvent(DisableableModule module) {
-        this.module = module;
+    static void hook() {
+        register(ExprDisableableModuleName.class, String.class, "name[s]", "modules");
     }
 
     @Override
-    public HandlerList getHandlers() {
-        return HANDLERS;
+    protected String getPropertyName() {
+        return PROPERTY;
     }
 
-    public static HandlerList getHandlerList() {
-        return HANDLERS;
+    @Override
+    public String convert(final DisableableModule disableableModule) {
+        return disableableModule.getId();
     }
 
-    public DisableableModule getModule() {
-        return module;
-    }
-
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
-    public void setCancelled(boolean cancelled) {
-        this.cancelled = cancelled;
+    @Override
+    public Class<? extends String> getReturnType() {
+        return String.class;
     }
 }

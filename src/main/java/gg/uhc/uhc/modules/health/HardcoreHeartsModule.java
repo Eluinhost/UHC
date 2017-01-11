@@ -30,7 +30,7 @@ package gg.uhc.uhc.modules.health;
 import gg.uhc.uhc.modules.Module;
 import gg.uhc.uhc.modules.ModuleRegistry;
 import gg.uhc.uhc.modules.autorespawn.AutoRespawnModule;
-import gg.uhc.uhc.modules.events.ModuleDisableEvent;
+import gg.uhc.uhc.modules.events.ModuleChangeStatusEvent;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -77,8 +77,8 @@ public class HardcoreHeartsModule extends Module implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    public void on(ModuleDisableEvent event) {
-        if (event.getModule() == respawnModule) event.setCancelled(true);
+    public void on(ModuleChangeStatusEvent event) {
+        if (!event.willBeEnabled() && event.getModule() == respawnModule) event.setCancelled(true);
     }
 
     class HardcoreHeartsListener extends PacketAdapter {

@@ -1,6 +1,6 @@
 /*
  * Project: UHC
- * Class: gg.uhc.uhc.modules.events.ModuleEnableEvent
+ * Class: gg.uhc.uhc.modules.ModuleChangeStatusEvent
  *
  * The MIT License (MIT)
  *
@@ -29,17 +29,23 @@ package gg.uhc.uhc.modules.events;
 
 import gg.uhc.uhc.modules.DisableableModule;
 
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class ModuleEnableEvent extends Event {
+public class ModuleChangeStatusEvent extends Event implements Cancellable {
     private static final HandlerList HANDLERS = new HandlerList();
 
-    protected boolean cancelled;
     protected final DisableableModule module;
+    protected final boolean from;
+    protected final boolean to;
 
-    public ModuleEnableEvent(DisableableModule module) {
+    protected boolean cancelled;
+
+    public ModuleChangeStatusEvent(DisableableModule module, boolean to) {
         this.module = module;
+        this.from = module.isEnabled();
+        this.to = to;
     }
 
     @Override
@@ -61,5 +67,13 @@ public class ModuleEnableEvent extends Event {
 
     public void setCancelled(boolean cancelled) {
         this.cancelled = cancelled;
+    }
+
+    public boolean isEnabled() {
+        return from;
+    }
+
+    public boolean willBeEnabled() {
+        return to;
     }
 }
