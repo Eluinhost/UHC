@@ -27,13 +27,6 @@
 
 package gg.uhc.uhc.skript;
 
-import ch.njol.skript.classes.Changer;
-import ch.njol.skript.expressions.base.EventValueExpression;
-import ch.njol.skript.lang.DefaultExpression;
-import ch.njol.skript.lang.Expression;
-import ch.njol.skript.lang.SkriptParser;
-import ch.njol.util.Checker;
-import ch.njol.util.Kleenean;
 import gg.uhc.uhc.UHC;
 import gg.uhc.uhc.modules.DisableableModule;
 import gg.uhc.uhc.modules.Module;
@@ -43,16 +36,14 @@ import gg.uhc.uhc.modules.events.ModuleChangeStatusEvent;
 import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptAddon;
 import ch.njol.skript.classes.ClassInfo;
+import ch.njol.skript.expressions.base.EventValueExpression;
 import ch.njol.skript.registrations.Classes;
 import ch.njol.skript.registrations.EventValues;
 import ch.njol.skript.util.Getter;
 import com.google.common.base.Function;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
-import org.bukkit.entity.Entity;
-import org.bukkit.event.Event;
 
-import java.util.Iterator;
 import java.util.logging.Logger;
 
 public final class SkriptHook {
