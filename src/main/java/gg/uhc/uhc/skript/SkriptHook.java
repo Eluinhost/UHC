@@ -109,6 +109,9 @@ public final class SkriptHook {
         EffDisableableModuleStatus.hook();
         logger.info("Registered module status efffect");
 
+        ExprGoldenHeadsHealAmount.hook();
+        logger.info("Registered golden heal heal amount expression");
+
         EventValues.registerEventValue(
             ModuleChangeStatusEvent.class,
             DisableableModule.class,
